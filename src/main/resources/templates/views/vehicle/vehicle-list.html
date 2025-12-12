@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head ('Taller Go - Vehículos')"></head>
+
+<body class="d-flex flex-column h-100">
+
+<header th:replace="fragments/header :: header"></header>
+
+<main class="list-page">
+    <div class="list-card">
+
+        <h1 th:text="#{msg.vehicle-list.title}">Listado de Vehículos</h1>
+
+        <a th:href="@{/vehicles/new}"
+           class="btn btn-success"
+           th:text="#{msg.vehicle-list.add}">Añadir Vehículo</a>
+
+        <div th:if="${errorMessage}"
+             class="alert alert-danger"
+             th:text="${errorMessage}"></div>
+
+        <table class="table table-bordered table-striped mt-3">
+            <thead>
+            <tr>
+                <th>
+                    <a class="text-decoration-none text-dark"
+                       th:href="@{/vehicles(page=${currentPage}, size=${pageSize}, sortField='id', sortDir=${(sortField == 'id') ? reverseSortDir : 'asc'})}">
+                        <span th:text="#{msg.vehicle-list.id}">ID</span>
+                        <span class="ms-1" th:if="${sortField == 'id'}" th:text="${sortDir == 'asc'} ? '▲' : '▼'"></span>
+                    </a>
+                </th>
+                <th>
+                    <a class="text-decoration-none text-dark"
+                       th:href="@{/vehicles(page=${currentPage}, size=${pageSize}, sortField='brand.name', sortDir=${(sortField == 'brand.name') ? reverseSortDir : 'asc'})}">
+                        <span th:text="#{msg.vehicle-list.brand}">Marca</span>
+                        <span class="ms-1" th:if="${sortField == 'brand.name'}" th:text="${sortDir == 'asc'} ? '▲' : '▼'"></span>
+                    </a>
+                </th>
+                <th>
+                    <a class="text-decoration-none text-dark"
+                       th:href="@{/vehicles(page=${currentPage}, size=${pageSize}, sortField='model', sortDir=${(sortField == 'model') ? reverseSortDir : 'asc'})}">
+                        <span th:text="#{msg.vehicle-list.model}">Modelo</span>
+                        <span class="ms-1" th:if="${sortField == 'model'}" th:text="${sortDir == 'asc'} ? '▲' : '▼'"></span>
+                    </a>
+                </th>
+                <th>
+                    <a class="text-decoration-none text-dark"
+                       th:href="@{/vehicles(page=${currentPage}, size=${pageSize}, sortField='matricula', sortDir=${(sortField == 'matricula') ? reverseSortDir : 'asc'})}">
+                        <span th:text="#{msg.vehicle-list.matricula}">Matrícula</span>
+                        <span class="ms-1" th:if="${sortField == 'matricula'}" th:text="${sortDir == 'asc'} ? '▲' : '▼'"></span>
+                    </a>
+                </th>
+                <th th:text="#{msg.vehicle-list.actions}">Acciones</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="vehicle : ${listVehicles}">
+                <td th:text="${vehicle.id}"></td>
+
+                <td th:text="${vehicle.brandName} ?: '-'"></td>
+
+                <td th:text="${vehicle.model}"></td>
+                <td th:text="${vehicle.matricula}"></td>
+                <td>
+                    <a th:href="@{/vehicles/detail(id=${vehicle.id})}"
+                       class="btn btn-outline-secondary btn-sm me-1"
+                       th:text="#{msg.vehicle-list.viewDetail}">Ver</a>
+
+                    <a th:href="@{/vehicles/edit(id=${vehicle.id})}"
+                       class="btn btn-primary btn-sm"
+                       th:text="#{msg.vehicle-list.edit}">Editar</a>
+
+                    <form th:action="@{/vehicles/delete}" method="post" class="d-inline">
+                        <input type="hidden" name="id" th:value="${vehicle.id}"/>
+                        <button type="submit"
+                                class="btn btn-danger btn-sm"
+                                th:text="#{msg.vehicle-list.delete}"
+                                th:onclick="'return confirm(\'' + #{msg.vehicle-list.confirm} + '\');'">Borrar</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="d-flex justify-content-between align-items-center mt-3"
+             th:if="${totalPages > 0}">
+
+            <div>
+                <span th:text="#{msg.pagination.info(${currentPage} + 1, ${totalPages}, ${totalElements})}"></span>
+            </div>
+
+            <nav th:aria-label="#{msg.pagination.aria.label}">
+                <ul class="pagination mb-0">
+                    <li class="page-item" th:classappend="${currentPage == 0} ? ' disabled'">
+                        <a class="page-link"
+                           th:href="@{/vehicles(page=${currentPage - 1}, size=${pageSize}, sortField=${sortField}, sortDir=${sortDir})}"
+                           th:aria-label="#{msg.pagination.prev}">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${i} == ${currentPage} ? ' active'">
+                        <a class="page-link"
+                           th:text="${i + 1}"
+                           th:href="@{/vehicles(page=${i}, size=${pageSize}, sortField=${sortField}, sortDir=${sortDir})}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? ' disabled'">
+                        <a class="page-link"
+                           th:href="@{/vehicles(page=${currentPage + 1}, size=${pageSize}, sortField=${sortField}, sortDir=${sortDir})}"
+                           th:aria-label="#{msg.pagination.next}">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <a th:href="@{/}" class="btn btn-secondary" th:text="#{msg.vehicle-form.returnback}">Volver</a>
+
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

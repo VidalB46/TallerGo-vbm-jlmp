@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head ('Taller Go - Formulario Marca')"></head>
+
+<body class="d-flex flex-column h-100">
+
+<header th:replace="fragments/header :: header"></header>
+
+<main class="form-page">
+    <div class="form-card">
+
+        <h1 th:text="${brand.id == null} ? #{msg.brand-form.add} : #{msg.brand-form.edit}">
+            Formulario Marca
+        </h1>
+
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+        <form th:action="${brand.id == null} ? @{/brands/insert} : @{/brands/update}"
+              th:object="${brand}" method="post" class="mt-3">
+
+            <input type="hidden" th:field="*{id}"/>
+
+            <div class="mb-3">
+                <label for="name" class="form-label" th:text="#{msg.brand-form.name}">Nombre</label>
+                <input type="text" th:field="*{name}" id="name" class="form-control" />
+                <div th:if="${#fields.hasErrors('name')}" class="text-danger" th:errors="*{name}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="country" class="form-label" th:text="#{msg.brand-form.country}">País</label>
+                <input type="text" th:field="*{country}" id="country" class="form-control" />
+                <div th:if="${#fields.hasErrors('country')}" class="text-danger" th:errors="*{country}"></div>
+            </div>
+
+            <button type="submit" class="btn btn-primary"
+                    th:text="${brand.id == null} ? #{msg.brand-form.create} : #{msg.brand-form.update}">
+                Guardar
+            </button>
+
+            <a th:href="@{/brands}" class="btn btn-secondary" th:text="#{msg.brand-form.returnback}">
+                Volver
+            </a>
+
+        </form>
+
+    </div>
+</main>
+
+<footer th:replace="fragments/footer :: footer"></footer>
+<div th:replace="fragments/scripts :: scripts"></div>
+
+</body>
+</html>

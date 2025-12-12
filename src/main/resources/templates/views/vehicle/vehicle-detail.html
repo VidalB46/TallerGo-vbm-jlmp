@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head ('Taller Go - Detalle Vehículo')"></head>
+
+<body class="d-flex flex-column h-100">
+
+<header th:replace="fragments/header :: header"></header>
+
+<main class="form-page">
+    <div class="form-card">
+
+        <h1>
+            <span th:text="#{msg.vehicle-detail.title}">Detalle</span>:
+            <span th:text="${vehicle.matricula}"></span>
+        </h1>
+
+        <div th:if="${errorMessage}"
+             class="alert alert-danger"
+             th:text="${errorMessage}"></div>
+
+        <div class="mt-3">
+            <h2 class="h5" th:text="#{msg.vehicle-detail.section.vehicleData}">Datos del Vehículo</h2>
+            <dl class="row">
+                <dt class="col-sm-3" th:text="#{msg.vehicle-detail.field.id}">ID</dt>
+                <dd class="col-sm-9" th:text="${vehicle.id}"></dd>
+
+                <dt class="col-sm-3" th:text="#{msg.vehicle-detail.field.model}">Modelo</dt>
+                <dd class="col-sm-9" th:text="${vehicle.model}"></dd>
+
+                <dt class="col-sm-3" th:text="#{msg.vehicle-detail.field.matricula}">Matrícula</dt>
+                <dd class="col-sm-9" th:text="${vehicle.matricula}"></dd>
+
+                <dt class="col-sm-3" th:text="#{msg.vehicle-detail.field.color}">Color</dt>
+                <dd class="col-sm-9" th:text="${vehicle.color}"></dd>
+
+                <dt class="col-sm-3" th:text="#{msg.vehicle-detail.field.year}">Año</dt>
+                <dd class="col-sm-9" th:text="${vehicle.year}"></dd>
+
+                <dt class="col-sm-3" th:text="#{msg.vehicle-detail.field.km}">KM</dt>
+                <dd class="col-sm-9" th:text="${vehicle.km}"></dd>
+            </dl>
+        </div>
+
+        <div class="mt-4">
+            <h2 class="h5" th:text="#{msg.vehicle-detail.section.brand}">Marca</h2>
+
+            <div th:if="${vehicle.brand == null}"
+                 class="alert alert-info"
+                 th:text="#{msg.vehicle-detail.brand.empty}">
+                Este vehículo no tiene marca asociada.
+            </div>
+
+            <div th:if="${vehicle.brand != null}">
+                <dl class="row">
+                    <dt class="col-sm-3" th:text="#{msg.vehicle-detail.brand.field.id}">ID Marca</dt>
+                    <dd class="col-sm-9" th:text="${vehicle.brand.id}"></dd>
+
+                    <dt class="col-sm-3" th:text="#{msg.vehicle-detail.brand.field.name}">Nombre</dt>
+                    <dd class="col-sm-9" th:text="${vehicle.brand.name}"></dd>
+
+                    <dt class="col-sm-3" th:text="#{msg.vehicle-detail.brand.field.country}">País</dt>
+                    <dd class="col-sm-9" th:text="${vehicle.brand.country}"></dd>
+                </dl>
+
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a class="btn btn-secondary" th:href="@{/vehicles}" th:text="#{msg.vehicle-detail.action.back}">Volver</a>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="fragments/footer :: footer"></footer>
+
+<div th:replace="fragments/scripts :: scripts"></div>
+
+</body>
+</html>

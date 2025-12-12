@@ -8,11 +8,11 @@
         <version>3.5.6</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>org.iesalixar.daw2.vbm</groupId>
-    <artifactId>dwese2526-ticket-logger-webapp-vbm</artifactId>
+    <groupId>org.daw2.tallergo.crud_tallergo</groupId>
+    <artifactId>crud-tallergo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>dwese2526-ticket-logger-webapp-vbm</name>
-    <description>Vidal Bañez - Aplicación Web para el registro de tickets de compras del supermercado</description>
+    <name>crud-tallergo</name>
+    <description>Vidal Bañez - Aplicación Web para la gestión de talleres mecanicos</description>
     <url/>
     <licenses>
         <license/>
