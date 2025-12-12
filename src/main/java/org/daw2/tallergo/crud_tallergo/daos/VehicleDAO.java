@@ -9,10 +9,9 @@ public interface VehicleDAO {
     long countVehicles();
     void insertVehicle(Vehicle vehicle);
     void updateVehicle(Vehicle vehicle);
-    void deleteVehicle(Long id); // Vehicle ID es Long
+    void deleteVehicle(Long id);
     Vehicle getVehicleById(Long id);
 
-    // En Vehicle el campo único es 'matricula' (en Province era 'code')
     boolean existsVehicleByMatricula(String matricula);
     boolean existsVehicleByMatriculaAndNotId(String matricula, Long id);
 }

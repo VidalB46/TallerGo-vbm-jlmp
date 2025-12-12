@@ -7,16 +7,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO reutilizable para crear marcas.
- */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class BrandCreateDTO {
 
-    // En este DTO este campo siempre vendrá null porque es una inserción
     private Integer id;
 
     @NotBlank(message = "{msg.brand.name.notEmpty}")

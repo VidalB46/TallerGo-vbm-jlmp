@@ -26,22 +26,16 @@ public class VehicleDAOImpl implements VehicleDAO {
     @PersistenceContext
     private EntityManager entityManager;
 
-    /**
-     * Lista todos los vehículos (con su marca asociada mediante FETCH).
-     */
+
     @Override
     public List<Vehicle> listAllVehicles() {
         logger.info("Listing all vehicles with their brands from the database.");
-        // Importante: JOIN FETCH para traer los datos de la marca en la misma consulta
         String hql = "SELECT v FROM Vehicle v JOIN FETCH v.brand";
         List<Vehicle> vehicles = entityManager.createQuery(hql, Vehicle.class).getResultList();
         logger.info("Retrieved {} vehicles from the database.", vehicles.size());
         return vehicles;
     }
 
-    /**
-     * Verifica existencia por matrícula.
-     */
     @Override
     public boolean existsVehicleByMatricula(String matricula) {
         logger.info("Checking if vehicle with matricula: {} exists", matricula);
@@ -111,9 +105,6 @@ public class VehicleDAOImpl implements VehicleDAO {
         }
     }
 
-    /**
-     * Paginación compleja con JOIN para ordenar por nombre de Marca.
-     */
     @Override
     public List<Vehicle> listVehiclesPage(int page, int size, String sortField, String sortDir) {
         logger.info("Listing vehicles page={}, size={}, sortField={}, sortDir={} from the database.",
@@ -121,18 +112,14 @@ public class VehicleDAOImpl implements VehicleDAO {
 
         int offset = page * size;
 
-        // 1. Construcción de Criteria
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Vehicle> cq = cb.createQuery(Vehicle.class);
         Root<Vehicle> root = cq.from(Vehicle.class);
 
-        // Hacemos fetch de brand para que venga cargada (equivalente al JOIN FETCH)
         root.fetch("brand", JoinType.INNER);
 
-        // Join separado para poder usar brand.name en ORDER BY
         Join<Vehicle, Brand> brandJoin = root.join("brand", JoinType.INNER);
 
-        // 2. Determinar el campo de ordenación
         Path<?> sortPath;
         switch (sortField) {
             case "id" -> sortPath = root.get("id");
@@ -147,14 +134,11 @@ public class VehicleDAOImpl implements VehicleDAO {
             }
         }
 
-        // 3. Dirección de ordenación
         boolean descending = "desc".equalsIgnoreCase(sortDir);
         Order order = descending ? cb.desc(sortPath) : cb.asc(sortPath);
 
-        // 4. Aplicar ordenación
         cq.select(root).orderBy(order);
 
-        // 5. Ejecutar
         return entityManager.createQuery(cq)
                 .setFirstResult(offset)
                 .setMaxResults(size)

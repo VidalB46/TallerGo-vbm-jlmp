@@ -8,9 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO para actualización (UPDATE) de Brand.
- */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

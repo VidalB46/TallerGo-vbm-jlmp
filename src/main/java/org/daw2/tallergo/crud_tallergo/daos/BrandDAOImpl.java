@@ -93,9 +93,7 @@ public class BrandDAOImpl implements BrandDAO {
         return exists;
     }
 
-    /**
-     * Paginación con Criteria API
-     */
+
     @Override
     public List<Brand> listBrandsPage(int page, int size, String sortField, String sortDir) {
         logger.info("Listing brands page={}, size={}, sortField={}, sortDir={} from the database.",
@@ -103,12 +101,10 @@ public class BrandDAOImpl implements BrandDAO {
 
         int offset = page * size;
 
-        // 1. Construcción de Criteria
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Brand> cq = cb.createQuery(Brand.class);
         Root<Brand> root = cq.from(Brand.class);
 
-        // 2. Determinar el campo de ordenación permitido
         Path<?> sortPath;
         switch (sortField) {
             case "id" -> sortPath = root.get("id");
@@ -120,14 +116,11 @@ public class BrandDAOImpl implements BrandDAO {
             }
         }
 
-        // 3. Dirección de ordenación
         boolean descending = "desc".equalsIgnoreCase(sortDir);
         Order order = descending ? cb.desc(sortPath) : cb.asc(sortPath);
 
-        // 4. Aplicar ordenación
         cq.select(root).orderBy(order);
 
-        // 5. Ejecutar query paginada
         return entityManager.createQuery(cq)
                 .setFirstResult(offset)
                 .setMaxResults(size)

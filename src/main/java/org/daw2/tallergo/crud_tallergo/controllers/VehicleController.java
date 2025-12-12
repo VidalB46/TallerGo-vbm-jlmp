@@ -184,7 +184,6 @@ public class VehicleController {
                 return "redirect:/vehicles/edit?id=" + vehicleDTO.getId();
             }
 
-            // Recuperamos la entidad original para no perder datos
             Vehicle vehicle = vehicleDAO.getVehicleById(vehicleDTO.getId());
             if(vehicle != null) {
                 VehicleMapper.copyToExistingEntity(vehicleDTO, vehicle);

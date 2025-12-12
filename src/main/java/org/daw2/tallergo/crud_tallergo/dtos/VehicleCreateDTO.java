@@ -10,16 +10,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO reutilizable para crear vehículos.
- */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class VehicleCreateDTO {
 
-    // ID nulo en inserción
     private Long id;
 
     @NotBlank(message = "{msg.vehicle.matricula.notEmpty}")

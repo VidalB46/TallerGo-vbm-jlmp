@@ -15,7 +15,6 @@ import java.util.Locale;
 @Configuration
 public class LocaleConfig implements WebMvcConfigurer {
 
-    // Logger para registrar eventos en esta clase
     private static final Logger logger = LoggerFactory.getLogger(LocaleConfig.class);
 
     /**

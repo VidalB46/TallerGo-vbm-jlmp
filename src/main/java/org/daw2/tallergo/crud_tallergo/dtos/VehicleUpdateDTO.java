@@ -10,10 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO para actualización (UPDATE) de Vehicle.
- * Incluye id obligatorio y el id de la marca.
- */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

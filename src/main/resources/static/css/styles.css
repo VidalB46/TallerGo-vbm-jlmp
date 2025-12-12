@@ -3,7 +3,7 @@
   ========================================================= */
 :root {
  --color-primary: #000000;          /* Negro para la navbar */
- --color-primary-hover: #2f2f2f;    /* Negro ligeramente más claro (antracita) */
+ --color-primary-hover: #2f2f2f;    /* Negro ligeramente más claro */
  --color-text-light: #ffffff;       /* Texto blanco */
  --color-text-hover: #e3e3e3;       /* Gris claro para hover */
  --color-bg-footer: #f8f9fa;
@@ -24,7 +24,6 @@ body {
  background-color: #ffffff;
 }
 
-/* Contenedor principal que empuja el footer hacia abajo */
 .content-wrapper {
  flex: 1;
  display: flex;

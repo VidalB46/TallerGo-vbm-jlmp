@@ -10,10 +10,9 @@ public interface BrandDAO {
     long countBrands();
     void insertBrand(Brand brand);
     void updateBrand(Brand brand);
-    void deleteBrand(Integer id); // Ojo: Brand ID es Integer según tu schema
+    void deleteBrand(Integer id);
     Brand getBrandById(Integer id);
 
-    // En Brand el campo único es 'name' (en Region era 'code')
     boolean existsBrandByName(String name);
     boolean existsBrandByNameAndNotId(String name, Integer id);
 }

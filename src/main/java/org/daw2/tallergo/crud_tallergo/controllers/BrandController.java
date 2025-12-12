@@ -146,7 +146,6 @@ public class BrandController {
 
             Brand brand = brandDAO.getBrandById(brandDTO.getId());
             if (brand == null){
-                // Manejo de error si no existe
                 return "redirect:/brands";
             }
             // Actualizamos los campos usando el Mapper

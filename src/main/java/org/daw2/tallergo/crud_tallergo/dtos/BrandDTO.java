@@ -5,9 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO genérico de lectura para Brand (listar/detalle).
- */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
