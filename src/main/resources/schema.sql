@@ -43,35 +43,38 @@ CREATE TABLE IF NOT EXISTS vehicles (
     ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
--- Catálogo de Servicios (e.g., Cambio de Aceite)
+-- Catálogo de Servicios
 CREATE TABLE IF NOT EXISTS services (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(150) NOT NULL
 );
 
--- Relación N:M entre Talleres y Servicios (con precio y duración)
+-- Relación N:M entre Talleres y Servicios
 CREATE TABLE IF NOT EXISTS workshop_services (
-  workshop_id INT,
-  service_id INT,
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  workshop_id INT NOT NULL,
+  service_id INT NOT NULL,
   price DECIMAL(10, 2) NOT NULL,
   duration_minutes INT,
-  PRIMARY KEY (workshop_id, service_id),
+
+  -- Un taller no puede tener 2 veces el mismo servicio
+  CONSTRAINT uk_workshop_service UNIQUE (workshop_id, service_id),
+
   CONSTRAINT fk_ws_workshop FOREIGN KEY (workshop_id) REFERENCES workshops(id),
   CONSTRAINT fk_ws_service FOREIGN KEY (service_id) REFERENCES services(id)
 );
 
 -- Citas
--- Basado en [cite: 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]
 CREATE TABLE IF NOT EXISTS appointments (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  user_id BIGINT NOT NULL,   -- ID_Cliente
-  workshop_id INT NOT NULL,  -- ID_Taller
-  vehicle_id BIGINT NOT NULL,-- ID_Vehiculo
+  user_id BIGINT NOT NULL,
+  workshop_id INT NOT NULL,
+  vehicle_id BIGINT NOT NULL,
   start_date DATETIME NOT NULL,
   end_date DATETIME,
   status ENUM('SOLICITADO', 'CONFIRMADO', 'CANCELADO') DEFAULT 'SOLICITADO',
   notes TEXT,
-  media_url VARCHAR(255),    -- Para fotos/videos
+  media_url VARCHAR(255),
   CONSTRAINT fk_appt_user FOREIGN KEY (user_id) REFERENCES users(id),
   CONSTRAINT fk_appt_workshop FOREIGN KEY (workshop_id) REFERENCES workshops(id),
   CONSTRAINT fk_appt_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(id)

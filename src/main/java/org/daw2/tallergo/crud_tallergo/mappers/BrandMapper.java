@@ -5,6 +5,7 @@ import org.daw2.tallergo.crud_tallergo.entities.Brand;
 import org.daw2.tallergo.crud_tallergo.entities.Vehicle;
 
 import java.util.List;
+import java.util.Set;
 
 public class BrandMapper {
 
@@ -37,6 +38,7 @@ public class BrandMapper {
         dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setCountry(entity.getCountry());
+
         dto.setVehicles(toVehicleList(entity.getVehicles()));
         return dto;
     }
@@ -54,8 +56,10 @@ public class BrandMapper {
         return dto;
     }
 
-    public static List<VehicleDTO> toVehicleList(List<Vehicle> vehicles) {
+    // --- CORRECCIÓN AQUÍ: Cambiado List<Vehicle> por Set<Vehicle> ---
+    public static List<VehicleDTO> toVehicleList(Set<Vehicle> vehicles) {
         if (vehicles == null) return List.of();
+        // Convertimos el Set a Stream y luego lo recogemos en una List para el DTO
         return vehicles.stream().map(BrandMapper::toVehicleDTO).toList();
     }
 

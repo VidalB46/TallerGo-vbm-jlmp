@@ -2,39 +2,37 @@ package org.daw2.tallergo.crud_tallergo.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * La clase `Brand` representa una entidad que modela una marca de vehículos dentro de la base de datos.
- * Contiene tres campos: `id`, `name` y `country`.
+ * Entidad JPA para la tabla 'brands'.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = "vehicles")
+@ToString(exclude = "vehicles")
 @Entity
 @Table(name = "brands")
 public class Brand {
 
+    /** INT AUTO_INCREMENT PRIMARY KEY */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "name", nullable = false, length = 100, unique = true)
+    /** VARCHAR(100) NOT NULL UNIQUE */
+    @Column(name = "name", nullable = false, unique = true, length = 100)
     private String name;
 
+    /** VARCHAR(100) NULL */
     @Column(name = "country", length = 100)
     private String country;
 
-    @OneToMany(
-            mappedBy = "brand",
-            fetch = FetchType.LAZY,
-            cascade = {CascadeType.ALL},
-            orphanRemoval = false
-    )
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private List<Vehicle> vehicles = new ArrayList<>();
+    /** Relación 1:N con Vehicle */
+    @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY)
+    private Set<Vehicle> vehicles = new HashSet<>();
 
     public Brand(String name, String country) {
         this.name = name;
