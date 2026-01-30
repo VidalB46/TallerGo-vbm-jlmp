@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="fragments/head :: head (#{msg.mecanico.detail.title})"></head>
+
+<body class="d-flex flex-column h-100">
+
+<header th:replace="fragments/header :: header"></header>
+
+<main class="form-page flex-grow-1">
+    <div class="form-card mt-5">
+
+        <!-- Título dinámico -->
+        <h1>
+            <span th:text="#{msg.mecanico.detail.title}"></span>:
+            <span th:text="${mecanico.nombre}"></span>
+        </h1>
+
+        <!-- Mensaje de error -->
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+        <!-- Datos básicos del mecánico -->
+        <div class="mt-3">
+            <h2 class="h5" th:text="#{msg.mecanico.detail.section.datos}"></h2>
+            <dl class="row">
+                <dt class="col-sm-3" th:text="#{msg.mecanico.detail.field.id}"></dt>
+                <dd class="col-sm-9" th:text="${mecanico.id}"></dd>
+
+                <dt class="col-sm-3" th:text="#{msg.mecanico.detail.field.nombre}"></dt>
+                <dd class="col-sm-9" th:text="${mecanico.nombre}"></dd>
+
+                <dt class="col-sm-3" th:text="#{msg.mecanico.detail.field.especialidad}"></dt>
+                <dd class="col-sm-9" th:text="${mecanico.especialidad}"></dd>
+
+                <dt class="col-sm-3" th:text="#{msg.mecanico.detail.field.taller}"></dt>
+                <dd class="col-sm-9" th:text="${mecanico.tallerNombre}"></dd>
+
+                <dt class="col-sm-3" th:text="#{msg.mecanico.detail.field.tallerDireccion}"></dt>
+                <dd class="col-sm-9" th:text="${mecanico.tallerDireccion}"></dd>
+            </dl>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="mt-4 d-flex gap-2">
+            <a class="btn btn-secondary" th:href="@{/mecanicos}" th:text="#{msg.mecanico.action.back}"></a>
+            <a class="btn btn-primary" th:href="@{/mecanicos/edit(id=${mecanico.id})}" th:text="#{msg.mecanico.action.edit}"></a>
+        </div>
+
+    </div>
+</main>
+
+<footer th:replace="fragments/footer :: footer"></footer>
+<div th:replace="fragments/scripts :: scripts"></div>
+
+</body>
+</html>
