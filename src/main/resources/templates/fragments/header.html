@@ -1,29 +1,37 @@
 <header th:fragment="header" xmlns:th="http://www.w3.org/1999/xhtml">
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Taller Go - Vidal - Leo</a>
+            <!-- Branding combinado -->
+            <a class="navbar-brand" href="#">Taller Go - Vidal Bañez - Leo Morillo</a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                    aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarCollapse">
+                <!-- Menú de navegación -->
                 <ul class="navbar-nav me-auto mb-2 mb-md-0">
                     <li class="nav-item">
-                        <a class="nav-link active" th:text="#{msg.header.home}" th:href="@{/}">Inicio</a>
+                        <a class="nav-link active" th:href="@{/}" th:text="#{msg.nav.home} ?: 'Inicio'">Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:text="#{msg.header.brands}" th:href="@{/brands}">Marcas</a>
+                        <a class="nav-link" th:href="@{/mecanicos}" th:text="#{msg.nav.mecanicos} ?: 'Mecanicos'">Mecanicos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:text="#{msg.header.vehicles}" th:href="@{/vehicles}">Vehículos</a>
+                        <a class="nav-link" th:href="@{/brands}" th:text="#{msg.header.brands} ?: 'Marcas'">Marcas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/vehicles}" th:text="#{msg.header.vehicles} ?: 'Vehículos'">Vehículos</a>
                     </li>
                 </ul>
 
+                <!-- Dropdown de perfil -->
                 <div class="dropdown text-end me-3">
                     <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <img th:src="@{/images/avatar.svg}" alt="avatar" width="40" height="40" class="rounded-circle border border-2 border-primary-subtle">
+                        <img th:src="@{/images/avatar.svg}" alt="avatar" width="40" height="40"
+                             class="rounded-circle border border-2 border-primary-subtle">
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end text-small shadow">
                         <li>
@@ -38,11 +46,10 @@
                         </li>
                     </ul>
                 </div>
-                <form method="get"
-                      class="d-none d-lg-flex align-items-center me-3"
-                      th:action="@{/}">
 
-                    <label for="langSelect" class="visually-hidden">Idioma</label>
+                <!-- Selector de idioma -->
+                <form method="get" class="d-none d-lg-flex align-items-center me-3" th:action="@{/}">
+                    <label for="langSelect" class="visually-hidden" th:text="#{msg.nav.language} ?: 'Idioma'">Idioma</label>
                     <select id="langSelect" name="lang" class="form-select form-select-sm" onchange="this.form.submit()">
                         <option value="es" th:selected="${#locale.language == 'es'}">Español</option>
                         <option value="en" th:selected="${#locale.language == 'en'}">English</option>
