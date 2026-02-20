@@ -166,3 +166,27 @@ CREATE TABLE IF NOT EXISTS reviews (
   CONSTRAINT fk_review_workshop FOREIGN KEY (workshop_id) REFERENCES workshops(id),
   CONSTRAINT fk_review_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+
+-- ─────────────────────────────
+-- Tabla Taller
+-- ─────────────────────────────
+CREATE TABLE IF NOT EXISTS talleres (
+                          id INT AUTO_INCREMENT PRIMARY KEY,
+                          nombre VARCHAR(100) NOT NULL,
+                          direccion VARCHAR(150) NOT NULL,
+                          telefono VARCHAR(20)
+);
+
+-- ─────────────────────────────
+-- Tabla Mecanico
+-- ─────────────────────────────
+CREATE TABLE IF NOT EXISTS mecanicos (
+                           id INT AUTO_INCREMENT PRIMARY KEY,
+                           nombre VARCHAR(100) NOT NULL,
+                           especialidad VARCHAR(50) NOT NULL,
+                           taller_id INT NOT NULL,
+                           CONSTRAINT fk_taller FOREIGN KEY (taller_id)
+                               REFERENCES talleres(id)
+                               ON DELETE CASCADE
+);
