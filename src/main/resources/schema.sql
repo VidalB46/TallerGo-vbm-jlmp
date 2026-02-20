@@ -169,24 +169,12 @@ CREATE TABLE IF NOT EXISTS reviews (
 
 
 -- ─────────────────────────────
--- Tabla Taller
+-- Tabla Mecánicos (Mechanics)
 -- ─────────────────────────────
-CREATE TABLE IF NOT EXISTS talleres (
-                          id INT AUTO_INCREMENT PRIMARY KEY,
-                          nombre VARCHAR(100) NOT NULL,
-                          direccion VARCHAR(150) NOT NULL,
-                          telefono VARCHAR(20)
-);
-
--- ─────────────────────────────
--- Tabla Mecanico
--- ─────────────────────────────
-CREATE TABLE IF NOT EXISTS mecanicos (
-                           id INT AUTO_INCREMENT PRIMARY KEY,
-                           nombre VARCHAR(100) NOT NULL,
-                           especialidad VARCHAR(50) NOT NULL,
-                           taller_id INT NOT NULL,
-                           CONSTRAINT fk_taller FOREIGN KEY (taller_id)
-                               REFERENCES talleres(id)
-                               ON DELETE CASCADE
+CREATE TABLE IF NOT EXISTS mechanics (
+   id BIGINT AUTO_INCREMENT PRIMARY KEY,
+   name VARCHAR(100) NOT NULL,
+   specialty VARCHAR(50) NOT NULL,
+   workshop_id INT NOT NULL,
+   CONSTRAINT fk_mechanic_workshop FOREIGN KEY (workshop_id) REFERENCES workshops(id) ON DELETE CASCADE
 );

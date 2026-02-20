@@ -116,4 +116,5 @@ public class VehicleMapper {
         brand.setId(dto.getBrandId());
         entity.setBrand(brand);
     }
+
 }

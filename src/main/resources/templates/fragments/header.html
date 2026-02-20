@@ -1,8 +1,7 @@
-<header th:fragment="header" xmlns:th="http://www.w3.org/1999/xhtml">
+<header th:fragment="header" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
         <div class="container-fluid">
-            <!-- Branding combinado -->
-            <a class="navbar-brand" href="#">Taller Go - Vidal Bañez - Leo Morillo</a>
+            <a class="navbar-brand" th:href="@{/}" th:text="#{msg.title}">Taller Go</a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
                     aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -10,51 +9,52 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarCollapse">
-                <!-- Menú de navegación -->
                 <ul class="navbar-nav me-auto mb-2 mb-md-0">
                     <li class="nav-item">
-                        <a class="nav-link active" th:href="@{/}" th:text="#{msg.nav.home} ?: 'Inicio'">Inicio</a>
+                        <a class="nav-link" th:href="@{/}" th:text="#{msg.nav.home}">Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/mecanicos}" th:text="#{msg.nav.mecanicos} ?: 'Mecanicos'">Mecanicos</a>
+                        <a class="nav-link" th:href="@{/mechanics}" th:text="#{msg.nav.mecanicos}">Mecánicos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/brands}" th:text="#{msg.header.brands} ?: 'Marcas'">Marcas</a>
+                        <a class="nav-link" th:href="@{/workshops}" th:text="#{msg.nav.workshops}">Talleres</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/vehicles}" th:text="#{msg.header.vehicles} ?: 'Vehículos'">Vehículos</a>
+                        <a class="nav-link" th:href="@{/brands}" th:text="#{msg.header.brands}">Marcas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/vehicles}" th:text="#{msg.header.vehicles}">Vehículos</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link text-warning" th:href="@{/users}" th:text="#{msg.header.users}">Usuarios</a>
                     </li>
                 </ul>
 
-                <!-- Dropdown de perfil -->
-                <div class="dropdown text-end me-3">
-                    <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
+                <form method="get" class="d-flex align-items-center me-3" th:action="@{/}">
+                    <select id="langSelect" name="lang" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="es" th:selected="${#locale.language == 'es'}">ES</option>
+                        <option value="en" th:selected="${#locale.language == 'en'}">EN</option>
+                    </select>
+                </form>
+
+                <div class="dropdown text-end" sec:authorize="isAuthenticated()">
+                    <a href="#" class="d-block link-light text-decoration-none dropdown-toggle"
                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <img th:src="@{/images/avatar.svg}" alt="avatar" width="40" height="40"
-                             class="rounded-circle border border-2 border-primary-subtle">
+                        <span class="small me-2" sec:authentication="name">usuario@email.com</span>
+                        <img th:src="@{/images/avatar.svg}" alt="avatar" width="32" height="32" class="rounded-circle border">
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end text-small shadow">
-                        <li>
-                            <a class="dropdown-item" th:href="@{/profile/edit}" th:text="#{menu.editProfile} ?: 'Editar perfil'">Editar perfil</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" th:href="@{/profile/change-password}" th:text="#{menu.changePassword} ?: 'Cambiar contraseña'">Cambiar contraseña</a>
-                        </li>
+                        <li><a class="dropdown-item" th:href="@{/profile/edit}" th:text="#{menu.editProfile}">Perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                            <a class="dropdown-item text-danger" th:href="@{/logout}" th:text="#{menu.logout} ?: 'Cerrar sesión'">Cerrar sesión</a>
+                            <a class="dropdown-item text-danger" th:href="@{/logout}" th:text="#{menu.logout}">Salir</a>
                         </li>
                     </ul>
                 </div>
 
-                <!-- Selector de idioma -->
-                <form method="get" class="d-none d-lg-flex align-items-center me-3" th:action="@{/}">
-                    <label for="langSelect" class="visually-hidden" th:text="#{msg.nav.language} ?: 'Idioma'">Idioma</label>
-                    <select id="langSelect" name="lang" class="form-select form-select-sm" onchange="this.form.submit()">
-                        <option value="es" th:selected="${#locale.language == 'es'}">Español</option>
-                        <option value="en" th:selected="${#locale.language == 'en'}">English</option>
-                    </select>
-                </form>
+                <div sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/login}" class="btn btn-outline-light btn-sm" th:text="#{spring.security.ui.login.submit}">Entrar</a>
+                </div>
 
             </div>
         </div>

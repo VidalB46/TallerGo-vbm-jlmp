@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head ('Taller Go - Mecánicos')}"></head>
+<body class="d-flex flex-column h-100">
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="list-page">
+    <div class="list-card">
+        <h1>Equipo de Mecánicos</h1>
+        <a th:href="@{/mechanics/new}" class="btn btn-success mb-3">Contratar Mecánico</a>
+
+        <table class="table table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th>Nombre</th>
+                <th>Especialidad</th>
+                <th>Taller Asignado</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="m : ${page.content}">
+                <td th:text="${m.name}"></td>
+                <td th:text="${m.specialty}"></td>
+                <td th:text="${m.workshopName}"></td>
+                <td>
+                    <form th:action="@{/mechanics/delete}" method="post" class="d-inline">
+                        <input type="hidden" name="id" th:value="${m.id}"/>
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Borrar mecánico?')">Despedir</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

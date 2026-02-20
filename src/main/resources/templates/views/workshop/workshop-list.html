@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head ('Taller Go - Talleres')}"></head>
+<body class="d-flex flex-column h-100">
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="list-page">
+    <div class="list-card">
+        <h1>Listado de Talleres</h1>
+        <a th:href="@{/workshops/new}" class="btn btn-success mb-3">Nuevo Taller</a>
+
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+
+        <table class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>NIF</th>
+                <th>Nombre</th>
+                <th>Ubicación</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="w : ${page.content}">
+                <td th:text="${w.id}"></td>
+                <td th:text="${w.nif}"></td>
+                <td th:text="${w.name}"></td>
+                <td th:text="${w.location}"></td>
+                <td>
+                    <a th:href="@{/workshops/detail(id=${w.id})}" class="btn btn-sm btn-outline-secondary">Ver Detalle</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <nav th:if="${page.totalPages > 0}">
+            <ul class="pagination">
+                <li class="page-item" th:classappend="${page.first} ? 'disabled'">
+                    <a class="page-link" th:href="@{/workshops(page=${page.number - 1})}">&laquo;</a>
+                </li>
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}" th:classappend="${i == page.number} ? 'active'">
+                    <a class="page-link" th:href="@{/workshops(page=${i})}" th:text="${i + 1}"></a>
+                </li>
+                <li class="page-item" th:classappend="${page.last} ? 'disabled'">
+                    <a class="page-link" th:href="@{/workshops(page=${page.number + 1})}">&raquo;</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

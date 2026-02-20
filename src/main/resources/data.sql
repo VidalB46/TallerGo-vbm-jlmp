@@ -84,17 +84,12 @@ INSERT IGNORE INTO budgets (id, repair_id, total_gross, total_net) VALUES
 (1, 1, 100.00, 121.00);
 
 
-INSERT INTO talleres (nombre, direccion, telefono) VALUES
-                                                       ('Taller RapidFix', 'Calle Falsa 123, Sevilla', '955123456'),
-                                                       ('Taller AutoPro', 'Avenida del Motor 45, Sevilla', '955654321'),
-                                                       ('Taller Mecánica Total', 'Plaza Taller 7, Sevilla', '955987654');
-
 -- ─────────────────────────────
--- Datos de mecánicos
+-- Datos de mecánicos (Mechanics)
 -- ─────────────────────────────
-INSERT INTO mecanicos (nombre, especialidad, taller_id) VALUES
-                                                            ('Carlos López', 'Motor', 1),
-                                                            ('Ana Martín', 'Electricidad', 1),
-                                                            ('Luis García', 'Neumáticos', 2),
-                                                            ('Marta Pérez', 'Carrocería', 2),
-                                                            ('Javier Torres', 'General', 3);
+INSERT IGNORE INTO mechanics (id, name, specialty, workshop_id) VALUES
+(1, 'Carlos López', 'Motor', 1),
+(2, 'Ana Martín', 'Electricidad', 1),
+(3, 'Luis García', 'Neumáticos', 2),
+(4, 'Marta Pérez', 'Carrocería', 2),
+(5, 'Javier Torres', 'General', 1);

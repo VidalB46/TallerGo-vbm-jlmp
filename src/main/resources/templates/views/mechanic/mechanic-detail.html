@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head ('Taller Go - Detalle Mecánico')}"></head>
+
+<body class="d-flex flex-column h-100">
+
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="form-page">
+    <div class="form-card" style="max-width: 700px;">
+        <h1>Ficha del Mecánico</h1>
+
+        <div class="mt-4">
+            <h5 class="text-primary border-bottom pb-2">Información Personal</h5>
+            <dl class="row">
+                <dt class="col-sm-4">ID Empleado</dt>
+                <dd class="col-sm-8" th:text="${mechanic.id}"></dd>
+
+                <dt class="col-sm-4">Nombre Completo</dt>
+                <dd class="col-sm-8" th:text="${mechanic.name}"></dd>
+
+                <dt class="col-sm-4">Especialidad</dt>
+                <dd class="col-sm-8">
+                    <span class="badge bg-info text-dark" th:text="${mechanic.specialty}"></span>
+                </dd>
+            </dl>
+        </div>
+
+        <div class="mt-4" th:if="${mechanic.workshop != null}">
+            <h5 class="text-primary border-bottom pb-2">Centro de Trabajo</h5>
+            <dl class="row">
+                <dt class="col-sm-4">Taller</dt>
+                <dd class="col-sm-8">
+                    <a th:href="@{/workshops/detail(id=${mechanic.workshop.id})}"
+                       th:text="${mechanic.workshop.name}" class="fw-bold"></a>
+                </dd>
+
+                <dt class="col-sm-4">NIF Taller</dt>
+                <dd class="col-sm-8" th:text="${mechanic.workshop.nif}"></dd>
+
+                <dt class="col-sm-4">Dirección</dt>
+                <dd class="col-sm-8" th:text="${mechanic.workshop.location}"></dd>
+            </dl>
+        </div>
+
+        <div class="mt-4 text-center">
+            <a th:href="@{/mechanics}" class="btn btn-secondary">Volver al equipo</a>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

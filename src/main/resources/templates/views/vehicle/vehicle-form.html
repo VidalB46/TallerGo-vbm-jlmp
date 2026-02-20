@@ -1,72 +1,62 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: head ('Taller Go - Formulario Vehículo')"></head>
+<head th:replace="~{fragments/head :: head(#{msg.vehicle-form.add})}"></head>
 
 <body class="d-flex flex-column h-100">
-
-<header th:replace="fragments/header :: header"></header>
+<header th:replace="~{fragments/header :: header}"></header>
 
 <main class="form-page">
     <div class="form-card">
+        <h1 th:text="${vehicle.id == null} ? #{msg.vehicle-form.add} : #{msg.vehicle-form.edit}">Formulario Vehículo</h1>
 
-        <h1 th:text="${vehicle.id} == null ? #{msg.vehicle-form.add} : #{msg.vehicle-form.edit}">Formulario Vehículo</h1>
-
-        <div th:if="${errorMessage}"
-             class="alert alert-danger"
-             th:text="${errorMessage}"></div>
-
-        <form th:action="${vehicle.id} == null ? @{/vehicles/insert} : @{/vehicles/update}"
-              th:object="${vehicle}" method="post" class="mt-3">
-
+        <form th:action="${vehicle.id == null} ? @{/vehicles/insert} : @{/vehicles/update}" th:object="${vehicle}" method="post">
             <input type="hidden" th:field="*{id}" />
 
             <div class="mb-3">
                 <label for="brand" class="form-label" th:text="#{msg.vehicle-form.brand}">Marca</label>
-                <select id="brand" class="form-select" th:field="*{brandId}">
-                    <option value="" th:text="#{msg.vehicle-form.brand.select}">Seleccione Marca</option>
+                <select id="brand" class="form-select" th:field="*{brandId}" required>
+                    <option value="" th:text="#{msg.vehicle-form.brand.select}">-- Seleccione --</option>
                     <option th:each="br : ${listBrands}" th:value="${br.id}" th:text="${br.name}"></option>
                 </select>
                 <div class="text-danger" th:if="${#fields.hasErrors('brandId')}" th:errors="*{brandId}"></div>
             </div>
 
-            <div class="mb-3">
-                <label for="model" class="form-label" th:text="#{msg.vehicle-form.model}">Modelo</label>
-                <input type="text" id="model" th:field="*{model}" class="form-control" />
-                <div th:if="${#fields.hasErrors('model')}" class="text-danger" th:errors="*{model}"></div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="model" class="form-label" th:text="#{msg.vehicle-form.model}">Modelo</label>
+                    <input type="text" id="model" th:field="*{model}" class="form-control" required />
+                    <div th:if="${#fields.hasErrors('model')}" class="text-danger" th:errors="*{model}"></div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="matricula" class="form-label" th:text="#{msg.vehicle-form.matricula}">Matrícula</label>
+                    <input type="text" id="matricula" th:field="*{matricula}" class="form-control" required />
+                    <div th:if="${#fields.hasErrors('matricula')}" class="text-danger" th:errors="*{matricula}"></div>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label for="matricula" class="form-label" th:text="#{msg.vehicle-form.matricula}">Matrícula</label>
-                <input type="text" id="matricula" th:field="*{matricula}" class="form-control" />
-                <div th:if="${#fields.hasErrors('matricula')}" class="text-danger" th:errors="*{matricula}"></div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="year" class="form-label" th:text="#{msg.vehicle-form.year}">Año</label>
+                    <input type="number" id="year" th:field="*{year}" class="form-control" />
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="km" class="form-label" th:text="#{msg.vehicle-form.km}">KM</label>
+                    <input type="number" id="km" th:field="*{km}" class="form-control" />
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="color" class="form-label" th:text="#{msg.vehicle-form.color}">Color</label>
+                    <input type="text" id="color" th:field="*{color}" class="form-control" />
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label for="color" class="form-label" th:text="#{msg.vehicle-form.color}">Color</label>
-                <input type="text" id="color" th:field="*{color}" class="form-control" />
-                <div th:if="${#fields.hasErrors('color')}" class="text-danger" th:errors="*{color}"></div>
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary" th:text="${vehicle.id == null} ? #{msg.vehicle-form.create} : #{msg.vehicle-form.update}">Guardar</button>
+                <a th:href="@{/vehicles}" class="btn btn-secondary" th:text="#{msg.vehicle-form.returnback}">Volver</a>
             </div>
-
-            <div class="mb-3">
-                <label for="year" class="form-label" th:text="#{msg.vehicle-form.year}">Año</label>
-                <input type="number" id="year" th:field="*{year}" class="form-control" />
-                <div th:if="${#fields.hasErrors('year')}" class="text-danger" th:errors="*{year}"></div>
-            </div>
-
-            <div class="mb-3">
-                <label for="km" class="form-label" th:text="#{msg.vehicle-form.km}">Kilómetros</label>
-                <input type="number" id="km" th:field="*{km}" class="form-control" />
-                <div th:if="${#fields.hasErrors('km')}" class="text-danger" th:errors="*{km}"></div>
-            </div>
-
-            <button type="submit" class="btn btn-primary"
-                    th:text="${vehicle.id} == null ? #{msg.vehicle-form.create} : #{msg.vehicle-form.update}">Guardar</button>
-
-            <a th:href="@{/vehicles}" class="btn btn-secondary" th:text="#{msg.vehicle-form.returnback}">Volver</a>
-
         </form>
     </div>
 </main>
 
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

@@ -1,127 +1,76 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: head ('Taller Go - Listado Marcas')"></head>
+<head th:replace="~{fragments/head :: head(#{msg.brand-list.title})}"></head>
 
 <body class="d-flex flex-column h-100">
-
-<header th:replace="fragments/header :: header"></header>
+<header th:replace="~{fragments/header :: header}"></header>
 
 <main class="list-page">
     <div class="list-card">
-
         <h1 th:text="#{msg.brand-list.title}">Listado de Marcas</h1>
 
-        <a th:href="@{/brands/new}" class="btn btn-success" th:text="#{msg.brand-list.add}">
-            Nueva Marca
-        </a>
+        <a th:href="@{/brands/new}" class="btn btn-success" th:text="#{msg.brand-list.add}">Nueva Marca</a>
 
-        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+        <div th:if="${errorMessage}" class="alert alert-danger mt-3" th:text="${errorMessage}"></div>
 
         <table class="table table-bordered table-striped mt-3">
             <thead>
             <tr>
-                <th>
-                    <a class="text-decoration-none text-dark"
-                       th:href="@{/brands(page=${currentPage}, size=${pageSize}, sortField='id', sortDir=${(sortField == 'id') ? reverseSortDir : 'asc'})}">
+                <th th:with="order=${page.sort.getOrderFor('id')}, dir=${order != null ? order.direction.name().toLowerCase() : 'asc'}, nextDir=${dir == 'asc' ? 'desc' : 'asc'}">
+                    <a class="text-decoration-none text-dark" th:href="@{/brands(page=${page.number}, sort=${'id,' + nextDir})}">
                         <span th:text="#{msg.brand-list.id}">ID</span>
-                        <span th:if="${sortField == 'id'}" th:text="${sortDir == 'asc' ? '▲' : '▼'}"></span>
+                        <span th:if="${order != null}" th:text="${dir == 'asc' ? '▲' : '▼'}"></span>
                     </a>
                 </th>
-
-                <th>
-                    <a class="text-decoration-none text-dark"
-                       th:href="@{/brands(page=${currentPage}, size=${pageSize}, sortField='name', sortDir=${(sortField == 'name') ? reverseSortDir : 'asc'})}">
+                <th th:with="order=${page.sort.getOrderFor('name')}, dir=${order != null ? order.direction.name().toLowerCase() : 'asc'}, nextDir=${dir == 'asc' ? 'desc' : 'asc'}">
+                    <a class="text-decoration-none text-dark" th:href="@{/brands(page=${page.number}, sort=${'name,' + nextDir})}">
                         <span th:text="#{msg.brand-list.name}">Nombre</span>
-                        <span th:if="${sortField == 'name'}" th:text="${sortDir == 'asc' ? '▲' : '▼'}"></span>
+                        <span th:if="${order != null}" th:text="${dir == 'asc' ? '▲' : '▼'}"></span>
                     </a>
                 </th>
-
                 <th>
-                    <a class="text-decoration-none text-dark"
-                       th:href="@{/brands(page=${currentPage}, size=${pageSize}, sortField='country', sortDir=${(sortField == 'country') ? reverseSortDir : 'asc'})}">
-                        <span th:text="#{msg.brand-list.country}">País</span>
-                        <span th:if="${sortField == 'country'}" th:text="${sortDir == 'asc' ? '▲' : '▼'}"></span>
-                    </a>
+                    <span th:text="#{msg.brand-list.country}">País</span>
                 </th>
-
                 <th th:text="#{msg.brand-list.actions}">Acciones</th>
             </tr>
             </thead>
-
             <tbody>
-            <tr th:each="brand : ${listBrands}">
+            <tr th:each="brand : ${page.content}">
                 <td th:text="${brand.id}"></td>
                 <td th:text="${brand.name}"></td>
                 <td th:text="${brand.country}"></td>
                 <td>
-                    <a th:href="@{/brands/detail(id=${brand.id})}"
-                       class="btn btn-outline-secondary btn-sm me-1"
-                       th:text="#{msg.brand-list.viewDetail}">Detalle</a>
-
-                    <a th:href="@{/brands/edit(id=${brand.id})}"
-                       class="btn btn-primary btn-sm"
-                       th:text="#{msg.brand-list.edit}">Editar</a>
-
+                    <a th:href="@{/brands/detail(id=${brand.id})}" class="btn btn-outline-secondary btn-sm" th:text="#{msg.brand-list.viewDetail}">Detalle</a>
+                    <a th:href="@{/brands/edit(id=${brand.id})}" class="btn btn-primary btn-sm" th:text="#{msg.brand-list.edit}">Editar</a>
                     <form th:action="@{/brands/delete}" method="post" class="d-inline">
                         <input type="hidden" name="id" th:value="${brand.id}"/>
-                        <button type="submit" class="btn btn-danger btn-sm"
-                                th:onclick="|return confirm('#{msg.brand-list.confirm}');|"
-                                th:text="#{msg.brand-list.delete}">
-                            Borrar
-                        </button>
+                        <button type="submit" class="btn btn-danger btn-sm" th:onclick="return confirm([[#{msg.brand-list.confirm}]]);" th:text="#{msg.brand-list.delete}">Borrar</button>
                     </form>
                 </td>
             </tr>
             </tbody>
         </table>
 
-        <div class="d-flex justify-content-between align-items-center mt-3"
-             th:if="${totalPages > 0}">
-
-            <div>
-                <span th:text="#{msg.pagination.info(${currentPage} + 1, ${totalPages}, ${totalElements})}"></span>
-            </div>
-
-            <nav th:aria-label="#{msg.pagination.aria.label}">
+        <div class="d-flex justify-content-between align-items-center mt-3" th:if="${page.totalPages > 0}">
+            <div th:text="#{msg.pagination.info(${page.number + 1}, ${page.totalPages}, ${page.totalElements})}"></div>
+            <nav>
                 <ul class="pagination mb-0">
-
-                    <li class="page-item"
-                        th:classappend="${currentPage == 0} ? ' disabled'">
-                        <a class="page-link"
-                           th:href="@{/brands(page=${currentPage - 1}, size=${pageSize}, sortField=${sortField}, sortDir=${sortDir})}"
-                           th:aria-label="#{msg.pagination.prev}">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
+                    <li class="page-item" th:classappend="${page.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/brands(page=${page.number - 1}, sort=${sortParam})}">&laquo;</a>
                     </li>
-
-                    <li class="page-item"
-                        th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-                        th:classappend="${i} == ${currentPage} ? ' active'">
-                        <a class="page-link"
-                           th:text="${i + 1}"
-                           th:href="@{/brands(page=${i}, size=${pageSize}, sortField=${sortField}, sortDir=${sortDir})}"></a>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}" th:classappend="${i == page.number} ? 'active'">
+                        <a class="page-link" th:href="@{/brands(page=${i}, sort=${sortParam})}" th:text="${i + 1}"></a>
                     </li>
-
-                    <li class="page-item"
-                        th:classappend="${currentPage == totalPages - 1} ? ' disabled'">
-                        <a class="page-link"
-                           th:href="@{/brands(page=${currentPage + 1}, size=${pageSize}, sortField=${sortField}, sortDir=${sortDir})}"
-                           th:aria-label="#{msg.pagination.next}">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
+                    <li class="page-item" th:classappend="${page.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/brands(page=${page.number + 1}, sort=${sortParam})}">&raquo;</a>
                     </li>
-
                 </ul>
             </nav>
         </div>
-
-        <a th:href="@{/}" class="btn btn-secondary" th:text="#{msg.brand-list.returnback}">Volver</a>
-
     </div>
 </main>
 
-<footer th:replace="fragments/footer :: footer"></footer>
-<div th:replace="fragments/scripts :: scripts"></div>
-
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
 </body>
 </html>

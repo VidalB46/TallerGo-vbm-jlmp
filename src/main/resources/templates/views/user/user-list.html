@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(#{msg.header.vehicles} + ' - Usuarios')}"></head>
+
+<body class="d-flex flex-column h-100">
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="list-page">
+    <div class="list-card">
+        <h1 th:text="#{msg.user-list.title} ?: 'Gestión de Usuarios'"></h1>
+
+        <a th:href="@{/users/new}" class="btn btn-success" th:text="#{msg.user-list.add} ?: 'Nuevo Usuario'"></a>
+
+        <div th:if="${errorMessage}" class="alert alert-danger mt-3" th:text="${errorMessage}"></div>
+
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered table-striped align-middle">
+                <thead>
+                <tr>
+                    <th th:with="order=${page.sort.getOrderFor('id')}, dir=${order != null ? order.direction.name().toLowerCase() : 'asc'}, nextDir=${dir == 'asc' ? 'desc' : 'asc'}">
+                        <a class="text-decoration-none text-dark" th:href="@{/users(page=${page.number}, size=${page.size}, sort=${'id,' + nextDir})}">
+                            <span th:text="#{msg.user-list.id} ?: 'ID'"></span>
+                            <span class="ms-1" th:if="${order != null}" th:text="${dir == 'asc' ? '▲' : '▼'}"></span>
+                        </a>
+                    </th>
+                    <th th:with="order=${page.sort.getOrderFor('email')}, dir=${order != null ? order.direction.name().toLowerCase() : 'asc'}, nextDir=${dir == 'asc' ? 'desc' : 'asc'}">
+                        <a class="text-decoration-none text-dark" th:href="@{/users(page=${page.number}, size=${page.size}, sort=${'email,' + nextDir})}">
+                            <span th:text="#{msg.user-list.email} ?: 'Email'"></span>
+                            <span class="ms-1" th:if="${order != null}" th:text="${dir == 'asc' ? '▲' : '▼'}"></span>
+                        </a>
+                    </th>
+                    <th th:text="#{msg.user-list.col.roles} ?: 'Roles'"></th>
+                    <th th:text="#{msg.user-list.active} ?: 'Estado'"></th>
+                    <th th:text="#{msg.user-list.actions} ?: 'Acciones'"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="u : ${page.content}">
+                    <td th:text="${u.id}"></td>
+                    <td th:text="${u.email}"></td>
+                    <td>
+                        <span th:each="role : ${u.roles}" class="badge bg-info text-dark me-1" th:text="${role}"></span>
+                    </td>
+                    <td>
+                        <span th:if="${u.active}" class="badge bg-success" th:text="#{msg.bool.yes} ?: 'Activo'"></span>
+                        <span th:unless="${u.active}" class="badge bg-danger" th:text="#{msg.bool.no} ?: 'Inactivo'"></span>
+                    </td>
+                    <td>
+                        <a th:href="@{/users/detail(id=${u.id})}" class="btn btn-outline-primary btn-sm">Ver</a>
+                        <a th:href="@{/users/edit(id=${u.id})}" class="btn btn-primary btn-sm">Editar</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <nav th:if="${page.totalPages > 1}" class="mt-3">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${page.first} ? 'disabled'">
+                    <a class="page-link" th:href="@{/users(page=${page.number - 1}, size=${page.size}, sort=${sortParam})}">&laquo;</a>
+                </li>
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}" th:classappend="${i == page.number} ? 'active'">
+                    <a class="page-link" th:href="@{/users(page=${i}, size=${page.size}, sort=${sortParam})}" th:text="${i + 1}"></a>
+                </li>
+                <li class="page-item" th:classappend="${page.last} ? 'disabled'">
+                    <a class="page-link" th:href="@{/users(page=${page.number + 1}, size=${page.size}, sort=${sortParam})}">&raquo;</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

@@ -57,4 +57,7 @@ public class Workshop {
     /** Relación 1:N con Reseñas recibidas */
     @OneToMany(mappedBy = "workshop", fetch = FetchType.LAZY)
     private Set<Review> reviews = new HashSet<>();
+
+    @OneToMany(mappedBy = "workshop", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Mechanic> mechanics = new HashSet<>();
 }

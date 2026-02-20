@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head ('Taller Go - Nuevo Mecánico')}"></head>
+<body class="d-flex flex-column h-100">
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="form-page">
+    <div class="form-card">
+        <h1>Nuevo Mecánico</h1>
+        <form th:action="@{/mechanics/insert}" th:object="${mechanic}" method="post">
+
+            <div class="mb-3">
+                <label class="form-label">Nombre Completo</label>
+                <input type="text" th:field="*{name}" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Especialidad</label>
+                <input type="text" th:field="*{specialty}" class="form-control" placeholder="Ej: Motor, Chapa...">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Asignar Taller</label>
+                <select th:field="*{workshopId}" class="form-select" required>
+                    <option value="" selected disabled>Selecciona un taller...</option>
+                    <option th:each="w : ${listWorkshops}" th:value="${w.id}" th:text="${w.name}"></option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Registrar</button>
+            <a th:href="@{/mechanics}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

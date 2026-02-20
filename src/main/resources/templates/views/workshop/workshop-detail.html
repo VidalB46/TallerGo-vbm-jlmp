@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head ('Taller Go - Detalle Taller')}"></head>
+<body class="d-flex flex-column h-100">
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="form-page">
+    <div class="form-card" style="max-width: 900px;">
+        <h1>Detalle Taller: <span th:text="${workshop.name}"></span></h1>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h5>Datos Generales</h5>
+                <p><strong>NIF:</strong> <span th:text="${workshop.nif}"></span></p>
+                <p><strong>Ubicación:</strong> <span th:text="${workshop.location}"></span></p>
+                <p><strong>Horario:</strong> <span th:text="${workshop.schedule}"></span></p>
+            </div>
+            <div class="col-md-6 border-start">
+                <h5>Mecánicos de la Plantilla</h5>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center" th:each="m : ${workshop.mechanics}">
+                        <span th:text="${m.name}"></span>
+                        <span class="badge bg-primary rounded-pill" th:text="${m.specialty}"></span>
+                    </li>
+                    <li class="list-group-item text-muted" th:if="${#lists.isEmpty(workshop.mechanics)}">No hay mecánicos asignados.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a th:href="@{/workshops}" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>
