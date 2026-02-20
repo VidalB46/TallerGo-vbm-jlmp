@@ -15,6 +15,7 @@ import java.util.Locale;
 @Configuration
 public class LocaleConfig implements WebMvcConfigurer {
 
+    // Logger para registrar eventos en esta clase
     private static final Logger logger = LoggerFactory.getLogger(LocaleConfig.class);
 
     /**
@@ -26,7 +27,7 @@ public class LocaleConfig implements WebMvcConfigurer {
     @Bean
     public LocaleResolver localeResolver() {
         SessionLocaleResolver slr = new SessionLocaleResolver();
-        slr.setDefaultLocale(Locale.of("es"));
+        slr.setDefaultLocale(Locale.of("es")); // Establece el español como idioma por defecto
         logger.info("LocaleResolver configurado con el idioma predeterminado: es");
         return slr;
     }

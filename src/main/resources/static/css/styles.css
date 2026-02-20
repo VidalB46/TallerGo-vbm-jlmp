@@ -187,7 +187,7 @@ main.form-page {
  color: #333;
 }
 
-.form-card .form-control {
+.form-card .form-control, .form-card .form-select {
  border-radius: 6px;
  border: 1px solid #ccc;
  padding: 0.6rem 0.75rem;
@@ -195,7 +195,7 @@ main.form-page {
 }
 
 /* Efecto al enfocar */
-.form-card .form-control:focus {
+.form-card .form-control:focus, .form-card .form-select:focus {
  border-color: #000;
  box-shadow: 0 0 0 0.15rem rgba(0,0,0,0.15);
 }
@@ -225,6 +225,18 @@ main.form-page {
 .form-card .alert {
  border-radius: 8px;
  text-align: center;
+}
+
+/* Detalles del vehículo (Data List) */
+.form-card dl.row dt {
+  color: #555;
+  font-weight: 600;
+  text-align: left;
+}
+.form-card dl.row dd {
+  text-align: left;
+  margin-bottom: 0.8rem;
+  font-weight: 500;
 }
 
 /* =========================================================
@@ -279,28 +291,51 @@ main.list-page {
  margin-top: 1rem;
 }
 
-/* Tabla */
+/* Tabla - Rediseño moderno */
 .list-card .table {
  margin-top: 1rem;
- border-radius: 10px;
- overflow: hidden;
+ border-radius: 8px;
+ overflow: hidden; /* Permite redondear las esquinas de los th */
  background-color: #ffffff;
+ border: 1px solid #dee2e6;
 }
 
 .list-card .table th {
- background-color: #000; /* header negro */
- color: #fff;
- border-color: #000;
+ background-color: #1a1a1a !important;
+ color: #ffffff !important;
+ border-color: #2f2f2f;
  text-align: center;
+ font-weight: 600;
+ padding: 1rem 0.75rem;
+ letter-spacing: 0.5px;
+}
+
+
+.list-card .table th a {
+  color: #ffffff !important;
+  text-decoration: none;
+}
+.list-card .table th a:hover {
+  color: #cccccc !important;
 }
 
 .list-card .table td {
  vertical-align: middle;
  text-align: center;
+ padding: 0.75rem;
 }
 
+/* Efecto cebra más suave */
 .list-card .table-striped tbody tr:nth-of-type(odd) {
- background-color: #f8f9fa;
+ background-color: #fbfbfb;
+}
+
+/* Efecto hover al pasar el ratón por la fila */
+.list-card .table tbody tr {
+  transition: background-color 0.2s ease;
+}
+.list-card .table tbody tr:hover td {
+  background-color: #e9ecef !important;
 }
 
 /* Botones dentro de tabla */
@@ -314,8 +349,22 @@ main.list-page {
  border-color: #2f2f2f;
 }
 
+.list-card .btn-outline-secondary.btn-sm {
+ font-weight: 500;
+}
+
 .list-card .btn-danger.btn-sm {
  font-weight: 500;
+}
+
+/* Paginación */
+.pagination .page-link {
+  color: #000;
+}
+.pagination .page-item.active .page-link {
+  background-color: #000;
+  border-color: #000;
+  color: #fff;
 }
 
 /* Alertas */
@@ -340,5 +389,6 @@ main.list-page {
 
  .list-card .btn-sm {
    padding: 0.25rem 0.5rem;
+   margin-bottom: 0.25rem;
  }
 }
