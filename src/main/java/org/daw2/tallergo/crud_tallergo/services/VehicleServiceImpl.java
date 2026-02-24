@@ -24,8 +24,6 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public Page<VehicleDTO> list(Pageable pageable) {
-        // En un futuro, si el usuario logueado es CLIENT, aquí filtraríamos para
-        // devolver solo SUS vehículos, no los de todo el mundo.
         return vehicleRepository.findAll(pageable).map(VehicleMapper::toDTO);
     }
 
@@ -44,10 +42,6 @@ public class VehicleServiceImpl implements VehicleService {
         }
 
         Vehicle vehicle = VehicleMapper.toEntity(dto);
-
-        // TODO: En el futuro, cuando la seguridad esté 100% activa,
-        // aquí deberíamos asignar el usuario logueado al vehículo:
-        // vehicle.setUser(usuarioLogueado);
 
         vehicleRepository.save(vehicle);
     }

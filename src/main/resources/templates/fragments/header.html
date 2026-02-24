@@ -47,7 +47,11 @@
                         <li><a class="dropdown-item" th:href="@{/profile/edit}" th:text="#{menu.editProfile}">Perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                            <a class="dropdown-item text-danger" th:href="@{/logout}" th:text="#{menu.logout}">Salir</a>
+                            <form th:action="@{/logout}" method="post" class="m-0">
+                                <button type="submit" class="dropdown-item text-danger" th:text="#{menu.logout}">
+                                    Salir
+                                </button>
+                            </form>
                         </li>
                     </ul>
                 </div>
