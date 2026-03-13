@@ -1,24 +1,25 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head ('Taller Go - Talleres')}"></head>
+<head th:replace="~{fragments/head :: head (#{msg.title} + ' - ' + #{msg.workshop-list.title})}"></head>
 <body class="d-flex flex-column h-100">
 <header th:replace="~{fragments/header :: header}"></header>
 
 <main class="list-page">
     <div class="list-card">
-        <h1>Listado de Talleres</h1>
-        <a th:href="@{/workshops/new}" class="btn btn-success mb-3">Nuevo Taller</a>
+        <h1 th:text="#{msg.workshop-list.title}">Listado de Talleres</h1>
+
+        <a th:href="@{/workshops/new}" class="btn btn-success mb-3" th:text="#{msg.workshop-list.add}">Nuevo Taller</a>
 
         <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
 
         <table class="table table-bordered table-striped">
-            <thead>
+            <thead class="table-dark">
             <tr>
                 <th>ID</th>
-                <th>NIF</th>
-                <th>Nombre</th>
-                <th>Ubicación</th>
-                <th>Acciones</th>
+                <th th:text="#{msg.workshop-list.nif}">NIF</th>
+                <th th:text="#{msg.workshop-list.name}">Nombre</th>
+                <th th:text="#{msg.workshop-list.location}">Ubicación</th>
+                <th th:text="#{msg.workshop-list.actions}">Acciones</th>
             </tr>
             </thead>
             <tbody>
@@ -28,7 +29,7 @@
                 <td th:text="${w.name}"></td>
                 <td th:text="${w.location}"></td>
                 <td>
-                    <a th:href="@{/workshops/detail(id=${w.id})}" class="btn btn-sm btn-outline-secondary">Ver Detalle</a>
+                    <a th:href="@{/workshops/detail(id=${w.id})}" class="btn btn-sm btn-outline-secondary" th:text="#{msg.common.viewDetail}">Ver Detalle</a>
                 </td>
             </tr>
             </tbody>

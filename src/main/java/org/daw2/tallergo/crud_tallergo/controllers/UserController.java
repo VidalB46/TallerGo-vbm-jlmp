@@ -6,7 +6,6 @@ import org.daw2.tallergo.crud_tallergo.dtos.UserDTO;
 import org.daw2.tallergo.crud_tallergo.dtos.UserDetailDTO;
 import org.daw2.tallergo.crud_tallergo.dtos.UserUpdateDTO;
 import org.daw2.tallergo.crud_tallergo.exceptions.DuplicateResourceException;
-import org.daw2.tallergo.crud_tallergo.exceptions.ResourceNotFoundException;
 import org.daw2.tallergo.crud_tallergo.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +23,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Locale;
 
+/**
+ * Controlador para la gestión de usuarios.
+ * Permite listar, crear, editar, actualizar, eliminar y ver detalles de usuarios.
+ */
 @Controller
 @RequestMapping("/users")
 public class UserController {
@@ -36,6 +39,13 @@ public class UserController {
     @Autowired
     private MessageSource messageSource;
 
+    /**
+     * Lista los usuarios con paginación y ordenamiento por email.
+     *
+     * @param pageable Configuración de paginación y ordenamiento.
+     * @param model    Modelo para pasar atributos a la vista.
+     * @return Vista del listado de usuarios ("views/user/user-list").
+     */
     @GetMapping
     public String listUsers(
             @PageableDefault(size = 10, sort = "email", direction = Sort.Direction.ASC) Pageable pageable,
@@ -57,6 +67,13 @@ public class UserController {
         return "views/user/user-list";
     }
 
+    /**
+     * Muestra el formulario para crear un nuevo usuario.
+     * Incluye la lista de roles disponibles.
+     *
+     * @param model Modelo para pasar atributos a la vista.
+     * @return Vista del formulario de usuario ("views/user/user-form").
+     */
     @GetMapping("/new")
     public String showNewForm(Model model) {
         model.addAttribute("user", new UserCreateDTO());
@@ -64,6 +81,17 @@ public class UserController {
         return "views/user/user-form";
     }
 
+    /**
+     * Inserta un nuevo usuario en la base de datos.
+     * Valida el formulario y maneja errores de duplicidad de email.
+     *
+     * @param userDTO            DTO con los datos del usuario a crear.
+     * @param result             Resultado de la validación del formulario.
+     * @param model              Modelo para recargar atributos en caso de error.
+     * @param redirectAttributes Atributos flash para mensajes de éxito o error.
+     * @param locale             Configuración regional para mensajes.
+     * @return Redirección al listado de usuarios o recarga del formulario si hay errores.
+     */
     @PostMapping("/insert")
     public String insertUser(@Valid @ModelAttribute("user") UserCreateDTO userDTO,
                              BindingResult result,
@@ -90,6 +118,15 @@ public class UserController {
         }
     }
 
+    /**
+     * Muestra el formulario para editar un usuario existente.
+     *
+     * @param id                 ID del usuario a editar.
+     * @param model              Modelo para pasar atributos a la vista.
+     * @param redirectAttributes Atributos flash para mensajes.
+     * @param locale             Configuración regional para mensajes.
+     * @return Vista del formulario de edición o redirección si ocurre un error.
+     */
     @GetMapping("/edit")
     public String showEditForm(@RequestParam("id") Long id, Model model, RedirectAttributes redirectAttributes, Locale locale) {
         try {
@@ -104,6 +141,17 @@ public class UserController {
         }
     }
 
+    /**
+     * Actualiza un usuario existente.
+     * Maneja errores de validación y duplicidad de email.
+     *
+     * @param userDTO            DTO con los datos actualizados.
+     * @param result             Resultado de la validación.
+     * @param redirectAttributes Atributos flash para mensajes.
+     * @param model              Modelo para recargar datos en caso de error.
+     * @param locale             Configuración regional para mensajes.
+     * @return Redirección al listado de usuarios o recarga del formulario si hay errores.
+     */
     @PostMapping("/update")
     public String updateUser(@Valid @ModelAttribute("user") UserUpdateDTO userDTO,
                              BindingResult result,
@@ -130,6 +178,14 @@ public class UserController {
         }
     }
 
+    /**
+     * Elimina un usuario por su ID.
+     *
+     * @param id                 ID del usuario a eliminar.
+     * @param redirectAttributes Atributos flash para mensajes.
+     * @param locale             Configuración regional para mensajes.
+     * @return Redirección al listado de usuarios.
+     */
     @PostMapping("/delete")
     public String deleteUser(@RequestParam("id") Long id, RedirectAttributes redirectAttributes, Locale locale) {
         try {
@@ -142,6 +198,15 @@ public class UserController {
         }
     }
 
+    /**
+     * Muestra los detalles de un usuario.
+     *
+     * @param id                 ID del usuario.
+     * @param model              Modelo para pasar atributos a la vista.
+     * @param redirectAttributes Atributos flash para mensajes.
+     * @param locale             Configuración regional.
+     * @return Vista con detalle de usuario o redirección al listado si hay error.
+     */
     @GetMapping("/detail")
     public String showDetail(@RequestParam("id") Long id, Model model, RedirectAttributes redirectAttributes, Locale locale) {
         try {

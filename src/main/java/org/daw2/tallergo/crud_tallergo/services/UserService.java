@@ -4,6 +4,7 @@ import org.daw2.tallergo.crud_tallergo.dtos.UserCreateDTO;
 import org.daw2.tallergo.crud_tallergo.dtos.UserDTO;
 import org.daw2.tallergo.crud_tallergo.dtos.UserDetailDTO;
 import org.daw2.tallergo.crud_tallergo.dtos.UserUpdateDTO;
+import org.daw2.tallergo.crud_tallergo.dtos.UserRegisterDTO; // ¡Faltaba este import!
 import org.daw2.tallergo.crud_tallergo.entities.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,4 +18,5 @@ public interface UserService {
     void delete(Long id);
     UserDetailDTO getDetail(Long id);
     List<Role> findAllRoles();
+    void registerNewClient(UserRegisterDTO dto);
 }

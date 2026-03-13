@@ -24,6 +24,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Locale;
 
+/**
+ * Controlador para la gestión de marcas en la aplicación.
+ * Permite listar, crear, actualizar, eliminar y ver detalles de las marcas.
+ */
 @Controller
 @RequestMapping("/brands")
 public class BrandController {
@@ -36,6 +40,13 @@ public class BrandController {
     @Autowired
     private BrandService brandService;
 
+    /**
+     * Lista todas las marcas con paginación.
+     *
+     * @param pageable Configuración de la paginación y ordenamiento.
+     * @param model    Modelo para pasar atributos a la vista.
+     * @return Nombre de la vista de listado de marcas.
+     */
     @GetMapping
     public String listBrands(
             @PageableDefault(size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable,
@@ -58,12 +69,27 @@ public class BrandController {
         return "views/brand/brand-list";
     }
 
+    /**
+     * Muestra el formulario para crear una nueva marca.
+     *
+     * @param model Modelo para pasar atributos a la vista.
+     * @return Vista del formulario de marca.
+     */
     @GetMapping("/new")
     public String showNewForm(Model model) {
         model.addAttribute("brand", new BrandCreateDTO());
         return "views/brand/brand-form";
     }
 
+    /**
+     * Inserta una nueva marca en la base de datos.
+     *
+     * @param brandDTO           DTO con los datos de la marca a crear.
+     * @param result             Resultado de la validación del formulario.
+     * @param redirectAttributes Atributos para redirigir mensajes flash.
+     * @param locale             Configuración regional para mensajes.
+     * @return Redirección a la lista de marcas o al formulario en caso de error.
+     */
     @PostMapping("/insert")
     public String insertBrand(@Valid @ModelAttribute("brand") BrandCreateDTO brandDTO,
                               BindingResult result,
@@ -89,6 +115,15 @@ public class BrandController {
         }
     }
 
+    /**
+     * Muestra el formulario para editar una marca existente.
+     *
+     * @param id                 ID de la marca a editar.
+     * @param model              Modelo para pasar atributos a la vista.
+     * @param redirectAttributes Atributos para redirigir mensajes flash.
+     * @param locale             Configuración regional para mensajes.
+     * @return Vista del formulario de edición o redirección si no se encuentra la marca.
+     */
     @GetMapping("/edit")
     public String showEditForm(@RequestParam("id") Integer id, Model model, RedirectAttributes redirectAttributes, Locale locale) {
         try {
@@ -102,6 +137,15 @@ public class BrandController {
         }
     }
 
+    /**
+     * Actualiza una marca existente.
+     *
+     * @param brandDTO           DTO con los datos actualizados de la marca.
+     * @param result             Resultado de la validación del formulario.
+     * @param redirectAttributes Atributos para redirigir mensajes flash.
+     * @param locale             Configuración regional para mensajes.
+     * @return Redirección a la lista de marcas o al formulario en caso de error.
+     */
     @PostMapping("/update")
     public String updateBrand(@Valid @ModelAttribute("brand") BrandUpdateDTO brandDTO,
                               BindingResult result,
@@ -123,6 +167,14 @@ public class BrandController {
         }
     }
 
+    /**
+     * Elimina una marca por su ID.
+     *
+     * @param id                 ID de la marca a eliminar.
+     * @param redirectAttributes Atributos para redirigir mensajes flash.
+     * @param locale             Configuración regional para mensajes.
+     * @return Redirección a la lista de marcas.
+     */
     @PostMapping("/delete")
     public String deleteBrand(@RequestParam("id") Integer id, RedirectAttributes redirectAttributes, Locale locale) {
         try {
@@ -134,6 +186,15 @@ public class BrandController {
         }
     }
 
+    /**
+     * Muestra los detalles de una marca.
+     *
+     * @param id                 ID de la marca.
+     * @param model              Modelo para pasar atributos a la vista.
+     * @param redirectAttributes Atributos para redirigir mensajes flash.
+     * @param locale             Configuración regional para mensajes.
+     * @return Vista con el detalle de la marca o redirección si ocurre un error.
+     */
     @GetMapping("/detail")
     public String showDetail(@RequestParam("id") Integer id, Model model, RedirectAttributes redirectAttributes, Locale locale) {
         try {
