@@ -29,9 +29,9 @@ INSERT INTO users (
    id, email, password_hash, active, account_non_locked,
    last_password_change, password_expires_at, failed_login_attempts, email_verified, must_change_password
 ) VALUES
-(1, 'leo@email.com', '$2a$12$HnF3pSI.kpCNujmMgcQDA.fbGt2TFPbmMDH.rT4wUKLvOKEzsvlTC', TRUE, TRUE, NOW(), DATE_ADD(NOW(), INTERVAL 3 MONTH), 0, TRUE, FALSE),
-(2, 'vidal@email.com', '$2a$12$HnF3pSI.kpCNujmMgcQDA.fbGt2TFPbmMDH.rT4wUKLvOKEzsvlTC', TRUE, TRUE, NOW(), DATE_ADD(NOW(), INTERVAL 3 MONTH), 0, TRUE, FALSE),
-(3, 'maria@email.com', '$2a$12$HnF3pSI.kpCNujmMgcQDA.fbGt2TFPbmMDH.rT4wUKLvOKEzsvlTC', TRUE, TRUE, NOW(), DATE_ADD(NOW(), INTERVAL 3 MONTH), 0, TRUE, FALSE);
+(1, 'leo@email.com', '$2a$12$689sjlmG8fDJSN7ODzko3ugxaErMzbfQwgzX0sCcwC7pzStTciE.q', TRUE, TRUE, NOW(), DATE_ADD(NOW(), INTERVAL 3 MONTH), 0, TRUE, FALSE),
+(2, 'vidal@email.com', '$2a$12$689sjlmG8fDJSN7ODzko3ugxaErMzbfQwgzX0sCcwC7pzStTciE.q', TRUE, TRUE, NOW(), DATE_ADD(NOW(), INTERVAL 3 MONTH), 0, TRUE, FALSE),
+(3, 'maria@email.com', '$2a$12$689sjlmG8fDJSN7ODzko3ugxaErMzbfQwgzX0sCcwC7pzStTciE.q', TRUE, TRUE, NOW(), DATE_ADD(NOW(), INTERVAL 3 MONTH), 0, TRUE, FALSE);
 
 INSERT INTO user_roles (user_id, role_id) VALUES
 (1, 1), (2, 1), (3, 2);
