@@ -26,6 +26,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Controlador para la gestión de vehículos.
+ * Permite listar, crear, editar, actualizar, eliminar y ver detalles de vehículos.
+ */
 @Controller
 @RequestMapping("/vehicles")
 public class VehicleController {
@@ -41,6 +45,14 @@ public class VehicleController {
     @Autowired
     private BrandService brandService;
 
+    /**
+     * Lista los vehículos con paginación y ordenamiento por modelo.
+     *
+     * @param pageable Configuración de paginación y ordenamiento.
+     * @param model    Modelo para pasar atributos a la vista.
+     * @param locale   Configuración regional para mensajes.
+     * @return Vista del listado de vehículos ("views/vehicle/vehicle-list").
+     */
     @GetMapping
     public String listVehicles(
             @PageableDefault(size = 10, sort = "model", direction = Sort.Direction.ASC) Pageable pageable,
@@ -66,6 +78,14 @@ public class VehicleController {
         return "views/vehicle/vehicle-list";
     }
 
+    /**
+     * Muestra el formulario para crear un nuevo vehículo.
+     * Incluye la lista de marcas disponibles.
+     *
+     * @param model  Modelo para pasar atributos a la vista.
+     * @param locale Configuración regional para mensajes.
+     * @return Vista del formulario de vehículo ("views/vehicle/vehicle-form").
+     */
     @GetMapping("/new")
     public String showNewForm(Model model, Locale locale) {
         try {
@@ -79,6 +99,17 @@ public class VehicleController {
         return "views/vehicle/vehicle-form";
     }
 
+    /**
+     * Inserta un nuevo vehículo en la base de datos.
+     * Maneja errores de validación y duplicidad de código.
+     *
+     * @param vehicleDTO         DTO con los datos del vehículo a crear.
+     * @param result             Resultado de la validación del formulario.
+     * @param redirectAttributes Atributos flash para mensajes de éxito o error.
+     * @param model              Modelo para recargar atributos en caso de error.
+     * @param locale             Configuración regional para mensajes.
+     * @return Redirección al listado de vehículos o recarga del formulario si hay errores.
+     */
     @PostMapping("/insert")
     public String insertVehicle(@Valid @ModelAttribute("vehicle") VehicleCreateDTO vehicleDTO,
                                 BindingResult result,
@@ -102,6 +133,14 @@ public class VehicleController {
         }
     }
 
+    /**
+     * Muestra el formulario de edición de un vehículo existente.
+     *
+     * @param id     ID del vehículo a editar.
+     * @param model  Modelo para pasar atributos a la vista.
+     * @param locale Configuración regional para mensajes.
+     * @return Vista del formulario de edición o redirección al listado si ocurre un error.
+     */
     @GetMapping("/edit")
     public String showEditForm(@RequestParam("id") Long id, Model model, Locale locale) {
         try {
@@ -116,6 +155,17 @@ public class VehicleController {
         return "views/vehicle/vehicle-form";
     }
 
+    /**
+     * Actualiza un vehículo existente.
+     * Maneja errores de validación y duplicidad de código.
+     *
+     * @param vehicleDTO         DTO con los datos actualizados.
+     * @param result             Resultado de la validación.
+     * @param redirectAttributes Atributos flash para mensajes.
+     * @param model              Modelo para recargar datos en caso de error.
+     * @param locale             Configuración regional para mensajes.
+     * @return Redirección al listado de vehículos o recarga del formulario si hay errores.
+     */
     @PostMapping("/update")
     public String updateVehicle(@Valid @ModelAttribute("vehicle") VehicleUpdateDTO vehicleDTO,
                                 BindingResult result,
@@ -139,6 +189,14 @@ public class VehicleController {
         }
     }
 
+    /**
+     * Elimina un vehículo por su ID.
+     *
+     * @param id                 ID del vehículo a eliminar.
+     * @param redirectAttributes Atributos flash para mensajes.
+     * @param locale             Configuración regional para mensajes.
+     * @return Redirección al listado de vehículos.
+     */
     @PostMapping("/delete")
     public String deleteVehicle(@RequestParam("id") Long id, RedirectAttributes redirectAttributes, Locale locale) {
         try {
@@ -150,6 +208,15 @@ public class VehicleController {
         return "redirect:/vehicles";
     }
 
+    /**
+     * Muestra los detalles de un vehículo.
+     *
+     * @param id                 ID del vehículo.
+     * @param model              Modelo para pasar atributos a la vista.
+     * @param redirectAttributes Atributos flash para mensajes.
+     * @param locale             Configuración regional para mensajes.
+     * @return Vista de detalle del vehículo o redirección al listado si hay error.
+     */
     @GetMapping("/detail")
     public String showDetail(@RequestParam("id") Long id, Model model, RedirectAttributes redirectAttributes, Locale locale) {
         try {

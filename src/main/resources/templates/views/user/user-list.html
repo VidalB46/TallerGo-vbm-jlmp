@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head(#{msg.header.vehicles} + ' - Usuarios')}"></head>
+<head th:replace="~{fragments/head :: head(#{msg.title} + ' - ' + #{msg.header.users})}"></head>
 
 <body class="d-flex flex-column h-100">
 <header th:replace="~{fragments/header :: header}"></header>
@@ -9,22 +9,22 @@
     <div class="list-card">
         <h1 th:text="#{msg.user-list.title} ?: 'Gestión de Usuarios'"></h1>
 
-        <a th:href="@{/users/new}" class="btn btn-success" th:text="#{msg.user-list.add} ?: 'Nuevo Usuario'"></a>
+        <a th:href="@{/users/new}" class="btn btn-success mb-3" th:text="#{msg.user-list.add} ?: 'Nuevo Usuario'"></a>
 
         <div th:if="${errorMessage}" class="alert alert-danger mt-3" th:text="${errorMessage}"></div>
 
-        <div class="table-responsive mt-3">
+        <div class="table-responsive">
             <table class="table table-bordered table-striped align-middle">
-                <thead>
+                <thead class="table-dark">
                 <tr>
                     <th th:with="order=${page.sort.getOrderFor('id')}, dir=${order != null ? order.direction.name().toLowerCase() : 'asc'}, nextDir=${dir == 'asc' ? 'desc' : 'asc'}">
-                        <a class="text-decoration-none text-dark" th:href="@{/users(page=${page.number}, size=${page.size}, sort=${'id,' + nextDir})}">
+                        <a class="text-decoration-none text-light" th:href="@{/users(page=${page.number}, size=${page.size}, sort=${'id,' + nextDir})}">
                             <span th:text="#{msg.user-list.id} ?: 'ID'"></span>
                             <span class="ms-1" th:if="${order != null}" th:text="${dir == 'asc' ? '▲' : '▼'}"></span>
                         </a>
                     </th>
                     <th th:with="order=${page.sort.getOrderFor('email')}, dir=${order != null ? order.direction.name().toLowerCase() : 'asc'}, nextDir=${dir == 'asc' ? 'desc' : 'asc'}">
-                        <a class="text-decoration-none text-dark" th:href="@{/users(page=${page.number}, size=${page.size}, sort=${'email,' + nextDir})}">
+                        <a class="text-decoration-none text-light" th:href="@{/users(page=${page.number}, size=${page.size}, sort=${'email,' + nextDir})}">
                             <span th:text="#{msg.user-list.email} ?: 'Email'"></span>
                             <span class="ms-1" th:if="${order != null}" th:text="${dir == 'asc' ? '▲' : '▼'}"></span>
                         </a>
@@ -46,8 +46,8 @@
                         <span th:unless="${u.active}" class="badge bg-danger" th:text="#{msg.bool.no} ?: 'Inactivo'"></span>
                     </td>
                     <td>
-                        <a th:href="@{/users/detail(id=${u.id})}" class="btn btn-outline-primary btn-sm">Ver</a>
-                        <a th:href="@{/users/edit(id=${u.id})}" class="btn btn-primary btn-sm">Editar</a>
+                        <a th:href="@{/users/detail(id=${u.id})}" class="btn btn-outline-primary btn-sm" th:text="#{msg.user-list.viewDetail} ?: 'Ver'"></a>
+                        <a th:href="@{/users/edit(id=${u.id})}" class="btn btn-primary btn-sm" th:text="#{msg.user-list.edit} ?: 'Editar'"></a>
                     </td>
                 </tr>
                 </tbody>

@@ -4,6 +4,7 @@ import org.daw2.tallergo.crud_tallergo.dtos.UserCreateDTO;
 import org.daw2.tallergo.crud_tallergo.dtos.UserDTO;
 import org.daw2.tallergo.crud_tallergo.dtos.UserDetailDTO;
 import org.daw2.tallergo.crud_tallergo.dtos.UserUpdateDTO;
+import org.daw2.tallergo.crud_tallergo.dtos.UserRegisterDTO; // Importante
 import org.daw2.tallergo.crud_tallergo.entities.Role;
 import org.daw2.tallergo.crud_tallergo.entities.User;
 import org.daw2.tallergo.crud_tallergo.exceptions.DuplicateResourceException;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder; // Importante
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +38,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder; // Inyectado para que no falle el register
 
     @Override
     public Page<UserDTO> list(Pageable pageable) {
@@ -105,5 +110,29 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Role> findAllRoles() {
         return roleRepository.findAll();
+    }
+
+    @Override
+    public void registerNewClient(UserRegisterDTO dto) {
+        // Verificar si el email ya existe
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new RuntimeException("Email ya registrado");
+        }
+
+        User user = new User();
+        user.setEmail(dto.getEmail());
+        // ENCRIPTAMOS LA CONTRASEÑA
+        user.setPasswordHash(passwordEncoder.encode(dto.getPassword()));
+        user.setActive(true);
+        user.setAccountNonLocked(true);
+        user.setEmailVerified(false);
+
+        // Buscar el rol de cliente en la base de datos
+        Role clientRole = roleRepository.findByName("ROLE_CLIENT")
+                .orElseThrow(() -> new RuntimeException("Error: Rol ROLE_CLIENT no encontrado en BD"));
+
+        user.getRoles().add(clientRole);
+
+        userRepository.save(user);
     }
 }

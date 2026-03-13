@@ -19,6 +19,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
 import java.util.Locale;
 
+/**
+ * Controlador para la gestión del perfil de usuario.
+ * Permite mostrar, actualizar la información personal y subir la imagen de perfil.
+ */
 @Controller
 @RequestMapping("/profile")
 public class UserProfileController {
@@ -31,6 +35,14 @@ public class UserProfileController {
     @Autowired
     private UserProfileService userProfileService;
 
+    /**
+     * Muestra el formulario de edición del perfil del usuario autenticado.
+     *
+     * @param model     Modelo para pasar atributos a la vista.
+     * @param locale    Configuración regional para los mensajes.
+     * @param principal Información del usuario autenticado.
+     * @return Vista del formulario de perfil ("views/user-profile/user-profile-form").
+     */
     @GetMapping("/edit")
     public String showProfileForm(Model model, Locale locale, Principal principal) {
         String email = principal.getName();
@@ -53,6 +65,18 @@ public class UserProfileController {
         }
     }
 
+    /**
+     * Actualiza el perfil del usuario autenticado.
+     * Permite cambiar datos personales y subir una imagen de perfil.
+     *
+     * @param profileDto        DTO con los datos actualizados del usuario.
+     * @param result            Resultado de la validación del formulario.
+     * @param profileImageFile  Imagen de perfil subida (opcional).
+     * @param redirectAttributes Atributos flash para mensajes de éxito o error.
+     * @param locale            Configuración regional para mensajes.
+     * @param principal         Información del usuario autenticado.
+     * @return Redirección al formulario de edición del perfil.
+     */
     @PostMapping("/update")
     public String updateProfile(@Valid @ModelAttribute("userProfileForm") UserProfileFormDTO profileDto,
                                 BindingResult result,
