@@ -6,7 +6,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Entidad JPA para la tabla 'vehicles'.
+ * Entidad JPA que representa un vehículo registrado en el sistema.
+ * Vincula a los usuarios con sus coches y mantiene el historial de citas y reparaciones.
  */
 @Data
 @NoArgsConstructor
@@ -17,50 +18,74 @@ import java.util.Set;
 @Table(name = "vehicles")
 public class Vehicle {
 
-    /** BIGINT AUTO_INCREMENT PRIMARY KEY */
+    /**
+     * Identificador único del vehículo.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** VARCHAR(150) NOT NULL - Modelo del coche */
+    /**
+     * Modelo específico del vehículo (ej. Civic, Golf).
+     */
     @Column(name = "model", nullable = false, length = 150)
     private String model;
 
-    /** VARCHAR(50) UNIQUE - Número de Bastidor */
+    /**
+     * Número de Identificación del Vehículo (Bastidor).
+     * Debe ser único a nivel de base de datos.
+     */
     @Column(name = "vin", unique = true, length = 50)
     private String vin;
 
-    /** VARCHAR(50) NULL - Color */
+    /**
+     * Color exterior del vehículo.
+     */
     @Column(name = "color", length = 50)
     private String color;
 
-    /** INT NULL - Año fabricación */
+    /**
+     * Año de fabricación del vehículo.
+     */
     @Column(name = "year")
     private Integer year;
 
-    /** INT NULL - Kilómetros actuales */
+    /**
+     * Kilometraje actual registrado del vehículo.
+     */
     @Column(name = "km")
     private Integer km;
 
-    /** VARCHAR(20) UNIQUE - Matrícula */
+    /**
+     * Matrícula o placa del vehículo.
+     * Es única y se utiliza frecuentemente para búsquedas rápidas.
+     */
     @Column(name = "matricula", unique = true, length = 20)
     private String matricula;
 
-    /** Relación N:1 con Brand (Marca) */
+    /**
+     * Marca del vehículo (ej. Honda, Toyota).
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id", nullable = false)
     private Brand brand;
 
-    /** Relación N:1 con User (Dueño) */
+    /**
+     * Usuario propietario del vehículo.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    /** Relación 1:N con Appointment (Historial de citas) */
+    /**
+     * Colección de citas programadas para este vehículo.
+     */
     @OneToMany(mappedBy = "vehicle", fetch = FetchType.LAZY)
     private Set<Appointment> appointments = new HashSet<>();
 
-    /** Relación 1:N con Repair (Historial de reparaciones) */
+    /**
+     * Historial de órdenes de reparación realizadas sobre este vehículo.
+     */
     @OneToMany(mappedBy = "vehicle", fetch = FetchType.LAZY)
     private Set<Repair> repairs = new HashSet<>();
 }

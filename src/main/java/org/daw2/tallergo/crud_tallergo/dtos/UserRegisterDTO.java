@@ -5,17 +5,29 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+/**
+ * DTO para el registro de un nuevo usuario.
+ */
 @Data
 public class UserRegisterDTO {
 
+    /**
+     * Correo electrónico del usuario.
+     */
     @NotBlank(message = "El email es obligatorio")
     @Email(message = "Debe ser un email válido")
     private String email;
 
+    /**
+     * Contraseña elegida por el usuario.
+     */
     @NotBlank(message = "La contraseña es obligatoria")
     @Size(min = 6, message = "Debe tener al menos 6 caracteres")
     private String password;
 
+    /**
+     * Confirmación de la contraseña elegida.
+     */
     @NotBlank(message = "Debes confirmar la contraseña")
     private String confirmPassword;
 }

@@ -11,14 +11,19 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Mapper utilitario entre la entidad {@link User} y sus DTOs.
+ * Mapper utilitario para la entidad User.
+ * Gestiona la lógica de conversión entre el modelo persistente y los DTOs,
+ * incluyendo el aplanamiento (flattening) de los datos del perfil y la gestión de roles.
  */
 public class UserMapper {
 
-    // ─────────────────────────────────────────
-    // Entity → DTO (listado/tabla básico)
-    // ─────────────────────────────────────────
+    // ──────────────────────────────────────────────────────────────────────────
+    // Entity → DTO (Conversiones de Salida)
+    // ──────────────────────────────────────────────────────────────────────────
 
+    /**
+     * Convierte una entidad User a un DTO básico para listados generales.
+     */
     public static UserDTO toDTO(User entity) {
         if (entity == null) return null;
 
@@ -33,7 +38,7 @@ public class UserMapper {
         dto.setEmailVerified(entity.isEmailVerified());
         dto.setMustChangePassword(entity.isMustChangePassword());
 
-        // Cargar roles si existen
+        // Transformación de Set<Role> a Set<String> (nombres de roles)
         if (entity.getRoles() != null && !entity.getRoles().isEmpty()) {
             Set<String> roleNames = entity.getRoles().stream()
                     .map(Role::getName)
@@ -46,15 +51,19 @@ public class UserMapper {
         return dto;
     }
 
+    /**
+     * Convierte una lista de entidades en una lista de DTOs básicos.
+     */
     public static List<UserDTO> toDTOList(List<User> entities) {
         if (entities == null) return List.of();
         return entities.stream().map(UserMapper::toDTO).toList();
     }
 
-    // ─────────────────────────────────────────
-    // Entity → DTO (detalle)
-    // ─────────────────────────────────────────
-
+    /**
+     * Convierte la entidad a un DTO de detalle completo.
+     * Realiza un "flattening" de la entidad UserProfile para que los campos
+     * aparezcan en el primer nivel del DTO.
+     */
     public static UserDetailDTO toDetailDTO(User entity) {
         if (entity == null) return null;
 
@@ -69,7 +78,7 @@ public class UserMapper {
         dto.setEmailVerified(entity.isEmailVerified());
         dto.setMustChangePassword(entity.isMustChangePassword());
 
-        // Cargar datos del perfil si existe
+        // Aplanamiento de UserProfile
         UserProfile profile = entity.getProfile();
         if (profile != null) {
             dto.setFirstName(profile.getFirstName());
@@ -80,7 +89,6 @@ public class UserMapper {
             dto.setLocale(profile.getLocale());
         }
 
-        // Cargar roles si existen
         if (entity.getRoles() != null && !entity.getRoles().isEmpty()) {
             Set<String> roleNames = entity.getRoles().stream()
                     .map(Role::getName)
@@ -93,6 +101,9 @@ public class UserMapper {
         return dto;
     }
 
+    /**
+     * Prepara un DTO de actualización, extrayendo los IDs de los roles.
+     */
     public static UserUpdateDTO toUpdateDTO(User entity) {
         if (entity == null) return null;
 
@@ -107,7 +118,6 @@ public class UserMapper {
         dto.setEmailVerified(entity.isEmailVerified());
         dto.setMustChangePassword(entity.isMustChangePassword());
 
-        // Rellenar roleIds a partir de entity.roles
         if (entity.getRoles() != null) {
             Set<Long> roleIds = entity.getRoles().stream()
                     .map(Role::getId)
@@ -118,9 +128,9 @@ public class UserMapper {
         return dto;
     }
 
-    // ─────────────────────────────────────────
-    // DTO (create/update) → Entity
-    // ─────────────────────────────────────────
+    // ──────────────────────────────────────────────────────────────────────────
+    // DTO → Entity (Conversiones de Entrada)
+    // ──────────────────────────────────────────────────────────────────────────
 
     public static User toEntity(UserCreateDTO dto) {
         if (dto == null) return null;
@@ -153,6 +163,9 @@ public class UserMapper {
         return e;
     }
 
+    /**
+     * Copia datos del DTO a una entidad persistente para actualizaciones parciales.
+     */
     public static void copyToExistingEntity(UserUpdateDTO dto, User entity) {
         if (dto == null || entity == null) return;
 
@@ -165,6 +178,8 @@ public class UserMapper {
         entity.setEmailVerified(dto.isEmailVerified());
         entity.setMustChangePassword(dto.isMustChangePassword());
     }
+
+    // --- Métodos sobrecargados para gestión de Roles (usados en Services) ---
 
     public static User toEntity(UserCreateDTO dto, Set<Role> roles) {
         if (dto == null) return null;

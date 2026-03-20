@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 /**
- * Entidad JPA para la tabla 'reviews'.
+ * Entidad JPA que representa una reseña o valoración de un taller.
  */
 @Data
 @NoArgsConstructor
@@ -13,25 +13,35 @@ import lombok.*;
 @Table(name = "reviews")
 public class Review {
 
-    /** BIGINT AUTO_INCREMENT PRIMARY KEY */
+    /**
+     * Identificador único de la reseña.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** INT CHECK (rating >= 1 AND rating <= 5) */
+    /**
+     * Calificación numérica otorgada (típicamente entre 1 y 5).
+     */
     @Column(name = "rating")
     private Integer rating;
 
-    /** TEXT NULL - Comentario */
+    /**
+     * Comentario textual u opinión del usuario sobre el taller.
+     */
     @Column(name = "comment", columnDefinition = "TEXT")
     private String comment;
 
-    /** Relación N:1 con Workshop */
+    /**
+     * Taller al que se dirige la reseña.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workshop_id", nullable = false)
     private Workshop workshop;
 
-    /** Relación N:1 con User */
+    /**
+     * Usuario que ha escrito la reseña.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

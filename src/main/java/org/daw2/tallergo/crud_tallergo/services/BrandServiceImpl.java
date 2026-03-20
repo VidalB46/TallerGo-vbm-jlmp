@@ -17,6 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Implementación de la lógica de negocio para la gestión de marcas.
+ * Utiliza @Transactional a nivel de clase para asegurar la integridad de las operaciones en DB.
+ */
 @Service
 @Transactional
 public class BrandServiceImpl implements BrandService {
@@ -25,16 +29,19 @@ public class BrandServiceImpl implements BrandService {
     private BrandRepository brandRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public Page<BrandDTO> list(Pageable pageable) {
         return brandRepository.findAll(pageable).map(BrandMapper::toDTO);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BrandDTO> listAll() {
         return BrandMapper.toDTOList(brandRepository.findAll());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BrandUpdateDTO getForEdit(Integer id) {
         Brand brand = brandRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("brand", "id", id));
@@ -43,17 +50,18 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public void create(BrandCreateDTO dto) {
-        // No pueden existir dos marcas con el mismo nombre
+        // Validación de negocio: No se permiten nombres duplicados
         if (brandRepository.existsByName(dto.getName())) {
             throw new DuplicateResourceException("brand", "name", dto.getName());
         }
+
         Brand brand = BrandMapper.toEntity(dto);
         brandRepository.save(brand);
     }
 
     @Override
     public void update(BrandUpdateDTO dto) {
-        // Comprobar que el nuevo nombre no lo use otra marca distinta
+        // Validación de negocio: El nombre no puede colisionar con otra marca (distinta a la actual)
         if (brandRepository.existsByNameAndIdNot(dto.getName(), dto.getId())) {
             throw new DuplicateResourceException("brand", "name", dto.getName());
         }
@@ -61,6 +69,7 @@ public class BrandServiceImpl implements BrandService {
         Brand brand = brandRepository.findById(dto.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("brand", "id", dto.getId()));
 
+        // Actualizamos el estado de la entidad gestionada por JPA
         BrandMapper.copyToExistingEntity(dto, brand);
         brandRepository.save(brand);
     }
@@ -74,7 +83,9 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BrandDetailDTO getDetail(Integer id) {
+        // Uso de fetch join para traer la marca y sus vehículos en una sola consulta
         Brand brand = brandRepository.findByIdWithVehicles(id)
                 .orElseThrow(() -> new ResourceNotFoundException("brand", "id", id));
         return BrandMapper.toDetailDTO(brand);

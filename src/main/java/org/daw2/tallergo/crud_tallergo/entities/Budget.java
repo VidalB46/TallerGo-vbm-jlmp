@@ -5,7 +5,7 @@ import lombok.*;
 import java.math.BigDecimal;
 
 /**
- * Entidad JPA para la tabla 'budgets'.
+ * Entidad JPA que representa un presupuesto asociado a una reparación.
  */
 @Data
 @NoArgsConstructor
@@ -16,20 +16,29 @@ import java.math.BigDecimal;
 @Table(name = "budgets")
 public class Budget {
 
-    /** BIGINT AUTO_INCREMENT PRIMARY KEY */
+    /**
+     * Identificador único del presupuesto.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** DECIMAL(10,2) NULL */
+    /**
+     * Importe total bruto del presupuesto.
+     */
     @Column(name = "total_gross", precision = 10, scale = 2)
     private BigDecimal totalGross;
 
-    /** DECIMAL(10,2) NULL */
+    /**
+     * Importe total neto del presupuesto.
+     */
     @Column(name = "total_net", precision = 10, scale = 2)
     private BigDecimal totalNet;
 
-    /** Relación 1:1 con Repair (Dueña de la FK) */
+    /**
+     * Reparación a la que pertenece este presupuesto.
+     * Mantiene la clave foránea en la tabla 'budgets'.
+     */
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "repair_id", nullable = false, unique = true)
     private Repair repair;

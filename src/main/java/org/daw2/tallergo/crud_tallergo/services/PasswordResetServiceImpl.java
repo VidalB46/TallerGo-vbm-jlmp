@@ -5,6 +5,8 @@ import org.daw2.tallergo.crud_tallergo.entities.PasswordResetToken;
 import org.daw2.tallergo.crud_tallergo.entities.User;
 import org.daw2.tallergo.crud_tallergo.repositories.PasswordResetTokenRepository;
 import org.daw2.tallergo.crud_tallergo.repositories.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,10 +22,14 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Servicio de recuperación de contraseña basado en tokens de un solo uso.
+ * Implementación robusta del servicio de recuperación de contraseñas.
+ * Utiliza hashing SHA-256 para almacenar los tokens en base de datos,
+ * siguiendo las mejores prácticas de seguridad (OWASP).
  */
 @Service
 public class PasswordResetServiceImpl implements PasswordResetService {
+
+    private static final Logger log = LoggerFactory.getLogger(PasswordResetServiceImpl.class);
 
     private static final int TOKEN_BYTES = 32;
     private static final int TOKEN_TTL_MINUTES = 45;
@@ -44,19 +50,29 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     @Autowired
     private AppUrlService appUrlService;
 
+    /**
+     * Proceso de solicitud:
+     * 1. Verifica usuario (sin confirmar existencia por seguridad ante enumeración).
+     * 2. Invalida tokens previos.
+     * 3. Genera y hashea nuevo token.
+     * 4. Envía correo electrónico.
+     */
     @Transactional
     @Override
     public void requestPasswordReset(String email, String requestIp, String userAgent) {
+        log.info("Solicitud de reset de password para: {} desde IP: {}", email, requestIp);
 
         Locale locale = LocaleContextHolder.getLocale();
         LocalDateTime now = LocalDateTime.now();
+
+        // Buscamos ignorando case para mayor flexibilidad
         User user = userRepository.findByEmailIgnoreCase(email).orElse(null);
 
         if (user != null) {
-            // Invalida tokens anteriores
+            // Seguridad: Un solo token activo a la vez
             tokenRepository.invalidateAllActiveTokensForUser(user.getId(), now);
 
-            // Genera token aleatorio y guarda hash
+            // Generación de token criptográficamente seguro
             String rawToken = generateSecureToken();
             String tokenHash = sha256Hex(rawToken);
 
@@ -67,14 +83,15 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             prt.setExpiresAt(now.plusMinutes(TOKEN_TTL_MINUTES));
             prt.setRequestIp(requestIp);
             prt.setUserAgent(safeTruncate(userAgent, 255));
+
             tokenRepository.save(prt);
 
-            // Construye URL y envía mail
+            // Construcción del enlace y envío
             String resetUrl = appUrlService.buildResetUrl(rawToken);
-
             Map<String, Object> vars = Map.of(
                     "resetUrl", resetUrl,
-                    "ttlMinutes", TOKEN_TTL_MINUTES
+                    "ttlMinutes", TOKEN_TTL_MINUTES,
+                    "userEmail", user.getEmail()
             );
 
             mailService.sendTemplate(
@@ -84,36 +101,56 @@ public class PasswordResetServiceImpl implements PasswordResetService {
                     vars,
                     locale
             );
+        } else {
+            // Logueamos pero no informamos al cliente para evitar enumeración de usuarios
+            log.warn("Intento de recuperación para email inexistente: {}", email);
         }
     }
 
+    /**
+     * Proceso de ejecución:
+     * 1. Valida el token contra el hash guardado.
+     * 2. Verifica expiración y uso previo.
+     * 3. Hashea y guarda la nueva password.
+     * 4. Limpia intentos fallidos y desbloquea cuenta.
+     */
     @Transactional
     @Override
     public void resetPassword(String rawToken, String newPassword) {
-
         LocalDateTime now = LocalDateTime.now();
         String tokenHash = sha256Hex(rawToken);
 
         PasswordResetToken token = tokenRepository.findByTokenHash(tokenHash)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid token"));
+                .orElseThrow(() -> new IllegalArgumentException("Token de recuperación inválido o inexistente."));
 
-        if (token.isUsed() || token.isExpired()) {
-            throw new IllegalArgumentException("Invalid or expired token");
+        // Validaciones de seguridad
+        if (token.getUsedAt() != null) {
+            throw new IllegalStateException("Este token ya ha sido utilizado.");
+        }
+        if (token.getExpiresAt().isBefore(now)) {
+            throw new IllegalStateException("El token de recuperación ha expirado.");
         }
 
         User user = token.getUser();
+
+        // Actualización de credenciales y estado de cuenta
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         user.setLastPasswordChange(now);
         user.setPasswordExpiresAt(now.plusDays(PASSWORD_EXPIRY_DAYS));
-        user.setMustChangePassword(Boolean.FALSE);
+        user.setMustChangePassword(false);
         user.setFailedLoginAttempts(0);
-        user.setAccountNonLocked(Boolean.TRUE);
+        user.setAccountNonLocked(true); // Desbloqueamos si estaba bloqueada por intentos fallidos
 
+        // Consumimos el token
         token.setUsedAt(now);
 
         userRepository.save(user);
         tokenRepository.save(token);
+
+        log.info("Password actualizada con éxito para el usuario ID: {}", user.getId());
     }
+
+    // --- Helpers de Seguridad ---
 
     private String generateSecureToken() {
         byte[] bytes = new byte[TOKEN_BYTES];
@@ -129,7 +166,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             for (byte b : digest) sb.append(String.format("%02x", b));
             return sb.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(e);
+            throw new IllegalStateException("Error crítico: Algoritmo SHA-256 no disponible.", e);
         }
     }
 

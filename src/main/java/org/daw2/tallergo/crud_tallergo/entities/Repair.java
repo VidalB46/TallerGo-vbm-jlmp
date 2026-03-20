@@ -7,7 +7,7 @@ import org.daw2.tallergo.crud_tallergo.enums.RepairStatus;
 import java.time.LocalDate;
 
 /**
- * Entidad JPA para la tabla 'repairs'.
+ * Entidad JPA que representa una orden de reparación en el taller.
  */
 @Data
 @NoArgsConstructor
@@ -18,35 +18,50 @@ import java.time.LocalDate;
 @Table(name = "repairs")
 public class Repair {
 
-    /** BIGINT AUTO_INCREMENT PRIMARY KEY */
+    /**
+     * Identificador único de la reparación.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** DATE NULL - Fecha de entrada real */
+    /**
+     * Fecha de entrada real del vehículo al taller.
+     */
     @Column(name = "entry_date")
     private LocalDate entryDate;
 
-    /** ENUM STANDBY/ACTIVO/FINALIZADO */
+    /**
+     * Estado actual del proceso de reparación.
+     */
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private RepairStatus status = RepairStatus.STANDBY;
 
-    /** TEXT NULL - Notas del mecánico */
+    /**
+     * Notas técnicas o comentarios detallados del mecánico.
+     */
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
 
-    /** Relación 1:1 con Appointment (Dueña de la FK) */
+    /**
+     * Cita previa que originó esta reparación.
+     * Mantiene la clave foránea en la tabla 'repairs'.
+     */
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appointment_id", nullable = false, unique = true)
     private Appointment appointment;
 
-    /** Relación N:1 con Vehicle (Redundancia útil) */
+    /**
+     * Vehículo objeto de la reparación.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
 
-    /** Relación 1:1 con Budget */
+    /**
+     * Presupuesto asociado a esta reparación concreta.
+     */
     @OneToOne(mappedBy = "repair", fetch = FetchType.LAZY)
     private Budget budget;
 }
