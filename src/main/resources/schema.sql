@@ -1,8 +1,7 @@
 -- =======================================================
--- 1. TABLAS DE SEGURIDAD Y USUARIOS (Estilo Profesor)
+-- 1. TABLAS DE SEGURIDAD Y USUARIOS
 -- =======================================================
 
--- Crear tabla users (Avanzada)
 CREATE TABLE IF NOT EXISTS users (
    id BIGINT AUTO_INCREMENT PRIMARY KEY,
    email VARCHAR(100) NOT NULL UNIQUE,
@@ -16,7 +15,6 @@ CREATE TABLE IF NOT EXISTS users (
    must_change_password BOOLEAN NOT NULL DEFAULT FALSE
 );
 
--- Crear tabla para perfil de usuario (Relación 1:1 con users)
 CREATE TABLE IF NOT EXISTS user_profiles (
    user_id BIGINT NOT NULL,
    first_name VARCHAR(100) NOT NULL,
@@ -31,7 +29,6 @@ CREATE TABLE IF NOT EXISTS user_profiles (
    CONSTRAINT fk_user_profiles_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- Tabla de roles
 CREATE TABLE IF NOT EXISTS roles (
    id BIGINT AUTO_INCREMENT PRIMARY KEY,
    name VARCHAR(50) NOT NULL UNIQUE,
@@ -39,7 +36,6 @@ CREATE TABLE IF NOT EXISTS roles (
    description VARCHAR(255) NULL
 );
 
--- Tabla intermedia N:M entre users y roles
 CREATE TABLE IF NOT EXISTS user_roles (
    user_id BIGINT NOT NULL,
    role_id BIGINT NOT NULL,
@@ -48,7 +44,6 @@ CREATE TABLE IF NOT EXISTS user_roles (
    CONSTRAINT fk_user_roles_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- Tabla para gestionar tokens de recuperación de contraseña
 CREATE TABLE IF NOT EXISTS password_reset_tokens (
  id BIGINT AUTO_INCREMENT PRIMARY KEY,
  user_id BIGINT NOT NULL,
@@ -68,7 +63,6 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
 -- 2. TABLAS ESPECÍFICAS DE TALLER GO
 -- =======================================================
 
--- Tabla de Talleres
 CREATE TABLE IF NOT EXISTS workshops (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nif VARCHAR(20) UNIQUE NOT NULL,
@@ -79,14 +73,12 @@ CREATE TABLE IF NOT EXISTS workshops (
   schedule VARCHAR(100)
 );
 
--- Tabla de marcas
 CREATE TABLE IF NOT EXISTS brands (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL UNIQUE,
   country VARCHAR(100)
 );
 
--- Tabla de vehículos (Ligada al nuevo sistema de users)
 CREATE TABLE IF NOT EXISTS vehicles (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   brand_id INT NOT NULL,
@@ -101,13 +93,11 @@ CREATE TABLE IF NOT EXISTS vehicles (
   CONSTRAINT fk_vehicles_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
--- Catálogo de Servicios
 CREATE TABLE IF NOT EXISTS services (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(150) NOT NULL
 );
 
--- Relación N:M entre Talleres y Servicios
 CREATE TABLE IF NOT EXISTS workshop_services (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   workshop_id INT NOT NULL,
@@ -119,7 +109,6 @@ CREATE TABLE IF NOT EXISTS workshop_services (
   CONSTRAINT fk_ws_service FOREIGN KEY (service_id) REFERENCES services(id)
 );
 
--- Citas
 CREATE TABLE IF NOT EXISTS appointments (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   user_id BIGINT NOT NULL,
@@ -135,7 +124,6 @@ CREATE TABLE IF NOT EXISTS appointments (
   CONSTRAINT fk_appt_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(id)
 );
 
--- Reparaciones
 CREATE TABLE IF NOT EXISTS repairs (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   appointment_id BIGINT UNIQUE NOT NULL,
@@ -147,16 +135,26 @@ CREATE TABLE IF NOT EXISTS repairs (
   CONSTRAINT fk_repair_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(id)
 );
 
--- Presupuestos
+DROP TABLE IF EXISTS budgets;
+
+CREATE TABLE IF NOT EXISTS budgets (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  repair_id BIGINT UNIQUE NOT NULL,
+  total_gross DECIMAL(10, 2),
+  total_net DECIMAL(10, 2),
+  accepted BOOLEAN DEFAULT FALSE,
+  CONSTRAINT fk_budget_repair FOREIGN KEY (repair_id) REFERENCES repairs(id)
+);
+
 CREATE TABLE IF NOT EXISTS budgets (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   repair_id BIGINT NOT NULL,
   total_gross DECIMAL(10, 2),
   total_net DECIMAL(10, 2),
+  accepted BOOLEAN DEFAULT FALSE, -- Coincide con tus DTOs
   CONSTRAINT fk_budget_repair FOREIGN KEY (repair_id) REFERENCES repairs(id)
 );
 
--- Reseñas
 CREATE TABLE IF NOT EXISTS reviews (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   workshop_id INT NOT NULL,
@@ -167,10 +165,6 @@ CREATE TABLE IF NOT EXISTS reviews (
   CONSTRAINT fk_review_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-
--- ─────────────────────────────
--- Tabla Mecánicos (Mechanics)
--- ─────────────────────────────
 CREATE TABLE IF NOT EXISTS mechanics (
    id BIGINT AUTO_INCREMENT PRIMARY KEY,
    name VARCHAR(100) NOT NULL,

@@ -7,6 +7,8 @@ import org.daw2.tallergo.crud_tallergo.dtos.VehicleUpdateDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 /**
  * Interfaz de servicio para la gestión del inventario de vehículos.
  * Define las operaciones necesarias para administrar los coches que entran en el taller,
@@ -53,4 +55,12 @@ public interface VehicleService {
      * @return DTO con el detalle exhaustivo.
      */
     VehicleDetailDTO getDetail(Long id);
+
+    /**
+     * Recupera todos los vehículos pertenecientes a un usuario específico.
+     * Útil para rellenar desplegables cuando el cliente solicita una cita.
+     * @param userId Identificador del usuario.
+     * @return Lista de VehicleDTO.
+     */
+    List<VehicleDTO> getVehiclesByUserId(Long userId);
 }

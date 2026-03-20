@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -46,4 +47,13 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
      */
     @Query("SELECT v FROM Vehicle v LEFT JOIN FETCH v.brand WHERE v.id = :id")
     Optional<Vehicle> findByIdWithBrand(@Param("id") Long id);
+
+    /**
+     * Recupera todos los vehículos asociados a un usuario específico.
+     * Fundamental para rellenar desplegables en la petición de citas del cliente.
+     *
+     * @param userId Identificador del usuario propietario.
+     * @return Lista de vehículos pertenecientes al usuario.
+     */
+    List<Vehicle> findByUserId(Long userId);
 }

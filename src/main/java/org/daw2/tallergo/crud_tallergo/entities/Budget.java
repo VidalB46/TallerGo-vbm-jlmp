@@ -36,6 +36,12 @@ public class Budget {
     private BigDecimal totalNet;
 
     /**
+     * Indica si el cliente ha aceptado el presupuesto.
+     */
+    @Column(name = "accepted", nullable = false)
+    private Boolean accepted = false;
+
+    /**
      * Reparación a la que pertenece este presupuesto.
      * Mantiene la clave foránea en la tabla 'budgets'.
      */

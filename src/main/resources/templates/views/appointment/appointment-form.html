@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(#{msg.appointment-form.add})}"></head>
+
+<body class="d-flex flex-column h-100">
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="form-page">
+    <div class="form-card">
+        <h1 th:text="#{msg.appointment-form.add}">Solicitar Cita</h1>
+
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <form th:action="@{/appointments/new}" th:object="${appointment}" method="post">
+
+            <div class="mb-3">
+                <label for="workshopId" class="form-label" th:text="#{msg.appointment-form.workshop}">Taller</label>
+                <select id="workshopId" th:field="*{workshopId}" class="form-select" th:classappend="${#fields.hasErrors('workshopId')} ? 'is-invalid'">
+                    <option value="" disabled selected th:text="#{msg.appointment-form.workshop.placeholder}">Selecciona...</option>
+                    <option th:each="w : ${workshops}" th:value="${w.id}" th:text="${w.name + ' - ' + w.location}"></option>
+                </select>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('workshopId')}" th:errors="*{workshopId}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="vehicleId" class="form-label" th:text="#{msg.appointment-form.vehicle}">Vehículo</label>
+                <select id="vehicleId" th:field="*{vehicleId}" class="form-select" th:classappend="${#fields.hasErrors('vehicleId')} ? 'is-invalid'">
+                    <option value="" disabled selected th:text="#{msg.appointment-form.vehicle.placeholder}">Selecciona...</option>
+                    <option th:each="v : ${vehicles}" th:value="${v.id}" th:text="${v.matricula + ' - ' + v.brandName + ' ' + v.model}"></option>
+                </select>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('vehicleId')}" th:errors="*{vehicleId}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="startDate" class="form-label" th:text="#{msg.appointment-form.startDate}">Fecha</label>
+                <input type="datetime-local" th:field="*{startDate}" id="startDate" class="form-control" th:classappend="${#fields.hasErrors('startDate')} ? 'is-invalid'" />
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="notes" class="form-label" th:text="#{msg.appointment-form.notes}">Notas</label>
+                <textarea th:field="*{notes}" id="notes" class="form-control" rows="3"></textarea>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('notes')}" th:errors="*{notes}"></div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary" th:text="#{msg.appointment-form.create}">Solicitar</button>
+                <a th:href="@{/appointments}" class="btn btn-secondary" th:text="#{msg.appointment-form.returnback}">Volver</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>
