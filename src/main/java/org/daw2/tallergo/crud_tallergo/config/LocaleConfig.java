@@ -19,24 +19,24 @@ public class LocaleConfig implements WebMvcConfigurer {
     private static final Logger logger = LoggerFactory.getLogger(LocaleConfig.class);
 
     /**
-     * Define el `LocaleResolver` que se usará para almacenar la configuración de idioma del usuario.
-     * En este caso, utilizamos `SessionLocaleResolver` para almacenar el idioma en la sesión.
+     * Define el LocaleResolver que se usará para almacenar la configuración de idioma del usuario.
+     * En este caso, utilizamos SessionLocaleResolver para almacenar el idioma en la sesión.
      *
-     * @return una instancia de `SessionLocaleResolver` con el idioma predeterminado configurado.
+     * @return una instancia de SessionLocaleResolver con el idioma predeterminado configurado.
      */
     @Bean
     public LocaleResolver localeResolver() {
         SessionLocaleResolver slr = new SessionLocaleResolver();
-        slr.setDefaultLocale(Locale.of("es")); // Establece el español como idioma por defecto
+        slr.setDefaultLocale(new Locale("es")); // Establece el español como idioma por defecto
         logger.info("LocaleResolver configurado con el idioma predeterminado: es");
         return slr;
     }
 
     /**
-     * Define un `LocaleChangeInterceptor` que intercepta las peticiones HTTP para cambiar el idioma
+     * Define un LocaleChangeInterceptor que intercepta las peticiones HTTP para cambiar el idioma
      * utilizando un parámetro llamado "lang" en la URL.
      *
-     * @return una instancia de `LocaleChangeInterceptor` con el parámetro configurado.
+     * @return una instancia de LocaleChangeInterceptor con el parámetro configurado.
      */
     @Bean
     public LocaleChangeInterceptor localeChangeInterceptor() {
@@ -47,7 +47,7 @@ public class LocaleConfig implements WebMvcConfigurer {
     }
 
     /**
-     * Registra el `LocaleChangeInterceptor` para que se aplique a todas las solicitudes.
+     * Registra el LocaleChangeInterceptor para que se aplique a todas las solicitudes.
      * Esto permite que el idioma de la aplicación se pueda cambiar dinámicamente.
      *
      * @param registry el registro de interceptores de Spring.
