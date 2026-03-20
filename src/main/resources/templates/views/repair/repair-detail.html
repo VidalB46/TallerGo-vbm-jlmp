@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head(#{msg.repair-detail.title})}"></head>
+
+<body class="d-flex flex-column h-100">
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="form-page">
+    <div class="form-card" style="max-width: 800px;">
+        <h1><span th:text="#{msg.repair-detail.title}">Detalle de Reparación</span> #<span th:text="${repair.id}"></span></h1>
+
+        <div th:if="${success}" class="alert alert-success mt-3" th:text="${success}"></div>
+
+        <div class="mt-4">
+            <h5>Datos Generales</h5>
+            <dl class="row">
+                <dt class="col-sm-4">Estado</dt>
+                <dd class="col-sm-8">
+                    <span class="badge"
+                          th:classappend="${#strings.toString(repair.status) == 'STANDBY' ? 'bg-secondary' : (#strings.toString(repair.status) == 'ACTIVO' ? 'bg-primary' : 'bg-success')}"
+                          th:text="${repair.status}">
+                    </span>
+                </dd>
+
+                <dt class="col-sm-4">Fecha de Entrada</dt>
+                <dd class="col-sm-8" th:text="${#temporals.format(repair.entryDate, 'dd/MM/yyyy')}"></dd>
+
+                <dt class="col-sm-4">Vehículo</dt>
+                <dd class="col-sm-8" th:text="${repair.vehicle.model + ' (' + repair.vehicle.matricula + ')'}"></dd>
+            </dl>
+        </div>
+
+        <div class="mt-4">
+            <h5>Notas del Mecánico</h5>
+            <div class="alert alert-secondary">
+                <p class="mb-0" th:text="${repair.notes != null and !#strings.isEmpty(repair.notes) ? repair.notes : 'Sin notas adicionales.'}"></p>
+            </div>
+        </div>
+
+        <div class="mt-4 d-flex justify-content-between">
+            <a th:href="@{/repairs}" class="btn btn-secondary">Volver</a>
+
+            <div>
+                <a th:if="${repair.budget == null}" sec:authorize="hasRole('ADMIN')" th:href="@{/budgets/new(repairId=${repair.id})}" class="btn btn-warning">Generar Presupuesto</a>
+                <a th:if="${repair.budget != null}" th:href="@{/budgets/repair/{id}(id=${repair.id})}" class="btn btn-info text-white">Ver Presupuesto</a>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

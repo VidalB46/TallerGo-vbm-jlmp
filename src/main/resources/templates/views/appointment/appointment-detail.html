@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/head :: head(#{msg.appointment-detail.title})}"></head>
 
 <body class="d-flex flex-column h-100">
@@ -15,7 +15,7 @@
                 <dt class="col-sm-3" th:text="#{msg.appointment-detail.field.status}">Estado</dt>
                 <dd class="col-sm-9">
                     <span class="badge"
-                          th:classappend="${appointment.status.name() == 'SOLICITADO' ? 'bg-warning text-dark' : (appointment.status.name() == 'CONFIRMADO' ? 'bg-success' : 'bg-danger')}"
+                          th:classappend="${#strings.toString(appointment.status) == 'SOLICITADO' ? 'bg-warning text-dark' : (#strings.toString(appointment.status) == 'CONFIRMADO' ? 'bg-success' : 'bg-danger')}"
                           th:text="${appointment.status}">
                     </span>
                 </dd>
@@ -31,12 +31,30 @@
         <div class="mt-4">
             <h5 th:text="#{msg.appointment-detail.section.notes}">Motivo / Notas</h5>
             <div class="alert alert-secondary">
-                <p class="mb-0" th:text="${appointment.notes ?: #{msg.appointment-detail.notes.empty}}">Sin notas adicionales.</p>
+                <p class="mb-0" th:text="${appointment.notes != null and !#strings.isEmpty(appointment.notes) ? appointment.notes : 'Sin notas adicionales.'}"></p>
             </div>
         </div>
 
-        <div class="mt-4 text-center">
+        <div class="mt-4 d-flex justify-content-center gap-3">
             <a th:href="@{/appointments}" class="btn btn-secondary" th:text="#{msg.appointment-detail.action.back}">Volver</a>
+
+            <a sec:authorize="hasRole('ADMIN')"
+               th:if="${#strings.toString(appointment.status) == 'SOLICITADO'}"
+               th:href="@{/repairs/new(appointmentId=${appointment.id}, vehicleId=${appointment.vehicle.id})}"
+               class="btn btn-primary">Iniciar Reparación</a>
+        </div>
+
+        <div class="mt-4 d-flex justify-content-center gap-3">
+            <a th:href="@{/appointments}" class="btn btn-secondary" th:text="#{msg.appointment-detail.action.back}">Volver</a>
+
+            <a sec:authorize="hasRole('CLIENT')"
+               th:href="@{/budgets/repair/{id}(id=${appointment.id})}"
+               class="btn btn-info text-white">Ver Presupuesto</a>
+
+            <a sec:authorize="hasRole('ADMIN')"
+               th:if="${#strings.toString(appointment.status) == 'SOLICITADO'}"
+               th:href="@{/repairs/new(appointmentId=${appointment.id}, vehicleId=${appointment.vehicle.id})}"
+               class="btn btn-primary">Iniciar Reparación</a>
         </div>
     </div>
 </main>
