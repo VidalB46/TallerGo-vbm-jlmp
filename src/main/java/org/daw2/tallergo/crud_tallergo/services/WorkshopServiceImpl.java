@@ -48,8 +48,8 @@ public class WorkshopServiceImpl implements WorkshopService {
     @Override
     @Transactional(readOnly = true)
     public WorkshopDetailDTO getDetail(Integer id) {
-        // Cargamos el taller junto con sus servicios para evitar LazyInitializationException
-        Workshop workshop = workshopRepository.findByIdWithServices(id)
+        // Cargamos el taller junto con sus mecánicos para evitar LazyInitializationException
+        Workshop workshop = workshopRepository.findByIdWithMechanics(id)
                 .orElseThrow(() -> new ResourceNotFoundException("workshop", "id", id));
         return WorkshopMapper.toDetailDTO(workshop);
     }
