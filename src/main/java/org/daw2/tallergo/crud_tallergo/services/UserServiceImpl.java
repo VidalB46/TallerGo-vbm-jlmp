@@ -4,7 +4,7 @@ import org.daw2.tallergo.crud_tallergo.dtos.UserCreateDTO;
 import org.daw2.tallergo.crud_tallergo.dtos.UserDTO;
 import org.daw2.tallergo.crud_tallergo.dtos.UserDetailDTO;
 import org.daw2.tallergo.crud_tallergo.dtos.UserUpdateDTO;
-import org.daw2.tallergo.crud_tallergo.dtos.UserRegisterDTO; // Importante
+import org.daw2.tallergo.crud_tallergo.dtos.UserRegisterDTO;
 import org.daw2.tallergo.crud_tallergo.entities.Role;
 import org.daw2.tallergo.crud_tallergo.entities.User;
 import org.daw2.tallergo.crud_tallergo.exceptions.DuplicateResourceException;
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder; // Importante
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +26,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Implementación del servicio de gestión de usuarios.
+ * Centraliza la lógica de seguridad, hashing de contraseñas y asignación de roles.
+ */
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
@@ -40,14 +44,16 @@ public class UserServiceImpl implements UserService {
     private RoleRepository roleRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder; // Inyectado para que no falle el register
+    private PasswordEncoder passwordEncoder;
 
     @Override
+    @Transactional(readOnly = true)
     public Page<UserDTO> list(Pageable pageable) {
         return userRepository.findAll(pageable).map(UserMapper::toDTO);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserUpdateDTO getForEdit(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("user", "id", id));
@@ -59,15 +65,18 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByEmail(dto.getEmail())) {
             throw new DuplicateResourceException("user", "email", dto.getEmail());
         }
-        LocalDateTime lastPasswordChange = dto.getLastPasswordChange();
-        if (lastPasswordChange == null) {
-            lastPasswordChange = LocalDateTime.now();
-            dto.setLastPasswordChange(lastPasswordChange);
-        }
-        dto.setPasswordExpiresAt(lastPasswordChange.plusDays(PASSWORD_EXPIRY_DAYS));
+
+        // Lógica de expiración de contraseña
+        LocalDateTime now = LocalDateTime.now();
+        dto.setLastPasswordChange(now);
+        dto.setPasswordExpiresAt(now.plusDays(PASSWORD_EXPIRY_DAYS));
+
+        // Mapeo de roles desde IDs recibidos del formulario
         Set<Role> roles = new HashSet<>(roleRepository.findAllById(dto.getRoleIds()));
+
         User user = UserMapper.toEntity(dto, roles);
         userRepository.save(user);
+        logger.info("Usuario creado por administrador: {}", user.getEmail());
     }
 
     @Override
@@ -75,16 +84,12 @@ public class UserServiceImpl implements UserService {
         User existingUser = userRepository.findById(dto.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("user", "id", dto.getId()));
 
-        if (!existingUser.getEmail().equalsIgnoreCase(dto.getEmail()) &&
-                userRepository.existsByEmail(dto.getEmail())) {
+        // Validar que el nuevo email no esté en uso por otro usuario
+        if (userRepository.existsByEmailAndIdNot(dto.getEmail(), dto.getId())) {
             throw new DuplicateResourceException("user", "email", dto.getEmail());
         }
 
-        if (dto.getLastPasswordChange() == null) {
-            dto.setLastPasswordChange(LocalDateTime.now());
-        }
-        dto.setPasswordExpiresAt(dto.getLastPasswordChange().plusDays(PASSWORD_EXPIRY_DAYS));
-
+        // Actualización manual de roles si vienen en el DTO
         if (dto.getRoleIds() != null) {
             Set<Role> roles = new HashSet<>(roleRepository.findAllById(dto.getRoleIds()));
             existingUser.setRoles(roles);
@@ -92,15 +97,20 @@ public class UserServiceImpl implements UserService {
 
         UserMapper.copyToExistingEntity(dto, existingUser);
         userRepository.save(existingUser);
+        logger.info("Usuario actualizado: {}", existingUser.getEmail());
     }
 
     @Override
     public void delete(Long id) {
-        if (!userRepository.existsById(id)) throw new ResourceNotFoundException("user", "id", id);
+        if (!userRepository.existsById(id)) {
+            throw new ResourceNotFoundException("user", "id", id);
+        }
         userRepository.deleteById(id);
+        logger.warn("Usuario con ID {} eliminado", id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDetailDTO getDetail(Long id) {
         User user = userRepository.findByIdWithRoles(id)
                 .orElseThrow(() -> new ResourceNotFoundException("user", "id", id));
@@ -108,31 +118,35 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Role> findAllRoles() {
         return roleRepository.findAll();
     }
 
+    /**
+     * Flujo de autoregistro para clientes externos.
+     * Aplica por defecto ROLE_CLIENT y encripta la contraseña con BCrypt.
+     */
     @Override
     public void registerNewClient(UserRegisterDTO dto) {
-        // Verificar si el email ya existe
-        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new RuntimeException("Email ya registrado");
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new DuplicateResourceException("user", "email", dto.getEmail());
         }
 
         User user = new User();
         user.setEmail(dto.getEmail());
-        // ENCRIPTAMOS LA CONTRASEÑA
         user.setPasswordHash(passwordEncoder.encode(dto.getPassword()));
         user.setActive(true);
         user.setAccountNonLocked(true);
         user.setEmailVerified(false);
+        user.setLastPasswordChange(LocalDateTime.now());
+        user.setPasswordExpiresAt(LocalDateTime.now().plusDays(PASSWORD_EXPIRY_DAYS));
 
-        // Buscar el rol de cliente en la base de datos
         Role clientRole = roleRepository.findByName("ROLE_CLIENT")
-                .orElseThrow(() -> new RuntimeException("Error: Rol ROLE_CLIENT no encontrado en BD"));
+                .orElseThrow(() -> new IllegalStateException("Error: El rol ROLE_CLIENT no existe en la base de datos."));
 
         user.getRoles().add(clientRole);
-
         userRepository.save(user);
+        logger.info("Nuevo cliente registrado: {}", user.getEmail());
     }
 }

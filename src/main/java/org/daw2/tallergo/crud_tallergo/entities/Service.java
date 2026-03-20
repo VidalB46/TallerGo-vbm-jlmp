@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Entidad JPA para la tabla 'services'.
+ * Entidad JPA que representa un tipo de servicio o actividad técnica ofrecida.
  */
 @Data
 @NoArgsConstructor
@@ -17,16 +17,22 @@ import java.util.Set;
 @Table(name = "services")
 public class Service {
 
-    /** INT AUTO_INCREMENT PRIMARY KEY */
+    /**
+     * Identificador único del servicio.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    /** VARCHAR(150) NOT NULL */
+    /**
+     * Nombre descriptivo del servicio (ej. Cambio de aceite, Equilibrado).
+     */
     @Column(name = "name", nullable = false, length = 150)
     private String name;
 
-    /** Relación 1:N con WorkshopService */
+    /**
+     * Conjunto de relaciones que vinculan este servicio con los diferentes talleres.
+     */
     @OneToMany(mappedBy = "service", fetch = FetchType.LAZY)
     private Set<WorkshopService> workshopServices = new HashSet<>();
 }

@@ -7,7 +7,7 @@ import org.daw2.tallergo.crud_tallergo.enums.AppointmentStatus;
 import java.time.LocalDateTime;
 
 /**
- * Entidad JPA para la tabla 'appointments'.
+ * Entidad JPA que representa una cita en la base de datos.
  */
 @Data
 @NoArgsConstructor
@@ -18,48 +18,68 @@ import java.time.LocalDateTime;
 @Table(name = "appointments")
 public class Appointment {
 
-    /** BIGINT AUTO_INCREMENT PRIMARY KEY */
+    /**
+     * Identificador único de la cita.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** DATETIME NOT NULL */
+    /**
+     * Fecha y hora de inicio de la cita.
+     */
     @Column(name = "start_date", nullable = false)
     private LocalDateTime startDate;
 
-    /** DATETIME NULL */
+    /**
+     * Fecha y hora de finalización de la cita.
+     */
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
-    /** ENUM('SOLICITADO', 'CONFIRMADO', 'CANCELADO') */
+    /**
+     * Estado actual de la cita.
+     */
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private AppointmentStatus status = AppointmentStatus.SOLICITADO;
 
-    /** TEXT NULL */
+    /**
+     * Notas o comentarios adicionales sobre la cita.
+     */
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
 
-    /** VARCHAR(255) NULL */
+    /**
+     * URL de un archivo multimedia adjunto a la cita.
+     */
     @Column(name = "media_url", length = 255)
     private String mediaUrl;
 
-    /** Relación N:1 con User (Cliente) */
+    /**
+     * Usuario (cliente) que solicita la cita.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    /** Relación N:1 con Workshop (Taller) */
+    /**
+     * Taller en el que se ha programado la cita.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workshop_id", nullable = false)
     private Workshop workshop;
 
-    /** Relación N:1 con Vehicle */
+    /**
+     * Vehículo asociado a la cita.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
 
-    /** Relación 1:1 con Repair */
+    /**
+     * Reparación generada a partir de la cita, si la hubiera.
+     */
     @OneToOne(mappedBy = "appointment", fetch = FetchType.LAZY)
     private Repair repair;
 }

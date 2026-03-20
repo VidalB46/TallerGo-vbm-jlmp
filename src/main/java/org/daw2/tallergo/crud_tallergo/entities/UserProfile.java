@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * Entidad JPA para la tabla 'user_profiles'.
- * Relación 1:1 con 'users' mediante primary key compartida (user_id=users.id).
+ * Entidad JPA que almacena la información detallada del perfil de un usuario.
+ * Utiliza una relación 1:1 con la tabla 'users' mediante una clave primaria compartida.
  */
 @Data
 @NoArgsConstructor
@@ -18,53 +18,83 @@ import java.time.LocalDateTime;
 @Table(name="user_profiles")
 public class UserProfile {
 
-    /** BIGINT PRIMARY KEY, también FK a users.id */
+    /**
+     * Identificador único del perfil.
+     * Coincide con el ID del usuario al que pertenece (Shared Primary Key).
+     */
     @Id
     @Column(name="user_id")
     private Long id;
 
     /**
-     * Relación 1:1 con User usando clave primaria compartida.
-     * 'user_id' actúa como PK y FK a 'users.id'.
+     * Referencia a la entidad de usuario propietaria.
+     * La anotación @MapsId indica que el ID de esta entidad se deriva de la entidad User.
      */
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "user_id")
     private User user;
 
-    /** VARCHAR(100) NOT NULL */
+    /**
+     * Nombre de pila del usuario.
+     */
     @Column(name = "first_name", nullable = false, length = 100)
     private String firstName;
 
-    /** VARCHAR(100) NOT NULL */
+    /**
+     * Apellidos del usuario.
+     */
     @Column(name = "last_name", nullable = false, length = 100)
     private String lastName;
 
-    /** VARCHAR(30) NULL */
+    /**
+     * Número de teléfono de contacto.
+     */
     @Column(name = "phone_number", length = 30)
     private String phoneNumber;
 
-    /** VARCHAR(255) NULL - Ruta/URL de la imagen de perfil */
+    /**
+     * Ruta o URL de la imagen de perfil almacenada.
+     */
     @Column(name = "profile_image", length = 255)
     private String profileImage;
 
-    /** VARCHAR(500) NULL - Pequeña descripción / biografía */
+    /**
+     * Breve descripción o biografía del usuario.
+     */
     @Column(name = "bio", length = 500)
     private String bio;
 
-    /** VARCHAR(10) NULL - Código de idioma/locale (es_ES, en_US, ...) */
+    /**
+     * Configuración regional o idioma preferido (ej. 'es_ES').
+     */
     @Column(name = "locale", length = 10)
     private String locale;
 
-    /** DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP (gestionado por la BD) */
+    /**
+     * Fecha y hora de creación del perfil.
+     * Gestionado automáticamente por la base de datos.
+     */
     @Column(name = "created_at", nullable = false, updatable = false, insertable = false)
     private LocalDateTime createdAt;
 
-    /** DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP (BD) */
+    /**
+     * Fecha y hora de la última actualización del perfil.
+     * Gestionado automáticamente por la base de datos.
+     */
     @Column(name = "updated_at", nullable = false, insertable = false, updatable = false)
     private LocalDateTime updatedAt;
 
-    /** Constructor de conveniencia sin campos de auditoria. */
+    /**
+     * Constructor para inicializar el perfil con sus datos básicos.
+     * * @param user Entidad User asociada.
+     * @param firstName Nombre.
+     * @param lastName Apellidos.
+     * @param phoneNumber Teléfono.
+     * @param profileImage Imagen de perfil.
+     * @param bio Biografía.
+     * @param locale Idioma.
+     */
     public UserProfile(User user, String firstName, String lastName, String phoneNumber, String profileImage, String bio, String locale){
         this.user = user;
         this.firstName = firstName;

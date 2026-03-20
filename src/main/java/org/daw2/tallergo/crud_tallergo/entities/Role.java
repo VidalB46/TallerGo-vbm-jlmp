@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Entidad JPA para la tabla 'roles'.
+ * Entidad JPA que representa los roles de seguridad del sistema.
  */
 @Data
 @NoArgsConstructor
@@ -18,31 +18,45 @@ import java.util.Set;
 @Table(name = "roles")
 public class Role {
 
-    /** BIGINT AUTO_INCREMENT PRIMARY KEY */
+    /**
+     * Identificador único del rol.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** VARCHAR(50) NOT NULL UNIQUE - Nombre técnico: ROLE_ADMIN, ROLE_CLIENT... */
+    /**
+     * Nombre técnico del rol (ej. ROLE_ADMIN, ROLE_USER).
+     * Debe ser único y no nulo.
+     */
     @Column(name = "name", nullable = false, unique = true, length = 50)
     private String name;
 
-    /** VARCHAR(100) NOT NULL - Nombre legible para la interfaz */
+    /**
+     * Nombre descriptivo para mostrar en la interfaz de usuario.
+     */
     @Column(name = "display_name", nullable = false, length = 100)
     private String displayName;
 
-    /** VARCHAR(255) NULL - Descripción opcional del rol */
+    /**
+     * Descripción opcional sobre los permisos o propósito del rol.
+     */
     @Column(name = "description", length = 255)
     private String description;
 
     /**
-     * Relación N:M con User.
-     * Lado NO propietario (mappedBy = "roles").
+     * Conjunto de usuarios que tienen asignado este rol.
+     * Lado inverso de la relación Many-To-Many.
      */
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     private Set<User> users = new HashSet<>();
 
-    /** Constructor útil para crear roles sin id ni usuarios. */
+    /**
+     * Constructor para inicializar un rol con sus datos básicos.
+     * * @param name Nombre técnico.
+     * @param displayName Nombre legible.
+     * @param description Descripción del rol.
+     */
     public Role(String name, String displayName, String description) {
         this.name = name;
         this.displayName = displayName;

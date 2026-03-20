@@ -12,30 +12,42 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 /**
- * Handler personalizado para manejar fallos en la autenticación con OAuth2.
+ * Manejador de fallos personalizado para el proceso de autenticación OAuth2.
+ * Se encarga de limpiar el rastro de la sesión fallida y redirigir al usuario con un mensaje amigable.
  */
 @Component
 public class CustomOAuth2FailureHandler implements AuthenticationFailureHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(CustomOAuth2FailureHandler.class);
 
+    /**
+     * Se ejecuta automáticamente cuando una autenticación OAuth2 (Google, GitHub, etc.) falla.
+     * * @param request La petición HTTP.
+     * @param response La respuesta HTTP.
+     * @param exception La excepción detallada del fallo de autenticación.
+     */
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         org.springframework.security.core.AuthenticationException exception)
             throws IOException, ServletException {
 
+        // Logueamos el error para auditoría técnica
         logger.warn("Falló la autenticación OAuth2: {}", exception.getMessage());
 
-        // Limpiar el contexto de seguridad
+        // Garantizamos que no quede rastro de autenticaciones parciales
         SecurityContextHolder.clearContext();
 
-        // Invalidar la sesión actual
+        // Forzamos la invalidación de la sesión para evitar estados inconsistentes
         request.getSession().invalidate();
 
-        // Agregar el mensaje de error como un atributo de sesión
-        request.getSession().setAttribute("errorMessage", "El usuario no está registrado en esta aplicación");
+        /*
+         * NOTA: Al invalidar la sesión arriba, debemos crear una nueva o usar flash attributes
+         * si queremos que el mensaje sobreviva a la redirección.
+         * Aquí, al ser una redirección simple, el atributo se guarda en la nueva sesión.
+         */
+        request.getSession(true).setAttribute("errorMessage", "El usuario no está registrado en esta aplicación");
 
-        // Redirigir al login
-        response.sendRedirect("/login");
+        // Devolvemos al usuario a la pantalla de entrada
+        response.sendRedirect("/login?error=oauth2");
     }
 }

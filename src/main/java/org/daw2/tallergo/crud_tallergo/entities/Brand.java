@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Entidad JPA para la tabla 'brands'.
+ * Entidad JPA que representa una marca de vehículos en la base de datos.
  */
 @Data
 @NoArgsConstructor
@@ -17,23 +17,36 @@ import java.util.Set;
 @Table(name = "brands")
 public class Brand {
 
-    /** INT AUTO_INCREMENT PRIMARY KEY */
+    /**
+     * Identificador único de la marca.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    /** VARCHAR(100) NOT NULL UNIQUE */
+    /**
+     * Nombre de la marca. Debe ser único y no nulo.
+     */
     @Column(name = "name", nullable = false, unique = true, length = 100)
     private String name;
 
-    /** VARCHAR(100) NULL */
+    /**
+     * País de origen de la marca.
+     */
     @Column(name = "country", length = 100)
     private String country;
 
-    /** Relación 1:N con Vehicle */
+    /**
+     * Conjunto de vehículos asociados a esta marca.
+     */
     @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY)
     private Set<Vehicle> vehicles = new HashSet<>();
 
+    /**
+     * Constructor para inicializar una marca con nombre y país.
+     * * @param name Nombre de la marca.
+     * @param country País de procedencia.
+     */
     public Brand(String name, String country) {
         this.name = name;
         this.country = country;

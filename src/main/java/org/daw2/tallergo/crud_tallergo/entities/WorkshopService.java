@@ -5,43 +5,59 @@ import lombok.*;
 import java.math.BigDecimal;
 
 /**
- * Entidad JPA para la tabla intermedia 'workshop_services'.
+ * Entidad JPA que actúa como tabla intermedia entre talleres y servicios.
+ * Permite definir atributos específicos como el precio y la duración para cada
+ * combinación de taller y servicio.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "workshop_services", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"workshop_id", "service_id"}) // Para que no se repita la pareja
+        @UniqueConstraint(columnNames = {"workshop_id", "service_id"})
 })
 public class WorkshopService {
 
-    /** BIGINT AUTO_INCREMENT PRIMARY KEY */
+    /**
+     * Identificador único de la relación taller-servicio.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** * Relación N:1 con Workshop.
+    /**
+     * Taller que ofrece el servicio.
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workshop_id", nullable = false)
     private Workshop workshop;
 
-    /** * Relación N:1 con Service.
+    /**
+     * Tipo de servicio ofrecido por el taller.
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id", nullable = false)
     private Service service;
 
-    /** DECIMAL(10, 2) NOT NULL - Precio del servicio */
+    /**
+     * Precio establecido por este taller concreto para este servicio.
+     */
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    /** INT NULL - Duración en minutos */
+    /**
+     * Duración estimada del servicio expresada en minutos.
+     */
     @Column(name = "duration_minutes")
     private Integer durationMinutes;
 
-    /** Constructor  */
+    /**
+     * Constructor para inicializar una relación de servicio en un taller.
+     * * @param workshop Taller propietario.
+     * @param service Servicio ofrecido.
+     * @param price Coste del servicio.
+     * @param durationMinutes Tiempo estimado de ejecución.
+     */
     public WorkshopService(Workshop workshop, Service service, BigDecimal price, Integer durationMinutes) {
         this.workshop = workshop;
         this.service = service;

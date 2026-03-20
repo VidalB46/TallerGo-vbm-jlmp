@@ -6,58 +6,84 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Entidad JPA para la tabla 'workshops'.
+ * Entidad JPA que representa un taller mecánico dentro del sistema.
+ * Centraliza la gestión de citas, mecánicos en plantilla y servicios ofrecidos.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"appointments", "workshopServices", "reviews"})
-@ToString(exclude = {"appointments", "workshopServices", "reviews"})
+@EqualsAndHashCode(exclude = {"appointments", "workshopServices", "reviews", "mechanics"})
+@ToString(exclude = {"appointments", "workshopServices", "reviews", "mechanics"})
 @Entity
 @Table(name = "workshops")
 public class Workshop {
 
-    /** INT AUTO_INCREMENT PRIMARY KEY */
+    /**
+     * Identificador único del taller.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    /** VARCHAR(20) NOT NULL UNIQUE - NIF */
+    /**
+     * Número de Identificación Fiscal (NIF/CIF) del taller.
+     * Debe ser único y no nulo.
+     */
     @Column(name = "nif", nullable = false, unique = true, length = 20)
     private String nif;
 
-    /** VARCHAR(150) NOT NULL */
+    /**
+     * Nombre comercial del taller.
+     */
     @Column(name = "name", nullable = false, length = 150)
     private String name;
 
-    /** VARCHAR(20) NULL */
+    /**
+     * Teléfono de contacto para clientes.
+     */
     @Column(name = "phone", length = 20)
     private String phone;
 
-    /** VARCHAR(255) NULL */
+    /**
+     * Dirección física o ubicación del taller.
+     */
     @Column(name = "location", length = 255)
     private String location;
 
-    /** VARCHAR(100) NULL */
+    /**
+     * Correo electrónico de contacto profesional.
+     */
     @Column(name = "email", length = 100)
     private String email;
 
-    /** VARCHAR(100) NULL */
+    /**
+     * Descripción del horario de apertura (ej. "L-V: 08:00-18:00").
+     */
     @Column(name = "schedule", length = 100)
     private String schedule;
 
-    /** Relación 1:N con Appointment */
+    /**
+     * Colección de citas programadas en este taller.
+     */
     @OneToMany(mappedBy = "workshop", fetch = FetchType.LAZY)
     private Set<Appointment> appointments = new HashSet<>();
 
-    /** Relación 1:N con Servicios ofrecidos (Tabla intermedia) */
+    /**
+     * Relación con la tabla intermedia que define qué servicios específicos ofrece este taller.
+     */
     @OneToMany(mappedBy = "workshop", fetch = FetchType.LAZY)
     private Set<WorkshopService> workshopServices = new HashSet<>();
 
-    /** Relación 1:N con Reseñas recibidas */
+    /**
+     * Valoraciones y reseñas dejadas por los clientes sobre este taller.
+     */
     @OneToMany(mappedBy = "workshop", fetch = FetchType.LAZY)
     private Set<Review> reviews = new HashSet<>();
 
+    /**
+     * Equipo de mecánicos que trabajan actualmente en el taller.
+     * Incluye borrado en cascada para la gestión simplificada de la plantilla.
+     */
     @OneToMany(mappedBy = "workshop", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Mechanic> mechanics = new HashSet<>();
 }
