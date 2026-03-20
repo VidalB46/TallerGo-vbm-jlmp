@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(#{msg.appointment-list.title})}"></head>
+
+<body class="d-flex flex-column h-100">
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="list-page">
+    <div class="list-card">
+        <h1 th:text="#{msg.appointment-list.title}">Listado de Citas</h1>
+
+        <a th:href="@{/appointments/new}" class="btn btn-success" th:text="#{msg.appointment-list.add}">Pedir Cita</a>
+
+        <div th:if="${success}" class="alert alert-success mt-3" th:text="${success}"></div>
+        <div th:if="${errorMessage}" class="alert alert-danger mt-3" th:text="${errorMessage}"></div>
+
+        <table class="table table-bordered table-striped mt-3">
+            <thead>
+            <tr>
+                <th><span th:text="#{msg.appointment-list.date}">Fecha</span></th>
+                <th><span th:text="#{msg.appointment-list.vehicle}">Vehículo</span></th>
+                <th><span th:text="#{msg.appointment-list.workshop}">Taller</span></th>
+                <th><span th:text="#{msg.appointment-list.status}">Estado</span></th>
+                <th th:text="#{msg.appointment-list.actions}">Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="appt : ${appointmentsPage.content}">
+                <td th:text="${#temporals.format(appt.startDate, 'dd/MM/yyyy HH:mm')}"></td>
+                <td th:text="${appt.vehicleModel}"></td>
+                <td th:text="${appt.workshopName}"></td>
+                <td>
+                    <span class="badge"
+                          th:classappend="${appt.status.name() == 'SOLICITADO' ? 'bg-warning text-dark' : (appt.status.name() == 'CONFIRMADO' ? 'bg-success' : 'bg-danger')}"
+                          th:text="${appt.status}">
+                    </span>
+                </td>
+                <td>
+                    <a th:href="@{/appointments/{id}(id=${appt.id})}" class="btn btn-outline-secondary btn-sm" th:text="#{msg.appointment-list.viewDetail}">Detalle</a>
+                </td>
+            </tr>
+            <tr th:if="${appointmentsPage.empty}">
+                <td colspan="5" class="text-center text-muted" th:text="#{msg.appointment-list.empty}">No tienes citas.</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="d-flex justify-content-between align-items-center mt-3" th:if="${appointmentsPage.totalPages > 0}">
+            <div th:text="#{msg.pagination.info(${appointmentsPage.number + 1}, ${appointmentsPage.totalPages}, ${appointmentsPage.totalElements})}"></div>
+            <nav>
+                <ul class="pagination mb-0">
+                    <li class="page-item" th:classappend="${appointmentsPage.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/appointments(page=${appointmentsPage.number - 1})}">&laquo;</a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, appointmentsPage.totalPages - 1)}" th:classappend="${i == appointmentsPage.number} ? 'active'">
+                        <a class="page-link" th:href="@{/appointments(page=${i})}" th:text="${i + 1}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${appointmentsPage.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/appointments(page=${appointmentsPage.number + 1})}">&raquo;</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

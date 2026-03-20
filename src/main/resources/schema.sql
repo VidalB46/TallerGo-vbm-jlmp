@@ -1,5 +1,5 @@
 -- =======================================================
--- 0. LIMPIEZA DE ESTRUCTURA
+-- 0. LIMPIEZA DE ESTRUCTURA (Para que se apliquen los cambios)
 -- =======================================================
 SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS reviews;
@@ -20,10 +20,9 @@ DROP TABLE IF EXISTS workshops;
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- =======================================================
--- 1. TABLAS DE SEGURIDAD Y USUARIOS (Estilo Profesor)
+-- 1. TABLAS DE SEGURIDAD Y USUARIOS
 -- =======================================================
-
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE users (
    id BIGINT AUTO_INCREMENT PRIMARY KEY,
    email VARCHAR(100) NOT NULL UNIQUE,
    password_hash VARCHAR(500) NOT NULL,
@@ -36,8 +35,8 @@ CREATE TABLE IF NOT EXISTS users (
    must_change_password BOOLEAN NOT NULL DEFAULT FALSE
 );
 
-CREATE TABLE IF NOT EXISTS user_profiles (
-   user_id BIGINT NOT NULL,
+CREATE TABLE user_profiles (
+   user_id BIGINT PRIMARY KEY,
    first_name VARCHAR(100) NOT NULL,
    last_name VARCHAR(100) NOT NULL,
    phone_number VARCHAR(30) NULL,
@@ -46,45 +45,28 @@ CREATE TABLE IF NOT EXISTS user_profiles (
    locale VARCHAR(10) NULL,
    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-   CONSTRAINT pk_user_profiles PRIMARY KEY (user_id),
-   CONSTRAINT fk_user_profiles_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
+   CONSTRAINT fk_user_profiles_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS roles (
+CREATE TABLE roles (
    id BIGINT AUTO_INCREMENT PRIMARY KEY,
    name VARCHAR(50) NOT NULL UNIQUE,
    display_name VARCHAR(100) NOT NULL,
    description VARCHAR(255) NULL
 );
 
-CREATE TABLE IF NOT EXISTS user_roles (
+CREATE TABLE user_roles (
    user_id BIGINT NOT NULL,
    role_id BIGINT NOT NULL,
-   CONSTRAINT pk_user_roles PRIMARY KEY (user_id, role_id),
-   CONSTRAINT fk_user_roles_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
-   CONSTRAINT fk_user_roles_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS password_reset_tokens (
- id BIGINT AUTO_INCREMENT PRIMARY KEY,
- user_id BIGINT NOT NULL,
- token_hash VARCHAR(64) NOT NULL,
- expires_at DATETIME NOT NULL,
- used_at DATETIME NULL,
- created_at DATETIME NOT NULL,
- request_ip VARCHAR(45) NULL,
- user_agent VARCHAR(255) NULL,
- CONSTRAINT fk_prt_user FOREIGN KEY (user_id) REFERENCES users(id),
- INDEX idx_prt_user_id (user_id),
- INDEX idx_prt_token_hash (token_hash),
- INDEX idx_prt_expires_at (expires_at)
+   PRIMARY KEY (user_id, role_id),
+   CONSTRAINT fk_user_roles_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+   CONSTRAINT fk_user_roles_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
 );
 
 -- =======================================================
 -- 2. TABLAS ESPECÍFICAS DE TALLER GO
 -- =======================================================
-
-CREATE TABLE IF NOT EXISTS workshops (
+CREATE TABLE workshops (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nif VARCHAR(20) UNIQUE NOT NULL,
   name VARCHAR(150) NOT NULL,
@@ -94,13 +76,13 @@ CREATE TABLE IF NOT EXISTS workshops (
   schedule VARCHAR(100)
 );
 
-CREATE TABLE IF NOT EXISTS brands (
+CREATE TABLE brands (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL UNIQUE,
   country VARCHAR(100)
 );
 
-CREATE TABLE IF NOT EXISTS vehicles (
+CREATE TABLE vehicles (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   brand_id INT NOT NULL,
   user_id BIGINT NOT NULL,
@@ -110,16 +92,16 @@ CREATE TABLE IF NOT EXISTS vehicles (
   year INT,
   km INT,
   matricula VARCHAR(20) UNIQUE,
-  CONSTRAINT fk_vehicles_brand FOREIGN KEY (brand_id) REFERENCES brands(id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT fk_vehicles_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT fk_vehicles_brand FOREIGN KEY (brand_id) REFERENCES brands(id),
+  CONSTRAINT fk_vehicles_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE IF NOT EXISTS services (
+CREATE TABLE services (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(150) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS workshop_services (
+CREATE TABLE workshop_services (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   workshop_id INT NOT NULL,
   service_id INT NOT NULL,
@@ -130,7 +112,7 @@ CREATE TABLE IF NOT EXISTS workshop_services (
   CONSTRAINT fk_ws_service FOREIGN KEY (service_id) REFERENCES services(id)
 );
 
-CREATE TABLE IF NOT EXISTS appointments (
+CREATE TABLE appointments (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   user_id BIGINT NOT NULL,
   workshop_id INT NOT NULL,
@@ -139,13 +121,12 @@ CREATE TABLE IF NOT EXISTS appointments (
   end_date DATETIME,
   status VARCHAR(20) DEFAULT 'SOLICITADO',
   notes TEXT,
-  media_url VARCHAR(255),
   CONSTRAINT fk_appt_user FOREIGN KEY (user_id) REFERENCES users(id),
   CONSTRAINT fk_appt_workshop FOREIGN KEY (workshop_id) REFERENCES workshops(id),
   CONSTRAINT fk_appt_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(id)
 );
 
-CREATE TABLE IF NOT EXISTS repairs (
+CREATE TABLE repairs (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   appointment_id BIGINT UNIQUE NOT NULL,
   vehicle_id BIGINT NOT NULL,
@@ -156,15 +137,16 @@ CREATE TABLE IF NOT EXISTS repairs (
   CONSTRAINT fk_repair_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(id)
 );
 
-CREATE TABLE IF NOT EXISTS budgets (
+CREATE TABLE budgets (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  repair_id BIGINT NOT NULL,
+  repair_id BIGINT UNIQUE NOT NULL,
   total_gross DECIMAL(10, 2),
   total_net DECIMAL(10, 2),
+  accepted BOOLEAN DEFAULT FALSE,
   CONSTRAINT fk_budget_repair FOREIGN KEY (repair_id) REFERENCES repairs(id)
 );
 
-CREATE TABLE IF NOT EXISTS reviews (
+CREATE TABLE reviews (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   workshop_id INT NOT NULL,
   user_id BIGINT NOT NULL,
@@ -174,7 +156,7 @@ CREATE TABLE IF NOT EXISTS reviews (
   CONSTRAINT fk_review_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE IF NOT EXISTS mechanics (
+CREATE TABLE mechanics (
    id BIGINT AUTO_INCREMENT PRIMARY KEY,
    name VARCHAR(100) NOT NULL,
    specialty VARCHAR(50) NOT NULL,

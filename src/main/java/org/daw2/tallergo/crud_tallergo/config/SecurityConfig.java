@@ -40,11 +40,30 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(auth -> {
-                    logger.debug("Configurando autorización de solicitudes HTTP");
+                    logger.debug("Configurando autorización de solicitudes HTTP por Roles");
                     auth
-                            .requestMatchers("/", "/js/**", "/css/**", "/images/**", "/login", "/register", "/auth/**","/error", "/error/**").permitAll()
-                            .requestMatchers("/workshops**", "/services**").hasRole("ADMIN")
-                            .requestMatchers("/vehicles**", "/appointments**").hasAnyRole("CLIENT", "ADMIN")
+                            // 1. RUTAS PÚBLICAS
+                            .requestMatchers("/", "/js/**", "/css/**", "/images/**", "/login", "/register", "/auth/**", "/error", "/error/**").permitAll()
+
+                            // 2. SOLO ADMINISTRADOR: Gestión de personal, usuarios y configuración global
+                            .requestMatchers("/users/**").hasRole("ADMIN")
+                            .requestMatchers("/mechanics/**").hasRole("ADMIN")
+                            .requestMatchers("/workshops/new", "/workshops/edit/**", "/workshops/delete/**").hasRole("ADMIN")
+
+                            // 3. SOLO MECÁNICOS (O ADMIN): Gestión técnica de reparaciones y presupuestos
+                            .requestMatchers("/repairs/**").hasAnyRole("MECHANIC", "ADMIN")
+                            .requestMatchers("/budgets/**").hasAnyRole("MECHANIC", "ADMIN")
+
+                            // 4. CLIENTES Y STAFF: Gestión de vehículos y citas
+                            // El cliente crea citas, el mecánico las ve para trabajar
+                            .requestMatchers("/vehicles/**").hasAnyRole("CLIENT", "ADMIN")
+                            .requestMatchers("/appointments/**").hasAnyRole("CLIENT", "MECHANIC", "ADMIN")
+
+                            // 5. PERFIL Y REVIEWS: Cualquier usuario autenticado
+                            .requestMatchers("/profile/**").authenticated()
+                            .requestMatchers("/reviews/add/**").hasRole("CLIENT")
+
+                            // Cualquier otra petición requiere estar logueado
                             .anyRequest().authenticated();
                 })
                 .formLogin(form -> {

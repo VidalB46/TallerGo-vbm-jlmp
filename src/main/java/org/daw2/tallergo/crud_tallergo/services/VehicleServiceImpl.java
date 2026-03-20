@@ -15,6 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional
 public class VehicleServiceImpl implements VehicleService {
@@ -73,5 +76,13 @@ public class VehicleServiceImpl implements VehicleService {
         Vehicle vehicle = vehicleRepository.findByIdWithBrand(id)
                 .orElseThrow(() -> new ResourceNotFoundException("vehicle", "id", id));
         return VehicleMapper.toDetailDTO(vehicle);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<VehicleDTO> getVehiclesByUserId(Long userId) {
+        return vehicleRepository.findByUserId(userId).stream()
+                .map(VehicleMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }
