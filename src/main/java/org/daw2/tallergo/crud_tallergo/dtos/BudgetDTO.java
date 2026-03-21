@@ -12,4 +12,5 @@ public class BudgetDTO {
     private BigDecimal totalGross; // Importe Bruto
     private BigDecimal totalNet;   // Importe Neto (con impuestos/descuentos)
     private Long repairId;
+    private boolean accepted;
 }

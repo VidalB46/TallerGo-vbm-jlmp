@@ -10,15 +10,30 @@
         <h1><span th:text="#{msg.repair-detail.title}">Detalle de Reparación</span> #<span th:text="${repair.id}"></span></h1>
 
         <div th:if="${success}" class="alert alert-success mt-3" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger mt-3" th:text="${error}"></div>
+
+        <div sec:authorize="hasRole('CLIENT')">
+            <div th:if="${#strings.toString(repair.status) == 'STANDBY' and repair.budget != null and repair.budget.accepted}" class="alert alert-warning mt-3 shadow-sm">
+                <i class="bi bi-hourglass-split"></i> <strong>Presupuesto aceptado.</strong> Estamos organizando el taller para empezar con tu vehículo en breve.
+            </div>
+
+            <div th:if="${#strings.toString(repair.status) == 'ACTIVO'}" class="alert alert-info mt-3 shadow-sm border-info">
+                <i class="bi bi-tools"></i> <strong>¡Manos a la obra!</strong> Nuestros mecánicos ya están trabajando en tu vehículo. Te avisaremos en cuanto esté finalizado.
+            </div>
+
+            <div th:if="${#strings.toString(repair.status) == 'FINALIZADO'}" class="alert alert-success mt-3 shadow-sm">
+                <i class="bi bi-check-circle-fill"></i> <strong>¡Vehículo listo!</strong> La reparación ha concluido. Ya puedes pasar por el taller a recogerlo.
+            </div>
+        </div>
 
         <div class="mt-4">
             <h5>Datos Generales</h5>
             <dl class="row">
                 <dt class="col-sm-4">Estado</dt>
                 <dd class="col-sm-8">
-                    <span class="badge"
+                    <span class="badge px-3 py-2 text-white"
                           th:classappend="${#strings.toString(repair.status) == 'STANDBY' ? 'bg-secondary' : (#strings.toString(repair.status) == 'ACTIVO' ? 'bg-primary' : 'bg-success')}"
-                          th:text="${repair.status}">
+                          th:text="${repair.status.displayName}">
                     </span>
                 </dd>
 
@@ -37,12 +52,51 @@
             </div>
         </div>
 
-        <div class="mt-4 d-flex justify-content-between">
-            <a th:href="@{/repairs}" class="btn btn-secondary">Volver</a>
+        <hr class="mt-5 mb-4">
 
-            <div>
-                <a th:if="${repair.budget == null}" sec:authorize="hasRole('ADMIN')" th:href="@{/budgets/new(repairId=${repair.id})}" class="btn btn-warning">Generar Presupuesto</a>
-                <a th:if="${repair.budget != null}" th:href="@{/budgets/repair/{id}(id=${repair.id})}" class="btn btn-info text-white">Ver Presupuesto</a>
+        <div class="d-flex justify-content-between align-items-center">
+            <a th:href="@{/repairs}" class="btn btn-outline-secondary">Volver al listado</a>
+
+            <div class="d-flex gap-2">
+                <a th:if="${repair.budget == null}" sec:authorize="hasRole('ADMIN')"
+                   th:href="@{/budgets/new(repairId=${repair.id})}" class="btn btn-warning">
+                    Generar Presupuesto
+                </a>
+
+                <a th:if="${repair.budget != null}"
+                   th:href="@{/budgets/repair/{id}(id=${repair.id})}" class="btn btn-info text-white">
+                    Ver Presupuesto
+                </a>
+
+                <form sec:authorize="hasRole('ADMIN')"
+                      th:if="${#strings.toString(repair.status) == 'STANDBY' and repair.budget != null and repair.budget.accepted}"
+                      th:action="@{/repairs/{id}/start(id=${repair.id})}" method="post">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-tools"></i> Comenzar Trabajo
+                    </button>
+                </form>
+
+                <div sec:authorize="hasRole('ADMIN')"
+                     th:if="${#strings.toString(repair.status) == 'STANDBY' and repair.budget != null and !repair.budget.accepted}"
+                     class="text-muted small align-self-center fst-italic me-2">
+                    Esperando aprobación del cliente...
+                </div>
+
+                <form sec:authorize="hasRole('ADMIN')"
+                      th:if="${#strings.toString(repair.status) == 'ACTIVO'}"
+                      th:action="@{/repairs/{id}/finish(id=${repair.id})}" method="post">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle"></i> Finalizar Reparación
+                    </button>
+                </form>
+
+                <form sec:authorize="hasRole('ADMIN')"
+                      th:if="${#strings.toString(repair.status) == 'FINALIZADO' and repair.appointment != null and #strings.toString(repair.appointment.status) != 'RECOGIDO'}"
+                      th:action="@{/repairs/{id}/deliver(id=${repair.id})}" method="post">
+                    <button type="submit" class="btn btn-dark">
+                        <i class="bi bi-key"></i> Entregar Vehículo
+                    </button>
+                </form>
             </div>
         </div>
     </div>

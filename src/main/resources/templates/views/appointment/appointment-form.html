@@ -53,5 +53,20 @@
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const dateInput = document.getElementById('startDate');
+        if(dateInput) {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1); // Sumamos un día (mañana)
+            // Ajustamos a la zona horaria local
+            tomorrow.setMinutes(tomorrow.getMinutes() - tomorrow.getTimezoneOffset());
+            // Formateamos a YYYY-MM-DDThh:mm
+            dateInput.min = tomorrow.toISOString().slice(0, 16);
+        }
+    });
+</script>
+
 </body>
 </html>

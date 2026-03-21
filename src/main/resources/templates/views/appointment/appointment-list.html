@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/head :: head(#{msg.appointment-list.title})}"></head>
 
 <body class="d-flex flex-column h-100">
@@ -9,13 +9,13 @@
     <div class="list-card">
         <h1 th:text="#{msg.appointment-list.title}">Listado de Citas</h1>
 
-        <a th:href="@{/appointments/new}" class="btn btn-success" th:text="#{msg.appointment-list.add}">Pedir Cita</a>
+        <a sec:authorize="hasRole('CLIENT')" th:href="@{/appointments/new}" class="btn btn-success" th:text="#{msg.appointment-list.add}">Pedir Cita</a>
 
         <div th:if="${success}" class="alert alert-success mt-3" th:text="${success}"></div>
         <div th:if="${errorMessage}" class="alert alert-danger mt-3" th:text="${errorMessage}"></div>
 
-        <table class="table table-bordered table-striped mt-3">
-            <thead>
+        <table class="table table-bordered table-striped mt-3 align-middle">
+            <thead class="table-dark">
             <tr>
                 <th><span th:text="#{msg.appointment-list.date}">Fecha</span></th>
                 <th><span th:text="#{msg.appointment-list.vehicle}">Vehículo</span></th>
@@ -30,13 +30,29 @@
                 <td th:text="${appt.vehicleModel}"></td>
                 <td th:text="${appt.workshopName}"></td>
                 <td>
-                    <span class="badge"
-                          th:classappend="${appt.status.name() == 'SOLICITADO' ? 'bg-warning text-dark' : (appt.status.name() == 'CONFIRMADO' ? 'bg-success' : 'bg-danger')}"
-                          th:text="${appt.status}">
+                    <span class="badge px-2 py-2 text-white"
+                          th:classappend="${#strings.toString(appt.status) == 'SOLICITADO' ? 'bg-warning text-dark' :
+                                        (#strings.toString(appt.status) == 'CONFIRMADO' ? 'bg-success' :
+                                        (#strings.toString(appt.status) == 'CANCELADO' or #strings.toString(appt.status) == 'RECHAZADA' ? 'bg-danger' :
+                                        (#strings.toString(appt.status) == 'EN_TALLER' ? 'bg-secondary' :
+                                        (#strings.toString(appt.status) == 'EN_REPARACION' ? 'bg-info text-dark' :
+                                        (#strings.toString(appt.status) == 'LISTO_RECOGIDA' ? 'bg-success' : 'bg-dark')))))}"
+                          th:text="${appt.status.displayName}">
                     </span>
                 </td>
                 <td>
-                    <a th:href="@{/appointments/{id}(id=${appt.id})}" class="btn btn-outline-secondary btn-sm" th:text="#{msg.appointment-list.viewDetail}">Detalle</a>
+                    <div class="d-flex gap-2">
+                        <a th:href="@{/appointments/{id}(id=${appt.id})}" class="btn btn-outline-secondary btn-sm" th:text="#{msg.appointment-list.viewDetail}">Detalle</a>
+
+                        <form sec:authorize="hasRole('CLIENT')"
+                              th:if="${#strings.toString(appt.status) == 'SOLICITADO' or #strings.toString(appt.status) == 'CONFIRMADO'}"
+                              th:action="@{/appointments/{id}/cancel(id=${appt.id})}" method="post"
+                              onsubmit="return confirm('¿Estás seguro de que deseas cancelar esta cita?');">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </button>
+                        </form>
+                    </div>
                 </td>
             </tr>
             <tr th:if="${appointmentsPage.empty}">

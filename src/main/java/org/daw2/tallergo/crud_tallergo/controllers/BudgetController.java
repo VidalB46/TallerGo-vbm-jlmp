@@ -73,4 +73,17 @@ public class BudgetController {
         redirectAttributes.addFlashAttribute("success", "¡Has aceptado el presupuesto! El mecánico comenzará pronto.");
         return "redirect:/appointments";
     }
+    /**
+     * Acción para que el cliente RECHACE el presupuesto.
+     */
+    @PostMapping("/{id}/reject")
+    public String rejectBudget(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            budgetService.deleteBudget(id);
+            redirectAttributes.addFlashAttribute("success", "Presupuesto rechazado. El mecánico tendrá que generar una nueva propuesta.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al rechazar: " + e.getMessage());
+        }
+        return "redirect:/appointments";
+    }
 }

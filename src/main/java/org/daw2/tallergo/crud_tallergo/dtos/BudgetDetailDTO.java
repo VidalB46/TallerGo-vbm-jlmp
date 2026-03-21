@@ -17,8 +17,6 @@ public class BudgetDetailDTO {
     private BigDecimal totalGross; // Bruto
     private BigDecimal totalNet;   // Neto (con IVA/descuentos)
     private Boolean accepted;      // Estado de la aprobación
-
-    // Información simplificada de la reparación asociada
     private Long repairId;
     private String vehicleMatricula;
 }

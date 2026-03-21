@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.daw2.tallergo.crud_tallergo.dtos.RepairCreateDTO;
 import org.daw2.tallergo.crud_tallergo.dtos.RepairDTO;
 import org.daw2.tallergo.crud_tallergo.dtos.RepairDetailDTO;
-import org.daw2.tallergo.crud_tallergo.dtos.RepairUpdateDTO;
 import org.daw2.tallergo.crud_tallergo.services.RepairService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,9 +22,6 @@ public class RepairController {
 
     private final RepairService repairService;
 
-    /**
-     * Listado general de reparaciones para mecánicos y admin.
-     */
     @GetMapping
     public String listRepairs(@RequestParam(defaultValue = "0") int page, Model model) {
         Pageable pageable = PageRequest.of(page, 10);
@@ -35,9 +31,6 @@ public class RepairController {
         return "views/repair/repair-list";
     }
 
-    /**
-     * Ver el detalle técnico de una reparación.
-     */
     @GetMapping("/{id}")
     public String viewRepair(@PathVariable Long id, Model model) {
         RepairDetailDTO detail = repairService.getRepairById(id);
@@ -45,10 +38,6 @@ public class RepairController {
         return "views/repair/repair-detail";
     }
 
-    /**
-     * Iniciar una reparación desde una cita previa.
-     * El ID de la cita y del vehículo se pasan por parámetro.
-     */
     @GetMapping("/new")
     public String showCreateForm(@RequestParam Long appointmentId,
                                  @RequestParam Long vehicleId,
@@ -69,11 +58,44 @@ public class RepairController {
 
         try {
             repairService.createRepair(dto);
-            redirectAttributes.addFlashAttribute("success", "Reparación iniciada correctamente.");
+            redirectAttributes.addFlashAttribute("success", "Vehículo recepcionado. La reparación está en STANDBY.");
             return "redirect:/repairs";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/appointments";
         }
+    }
+
+    @PostMapping("/{id}/start")
+    public String startRepair(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            repairService.updateStatus(id, org.daw2.tallergo.crud_tallergo.enums.RepairStatus.ACTIVO);
+            redirectAttributes.addFlashAttribute("success", "¡Trabajo iniciado! El coche ya está en reparación.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error: " + e.getMessage());
+        }
+        return "redirect:/repairs/" + id;
+    }
+
+    @PostMapping("/{id}/finish")
+    public String finishRepair(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            repairService.updateStatus(id, org.daw2.tallergo.crud_tallergo.enums.RepairStatus.FINALIZADO);
+            redirectAttributes.addFlashAttribute("success", "¡Reparación finalizada! El vehículo está listo para recoger.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al finalizar: " + e.getMessage());
+        }
+        return "redirect:/repairs/" + id;
+    }
+
+    @PostMapping("/{id}/deliver")
+    public String deliverVehicle(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            repairService.deliverVehicle(id);
+            redirectAttributes.addFlashAttribute("success", "¡Vehículo entregado!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al entregar: " + e.getMessage());
+        }
+        return "redirect:/repairs/" + id;
     }
 }

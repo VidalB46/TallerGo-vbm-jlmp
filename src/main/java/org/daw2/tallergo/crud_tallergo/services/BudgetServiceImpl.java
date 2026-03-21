@@ -10,7 +10,6 @@ import org.daw2.tallergo.crud_tallergo.entities.Repair;
 import org.daw2.tallergo.crud_tallergo.mappers.BudgetMapper;
 import org.daw2.tallergo.crud_tallergo.repositories.BudgetRepository;
 import org.daw2.tallergo.crud_tallergo.repositories.RepairRepository;
-import org.daw2.tallergo.crud_tallergo.services.BudgetService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,6 +53,16 @@ public class BudgetServiceImpl implements BudgetService {
                 .orElseThrow(() -> new IllegalArgumentException("Presupuesto no encontrado"));
 
         BudgetMapper.updateEntity(dto, budget);
+        // Guardamos el presupuesto.
         return BudgetMapper.toDTO(budgetRepository.save(budget));
+    }
+
+    @Override
+    @Transactional
+    public void deleteBudget(Long id) {
+        if (!budgetRepository.existsById(id)) {
+            throw new IllegalArgumentException("Presupuesto no encontrado");
+        }
+        budgetRepository.deleteById(id);
     }
 }

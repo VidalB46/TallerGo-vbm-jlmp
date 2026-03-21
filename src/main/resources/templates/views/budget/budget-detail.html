@@ -10,6 +10,7 @@
         <h1 class="text-center mb-4"><i class="bi bi-receipt"></i> <span th:text="#{msg.budget-detail.title}">Tu Presupuesto</span></h1>
 
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-body">
@@ -39,12 +40,21 @@
         </div>
 
         <div class="d-flex justify-content-center gap-3">
-            <a th:href="@{/appointments}" class="btn btn-secondary">Volver a mis citas</a>
+            <a sec:authorize="hasRole('CLIENT')" th:href="@{/appointments}" class="btn btn-secondary">Volver a mis citas</a>
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/repairs/{id}(id=${budget.repairId})}" class="btn btn-secondary">Volver a la Reparación</a>
 
             <form th:if="${!budget.accepted}" sec:authorize="hasRole('CLIENT')"
                   th:action="@{/budgets/{id}/accept(id=${budget.id})}" method="post">
                 <button type="submit" class="btn btn-success">
                     <i class="bi bi-check-lg"></i> <span th:text="#{msg.budget.action.accept}">Aceptar Presupuesto</span>
+                </button>
+            </form>
+
+            <form th:if="${!budget.accepted}" sec:authorize="hasRole('CLIENT')"
+                  th:action="@{/budgets/{id}/reject(id=${budget.id})}" method="post"
+                  onsubmit="return confirm('¿Seguro que quieres rechazar el presupuesto? El taller tendrá que hacer uno nuevo.');">
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-x-lg"></i> Rechazar
                 </button>
             </form>
         </div>
