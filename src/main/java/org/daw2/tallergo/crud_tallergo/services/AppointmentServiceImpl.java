@@ -32,7 +32,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     @Transactional(readOnly = true)
     public Page<AppointmentDTO> getAllAppointments(Pageable pageable) {
-        return appointmentRepository.findAll(pageable).map(AppointmentMapper::toDTO);
+        return appointmentRepository.findAllWithDetails(pageable).map(AppointmentMapper::toDTO);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     @Transactional(readOnly = true)
     public Page<AppointmentDTO> getAppointmentsByUser(Long userId, Pageable pageable) {
-        return appointmentRepository.findByUserId(userId, pageable)
+        return appointmentRepository.findByUserIdWithDetails(userId, pageable)
                 .map(AppointmentMapper::toDTO);
     }
 
