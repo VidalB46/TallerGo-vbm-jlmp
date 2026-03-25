@@ -2,12 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
 
-<!--
-  Fragment: navbar
-  Uso: <nav th:replace="~{fragments/navbar :: navbar(activeLink='workshops')}"></nav>
-  Parámetros:
-    - activeLink : 'home' | 'workshops' | 'mechanics' | '' (ninguno marcado)
--->
 <nav th:fragment="navbar(activeLink)"
      class="tgo-nav" id="tgoNav"
      xmlns:th="http://www.thymeleaf.org"
@@ -21,187 +15,210 @@
     <!-- Links centrales -->
     <ul class="tgo-links">
         <li>
-            <a th:href="@{/}"
-               th:classappend="${activeLink == 'home'} ? ' tgo-active'">
-                Inicio
-            </a>
+            <a th:href="@{/}" th:classappend="${activeLink == 'home'} ? ' tgo-active'">Inicio</a>
         </li>
         <li>
-            <a th:href="@{/workshops}"
-               th:classappend="${activeLink == 'workshops'} ? ' tgo-active'">
-                Talleres
-            </a>
-        </li>
-        <li>
-            <a th:href="@{/mechanics}"
-               th:classappend="${activeLink == 'mechanics'} ? ' tgo-active'">
-                Mecánicos
-            </a>
+            <a th:href="@{/workshops}" th:classappend="${activeLink == 'workshops'} ? ' tgo-active'">Talleres</a>
         </li>
         <li sec:authorize="isAuthenticated()">
-            <a th:href="@{/appointments}">Mis Citas</a>
+            <a th:href="@{/appointments}" th:classappend="${activeLink == 'appointments'} ? ' tgo-active'">Mis Citas</a>
         </li>
         <li sec:authorize="isAuthenticated()">
-            <a th:href="@{/vehicles}">Mis Vehículos</a>
+            <a th:href="@{/vehicles}" th:classappend="${activeLink == 'vehicles'} ? ' tgo-active'">Mis Vehículos</a>
         </li>
         <li sec:authorize="hasRole('ADMIN')">
-            <a th:href="@{/users}" style="color:#f0a0a0;">Admin</a>
+            <a th:href="@{/brands}" th:classappend="${activeLink == 'brands'} ? ' tgo-active'">Marcas</a>
         </li>
+        <!-- Dropdown Personal -->
+        <li class="tgo-dd-wrap" id="ddPersonal">
+            <button class="tgo-dd-btn"
+                    th:classappend="${activeLink == 'mechanics' or activeLink == 'users'} ? ' tgo-active'">
+                Personal <i class="bi bi-chevron-down tgo-chev"></i>
+            </button>
+            <ul class="tgo-dd-menu">
+                <li>
+                    <a th:href="@{/mechanics}" th:classappend="${activeLink == 'mechanics'} ? ' tgo-dd-active'">
+                        <i class="bi bi-tools"></i> Mecánicos
+                    </a>
+                </li>
+                <li sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/users}" th:classappend="${activeLink == 'users'} ? ' tgo-dd-active'">
+                        <i class="bi bi-people"></i> Usuarios
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <!-- CTA no autenticado -->
         <li sec:authorize="!isAuthenticated()">
             <a th:href="@{/login}" class="tgo-cta">Iniciar sesión</a>
         </li>
     </ul>
 
-    <!-- Usuario autenticado -->
-    <div class="tgo-user" sec:authorize="isAuthenticated()">
-        <i class="bi bi-person-circle"></i>
-        <span class="tgo-username" sec:authentication="name"></span>
-        <form th:action="@{/logout}" method="post">
-            <button type="submit">Salir</button>
-        </form>
+    <!-- Avatar usuario autenticado -->
+    <div class="tgo-avatar-wrap" id="ddUser" sec:authorize="isAuthenticated()">
+        <button class="tgo-avatar-btn">
+            <i class="bi bi-person-circle"></i>
+            <span class="tgo-uname" sec:authentication="name"></span>
+            <i class="bi bi-chevron-down tgo-chev"></i>
+        </button>
+        <ul class="tgo-dd-menu tgo-dd-right">
+            <li class="tgo-dd-label" sec:authentication="name"></li>
+            <li class="tgo-dd-sep"></li>
+            <li>
+                <a th:href="@{/profile/edit}">
+                    <i class="bi bi-person-gear"></i> Mi Perfil
+                </a>
+            </li>
+            <li class="tgo-dd-sep"></li>
+            <li>
+                <form th:action="@{/logout}" method="post" style="margin:0;padding:0;">
+                    <button type="submit" class="tgo-dd-logout">
+                        <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                    </button>
+                </form>
+            </li>
+        </ul>
     </div>
 
 </nav>
 
-<!--
-  Bloque de CSS del navbar — incluirlo UNA VEZ en el <head> de cada página
-  Uso: <style th:replace="~{fragments/navbar :: navbarCss}"></style>
--->
+<!-- ─── navbarScripts (ya no se usa directamente, el JS va en scripts.html) ─── -->
+<th:block th:fragment="navbarScripts"></th:block>
+
+<!-- ─── navbarCss ─── -->
 <th:block th:fragment="navbarCss">
 <style>
-/* ════════════════════════════════════════
-   NAVBAR COMPARTIDO — TallerGO
-════════════════════════════════════════ */
+/* ════ NAVBAR ════ */
 .tgo-nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 500;
-    padding: 0.9rem 2.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    transition: background 0.4s ease, box-shadow 0.4s ease, padding 0.3s ease;
+    position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+    padding: 0.75rem 2.5rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    transition: background 0.35s, box-shadow 0.35s, padding 0.25s;
 }
 .tgo-nav.scrolled {
     background: rgba(10,10,10,0.93);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    box-shadow: 0 2px 24px rgba(0,0,0,0.4);
-    padding: 0.6rem 2.5rem;
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 2px 24px rgba(0,0,0,0.45);
+    padding: 0.5rem 2.5rem;
 }
 
 /* Logo */
 .tgo-brand {
-    font-size: 1.4rem;
-    font-weight: 900;
-    color: #fff;
-    text-decoration: none;
-    letter-spacing: 1.5px;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    flex-shrink: 0;
+    font-size: 1.4rem; font-weight: 900; color: #fff;
+    text-decoration: none; letter-spacing: 1.5px;
+    display: flex; align-items: center; gap: 0.25rem; flex-shrink: 0;
 }
 .tgo-brand-dot {
-    display: inline-block;
-    width: 9px; height: 9px;
-    border-radius: 50%;
-    background: #c0392b;
-    margin-bottom: 2px;
+    display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+    background: #c0392b; margin-bottom: 2px;
     animation: pulse-red 2.2s infinite;
 }
 @keyframes pulse-red {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.55); }
-    50%       { box-shadow: 0 0 0 6px rgba(192,57,43,0); }
+    0%,100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.55); }
+    50%      { box-shadow: 0 0 0 6px rgba(192,57,43,0); }
 }
 
 /* Links */
 .tgo-links {
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    list-style: none;
-    margin: 0; padding: 0;
+    display: flex; align-items: center; gap: 0.15rem;
+    list-style: none; margin: 0; padding: 0; flex: 1; justify-content: center;
 }
-.tgo-links a,
-.tgo-links button {
-    color: rgba(255,255,255,0.75);
-    text-decoration: none;
-    font-size: 0.85rem;
-    font-weight: 500;
-    padding: 0.45rem 0.9rem;
-    border-radius: 8px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    font-family: inherit;
-    transition: color 0.2s, background 0.2s;
-    white-space: nowrap;
+.tgo-links a {
+    color: rgba(255,255,255,0.72); text-decoration: none;
+    font-size: 0.84rem; font-weight: 500;
+    padding: 0.42rem 0.85rem; border-radius: 8px;
+    transition: color 0.2s, background 0.2s; white-space: nowrap;
+    display: block;
 }
-.tgo-links a:hover,
-.tgo-links button:hover {
-    color: #fff;
-    background: rgba(255,255,255,0.09);
-}
-.tgo-links a.tgo-active {
-    color: #fff;
-    font-weight: 700;
-    background: rgba(255,255,255,0.07);
-}
+.tgo-links a:hover { color: #fff; background: rgba(255,255,255,0.09); }
+.tgo-links a.tgo-active { color: #fff; font-weight: 700; background: rgba(255,255,255,0.07); }
 .tgo-links .tgo-cta {
-    background: #c0392b;
-    color: #fff !important;
-    font-weight: 600;
-    padding: 0.45rem 1.1rem;
-    border-radius: 8px;
+    background: #c0392b; color: #fff !important; font-weight: 600;
+    padding: 0.42rem 1.1rem; border-radius: 8px;
     box-shadow: 0 3px 12px rgba(192,57,43,0.35);
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
 }
 .tgo-links .tgo-cta:hover {
-    background: #a93226;
-    transform: translateY(-1px);
+    background: #a93226; transform: translateY(-1px);
     box-shadow: 0 6px 18px rgba(192,57,43,0.45);
 }
 
-/* Usuario */
-.tgo-user {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.83rem;
-    color: rgba(255,255,255,0.65);
-    flex-shrink: 0;
+/* ── Dropdown genérico ── */
+.tgo-dd-wrap, .tgo-avatar-wrap {
+    position: relative; list-style: none;
 }
-.tgo-username {
-    color: #fff;
-    font-weight: 600;
+.tgo-dd-btn, .tgo-avatar-btn {
+    display: flex; align-items: center; gap: 0.35rem;
+    color: rgba(255,255,255,0.72); font-size: 0.84rem; font-weight: 500;
+    padding: 0.42rem 0.85rem; border-radius: 8px;
+    border: none; background: transparent; cursor: pointer;
+    font-family: inherit; white-space: nowrap;
+    transition: color 0.2s, background 0.2s;
 }
-.tgo-user form button {
-    background: rgba(192,57,43,0.15);
-    border: 1px solid rgba(192,57,43,0.3);
-    color: #e88080;
-    font-size: 0.8rem;
-    padding: 0.3rem 0.8rem;
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: inherit;
-    font-weight: 600;
-    transition: background 0.2s, color 0.2s;
+.tgo-dd-btn:hover, .tgo-avatar-btn:hover,
+.tgo-dd-wrap.open .tgo-dd-btn,
+.tgo-avatar-wrap.open .tgo-avatar-btn {
+    color: #fff; background: rgba(255,255,255,0.09);
 }
-.tgo-user form button:hover {
-    background: #c0392b;
-    color: #fff;
-    border-color: #c0392b;
+.tgo-dd-btn.tgo-active { color: #fff; font-weight: 700; background: rgba(255,255,255,0.07); }
+.tgo-chev { font-size: 0.6rem; transition: transform 0.22s; }
+.tgo-dd-wrap.open .tgo-chev,
+.tgo-avatar-wrap.open .tgo-chev { transform: rotate(180deg); }
+
+/* Menú desplegable */
+.tgo-dd-menu {
+    display: none; position: absolute;
+    top: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+    background: rgba(14,14,14,0.98);
+    backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+    list-style: none; padding: 0.4rem; min-width: 180px; z-index: 700;
+}
+.tgo-dd-right { left: auto; right: 0; transform: none; }
+.tgo-dd-wrap.open .tgo-dd-menu,
+.tgo-avatar-wrap.open .tgo-dd-menu { display: block; }
+
+.tgo-dd-menu li a,
+.tgo-dd-menu li .tgo-dd-logout {
+    display: flex; align-items: center; gap: 0.55rem;
+    padding: 0.58rem 1rem; border-radius: 9px;
+    font-size: 0.83rem; font-weight: 500;
+    color: rgba(255,255,255,0.72); text-decoration: none;
+    transition: background 0.15s, color 0.15s; white-space: nowrap;
+    background: transparent; width: 100%; border: none; cursor: pointer; font-family: inherit;
+}
+.tgo-dd-menu li a:hover,
+.tgo-dd-menu li .tgo-dd-logout:hover { background: rgba(255,255,255,0.07); color: #fff; }
+.tgo-dd-menu li a.tgo-dd-active { color: #fff; font-weight: 700; background: rgba(192,57,43,0.16); }
+.tgo-dd-menu li a i, .tgo-dd-menu li .tgo-dd-logout i { color: #c0392b; font-size: 0.88rem; flex-shrink: 0; }
+.tgo-dd-logout { color: #e88080 !important; }
+.tgo-dd-logout i { color: #e88080 !important; }
+.tgo-dd-logout:hover { background: rgba(192,57,43,0.15) !important; color: #fff !important; }
+
+.tgo-dd-label {
+    padding: 0.5rem 1rem 0.25rem;
+    font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.35);
+    text-transform: uppercase; letter-spacing: 0.8px; pointer-events: none;
+}
+.tgo-dd-sep {
+    height: 1px; background: rgba(255,255,255,0.07);
+    margin: 0.3rem 0.5rem; pointer-events: none;
 }
 
+/* Avatar */
+.tgo-avatar-btn .bi-person-circle { font-size: 1.2rem; color: rgba(255,255,255,0.8); }
+.tgo-uname { color: #fff; font-weight: 600; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+
 /* Responsive */
-@media (max-width: 900px) {
-    .tgo-nav { padding: 0.75rem 1.2rem; }
-    .tgo-nav.scrolled { padding: 0.5rem 1.2rem; }
-    .tgo-links a, .tgo-links button { font-size: 0.78rem; padding: 0.38rem 0.6rem; }
-    .tgo-username { display: none; }
+@media (max-width: 960px) {
+    .tgo-nav { padding: 0.65rem 1.2rem; }
+    .tgo-nav.scrolled { padding: 0.45rem 1.2rem; }
+    .tgo-links a, .tgo-dd-btn { font-size: 0.76rem; padding: 0.35rem 0.55rem; }
+    .tgo-uname { display: none; }
 }
 @media (max-width: 640px) {
-    .tgo-links li:not(:has(.tgo-cta)):not(:last-child) { display: none; }
+    .tgo-links > li:not(:has(.tgo-cta)):not(.tgo-dd-wrap) { display: none; }
 }
 </style>
 </th:block>

@@ -1,57 +1,131 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('Taller Go - Mi Perfil')}"></head>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>TallerGO — Mi Perfil</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+    <th:block th:replace="~{fragments/navbar :: navbarCss}"></th:block>
+<style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body.profile-form-page { font-family: 'Inter', sans-serif; background: #f4f4f6; color: #1a1a1a; display: block !important; height: auto !important; min-height: 100vh; }
+    body.profile-form-page > nav, body.profile-form-page > div, body.profile-form-page > main, body.profile-form-page > footer { flex: unset !important; width: 100%; }
+    .tgo-nav { background: rgba(10,10,10,0.93) !important; backdrop-filter: blur(18px); box-shadow: 0 2px 24px rgba(0,0,0,0.4); }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .page-hero { margin-top: 0; padding: calc(4rem + 64px) 2.5rem 5rem; background: linear-gradient(135deg, #111 0%, #1a1a1a 100%); position: relative; overflow: hidden; }
+    .page-hero::before { content: ''; position: absolute; top: -60px; right: -60px; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(192,57,43,0.15) 0%, transparent 70%); pointer-events: none; }
+    .page-hero-inner { max-width: 720px; margin: 0 auto; position: relative; z-index: 1; }
+    .page-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #c0392b; margin-bottom: 0.4rem; }
+    .page-hero h1 { font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+    .page-hero p { color: rgba(255,255,255,0.45); font-size: 0.88rem; margin-top: 0.3rem; }
+    .form-main { max-width: 720px; margin: 2.5rem auto; padding: 0 2rem 5rem; animation: fadeUp 0.5s ease both; }
+    .form-card { background: #fff; border: 1.5px solid rgba(0,0,0,0.07); border-radius: 20px; box-shadow: 0 4px 24px rgba(0,0,0,0.07); overflow: hidden; }
+    .form-card-header { padding: 1.5rem 2.2rem; border-bottom: 1.5px solid #f0f0f0; display: flex; align-items: center; gap: 0.7rem; }
+    .form-card-header i { font-size: 1.3rem; color: #c0392b; }
+    .form-card-header h2 { font-size: 1rem; font-weight: 700; color: #111; }
+    .form-card-body { padding: 2rem 2.2rem; }
+    .form-group { margin-bottom: 1.4rem; }
+    .form-group label { display: block; font-size: 0.78rem; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 0.5rem; }
+    .form-control { width: 100%; padding: 0.7rem 1rem; border: 1.5px solid #e0e0e0; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 0.92rem; color: #111; background: #f9f9fb; transition: border-color 0.2s, box-shadow 0.2s; outline: none; }
+    .form-control:focus { border-color: #c0392b; box-shadow: 0 0 0 3px rgba(192,57,43,0.1); background: #fff; }
+    .form-control:read-only { background: #f0f0f2; color: #888; cursor: not-allowed; }
+    textarea.form-control { resize: vertical; min-height: 100px; }
+    .form-hint { font-size: 0.75rem; color: #aaa; margin-top: 0.35rem; }
+    .avatar-preview-wrap { display: flex; align-items: center; gap: 1.2rem; margin-bottom: 1rem; }
+    .avatar-preview { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 3px solid #e0e0e0; background: #f0f0f2; }
+    .avatar-placeholder { width: 72px; height: 72px; border-radius: 50%; background: #f0f0f2; border: 3px solid #e0e0e0; display: flex; align-items: center; justify-content: center; color: #ccc; font-size: 2rem; flex-shrink: 0; }
+    .form-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .alert-success { background: rgba(39,174,96,0.07); border: 1.5px solid rgba(39,174,96,0.2); border-radius: 12px; padding: 0.9rem 1.2rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: #1e8449; display: flex; align-items: center; gap: 0.5rem; }
+    .alert-error { background: rgba(192,57,43,0.07); border: 1.5px solid rgba(192,57,43,0.2); border-radius: 12px; padding: 0.9rem 1.2rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: #c0392b; display: flex; align-items: center; gap: 0.5rem; }
+    .form-card-footer { padding: 1.2rem 2.2rem; border-top: 1.5px solid #f0f0f0; display: flex; gap: 0.75rem; }
+    .btn-submit { display: inline-flex; align-items: center; gap: 0.4rem; background: #c0392b; color: #fff; font-size: 0.85rem; font-weight: 700; padding: 0.65rem 1.5rem; border-radius: 10px; border: none; cursor: pointer; transition: background 0.2s; }
+    .btn-submit:hover { background: #a93226; }
+    @media (max-width: 640px) { .page-hero { padding: calc(3rem + 64px) 1.2rem 3.5rem; } .form-main { padding: 0 1rem 3rem; } .form-card-body { padding: 1.5rem; } .form-cols { grid-template-columns: 1fr; } .form-card-footer { padding: 1rem 1.5rem; } }
+</style>
+</head>
+<body class="profile-form-page">
 
-<body class="d-flex flex-column h-100">
-<header th:replace="~{fragments/header :: header}"></header>
+<nav th:replace="~{fragments/navbar :: navbar('profile')}"></nav>
 
-<main class="form-page">
+<div class="page-hero">
+    <div class="page-hero-inner">
+        <div class="page-label">Cuenta</div>
+        <h1>Mi Perfil</h1>
+        <p>Actualiza tu información personal y foto de perfil.</p>
+    </div>
+</div>
+
+<main class="form-main">
     <div class="form-card">
-        <div class="text-center mb-4">
-            <img th:src="${userProfileForm.profileImage} ?: @{/images/avatar.svg}"
-                 class="rounded-circle border" style="width: 120px; height: 120px; object-fit: cover;">
-            <h2 class="mt-2" th:text="#{msg.userProfile.title} ?: 'Mi Perfil'"></h2>
+        <div class="form-card-header">
+            <i class="bi bi-person-circle"></i>
+            <h2>Datos personales</h2>
         </div>
 
-        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+        <form th:action="@{/profile/update}" th:object="${userProfileForm}"
+              method="post" enctype="multipart/form-data">
+            <input type="hidden" th:field="*{userId}"/>
 
-        <form th:action="@{/profile/update}" th:object="${userProfileForm}" method="post" enctype="multipart/form-data">
-            <input type="hidden" th:field="*{userId}" />
+            <div class="form-card-body">
 
-            <div class="mb-3">
-                <label class="form-label">Email (No editable)</label>
-                <input type="text" th:field="*{email}" class="form-control" readonly>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label" th:text="#{msg.userProfile.field.firstName} ?: 'Nombre'"></label>
-                    <input type="text" th:field="*{firstName}" class="form-control" required>
+                <div class="alert-success" th:if="${successMessage}">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span th:text="${successMessage}"></span>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label" th:text="#{msg.userProfile.field.lastName} ?: 'Apellidos'"></label>
-                    <input type="text" th:field="*{lastName}" class="form-control" required>
+                <div class="alert-error" th:if="${errorMessage}">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span th:text="${errorMessage}"></span>
                 </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="form-control" th:field="*{email}" readonly/>
+                </div>
+
+                <div class="form-cols">
+                    <div class="form-group">
+                        <label for="firstName">Nombre</label>
+                        <input type="text" id="firstName" class="form-control" th:field="*{firstName}" placeholder="Tu nombre"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Apellidos</label>
+                        <input type="text" id="lastName" class="form-control" th:field="*{lastName}" placeholder="Tus apellidos"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Foto de perfil</label>
+                    <div class="avatar-preview-wrap">
+                        <img th:if="${userProfileForm.profileImage != null and !userProfileForm.profileImage.isEmpty()}"
+                             th:src="${userProfileForm.profileImage}" class="avatar-preview" alt="Avatar"/>
+                        <div class="avatar-placeholder" th:unless="${userProfileForm.profileImage != null and !userProfileForm.profileImage.isEmpty()}">
+                            <i class="bi bi-person"></i>
+                        </div>
+                        <input type="file" name="profileImageFile" class="form-control" accept="image/*" style="flex:1;"/>
+                    </div>
+                    <div class="form-hint">Sube una imagen JPG/PNG (máx. 2 MB). Si no seleccionas, se conserva la actual.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="bio">Biografía</label>
+                    <textarea id="bio" class="form-control" th:field="*{bio}" placeholder="Cuéntanos algo sobre ti…"></textarea>
+                </div>
+
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Cambiar Foto de Perfil</label>
-                <input type="file" name="profileImageFile" class="form-control" accept="image/*">
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Biografía</label>
-                <textarea th:field="*{bio}" class="form-control" rows="3"></textarea>
-            </div>
-
-            <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                <a th:href="@{/}" class="btn btn-outline-secondary">Cancelar</a>
+            <div class="form-card-footer">
+                <button type="submit" class="btn-submit">
+                    <i class="bi bi-check2-circle"></i> Guardar cambios
+                </button>
             </div>
         </form>
     </div>
 </main>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
 </body>
 </html>

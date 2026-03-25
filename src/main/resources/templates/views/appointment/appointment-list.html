@@ -1,70 +1,331 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head(#{msg.appointment-list.title})}"></head>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>TallerGO — Mis Citas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+    <th:block th:replace="~{fragments/navbar :: navbarCss}"></th:block>
+<style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-<body class="d-flex flex-column h-100">
-<header th:replace="~{fragments/header :: header}"></header>
+    body.appointments-page {
+        font-family: 'Inter', sans-serif;
+        background: #f4f4f6;
+        color: #1a1a1a;
+        display: block !important;
+        height: auto !important;
+        min-height: 100vh;
+    }
+    body.appointments-page > nav,
+    body.appointments-page > div,
+    body.appointments-page > main,
+    body.appointments-page > footer { flex: unset !important; width: 100%; }
 
-<main class="list-page">
-    <div class="list-card">
-        <h1 th:text="#{msg.appointment-list.title}">Listado de Citas</h1>
+    /* ── NAVBAR: fondo oscuro siempre visible ── */
+    .tgo-nav {
+        background: rgba(10,10,10,0.93) !important;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        box-shadow: 0 2px 24px rgba(0,0,0,0.4);
+    }
 
-        <a th:href="@{/appointments/new}" class="btn btn-success" th:text="#{msg.appointment-list.add}">Pedir Cita</a>
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(24px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
 
-        <div th:if="${success}" class="alert alert-success mt-3" th:text="${success}"></div>
-        <div th:if="${errorMessage}" class="alert alert-danger mt-3" th:text="${errorMessage}"></div>
+    /* ── PAGE HERO ── */
+    .page-hero {
+        margin-top: 0;
+        padding: calc(4rem + 64px) 2.5rem 5rem;
+        background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
+        position: relative; overflow: hidden;
+    }
+    .page-hero::before {
+        content: '';
+        position: absolute; top: -60px; right: -60px;
+        width: 300px; height: 300px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(192,57,43,0.15) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .page-hero-inner {
+        max-width: 1200px; margin: 0 auto;
+        display: flex; align-items: center; justify-content: space-between;
+        flex-wrap: wrap; gap: 1.5rem;
+        position: relative; z-index: 1;
+    }
+    .page-hero-text .page-label {
+        font-size: 0.7rem; font-weight: 700; letter-spacing: 2.5px;
+        text-transform: uppercase; color: #c0392b; margin-bottom: 0.4rem;
+    }
+    .page-hero-text h1 {
+        font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: -0.5px;
+    }
+    .page-hero-text p {
+        color: rgba(255,255,255,0.45); font-size: 0.88rem; margin-top: 0.3rem;
+    }
+    .btn-new {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        background: linear-gradient(135deg, #c0392b, #96281b);
+        color: #fff; font-weight: 700; font-size: 0.88rem;
+        padding: 0.7rem 1.4rem; border-radius: 10px; text-decoration: none;
+        box-shadow: 0 4px 16px rgba(192,57,43,0.35);
+        transition: transform 0.2s, box-shadow 0.2s;
+        white-space: nowrap;
+    }
+    .btn-new:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(192,57,43,0.45); color: #fff; }
 
-        <table class="table table-bordered table-striped mt-3">
-            <thead>
-            <tr>
-                <th><span th:text="#{msg.appointment-list.date}">Fecha</span></th>
-                <th><span th:text="#{msg.appointment-list.vehicle}">Vehículo</span></th>
-                <th><span th:text="#{msg.appointment-list.workshop}">Taller</span></th>
-                <th><span th:text="#{msg.appointment-list.status}">Estado</span></th>
-                <th th:text="#{msg.appointment-list.actions}">Acciones</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="appt : ${appointmentsPage.content}">
-                <td th:text="${#temporals.format(appt.startDate, 'dd/MM/yyyy HH:mm')}"></td>
-                <td th:text="${appt.vehicleModel}"></td>
-                <td th:text="${appt.workshopName}"></td>
-                <td>
-                    <span class="badge"
-                          th:classappend="${appt.status.name() == 'SOLICITADO' ? 'bg-warning text-dark' : (appt.status.name() == 'CONFIRMADO' ? 'bg-success' : 'bg-danger')}"
-                          th:text="${appt.status}">
+    /* ── CONTENT ── */
+    .appt-main {
+        max-width: 1200px; margin: 2.5rem auto;
+        padding: 0 2rem 5rem;
+        animation: fadeUp 0.5s ease both;
+    }
+
+    /* Alert flash */
+    .alert-success-custom {
+        background: rgba(39,174,96,0.08); border: 1px solid rgba(39,174,96,0.25);
+        color: #1e8449; border-radius: 10px; padding: 0.75rem 1rem;
+        font-size: 0.88rem; display: flex; align-items: center; gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .alert-error-custom {
+        background: rgba(192,57,43,0.08); border: 1px solid rgba(192,57,43,0.25);
+        color: #c0392b; border-radius: 10px; padding: 0.75rem 1rem;
+        font-size: 0.88rem; display: flex; align-items: center; gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* ── GRID DE CARDS ── */
+    .appt-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.4rem;
+    }
+    @media (max-width: 1100px) { .appt-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px)  { .appt-grid { grid-template-columns: 1fr; } }
+
+    .appt-card {
+        background: #fff;
+        border: 1.5px solid rgba(0,0,0,0.07);
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        overflow: hidden;
+        display: flex; flex-direction: column;
+        transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+        animation: fadeUp 0.5s ease both;
+    }
+    .appt-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+    }
+
+    /* Franja de color según estado */
+    .appt-card-stripe {
+        height: 5px; width: 100%;
+    }
+    .stripe-solicitado { background: linear-gradient(90deg, #f39c12, #f1c40f); }
+    .stripe-confirmado { background: linear-gradient(90deg, #27ae60, #2ecc71); }
+    .stripe-cancelado  { background: linear-gradient(90deg, #c0392b, #e74c3c); }
+
+    .appt-card-body { padding: 1.3rem; flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .appt-card-header {
+        display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem;
+        margin-bottom: 0.3rem;
+    }
+    .appt-date {
+        font-size: 1rem; font-weight: 800; color: #111;
+    }
+    .appt-time {
+        font-size: 0.78rem; color: #888; font-weight: 500; margin-top: 0.1rem;
+    }
+
+    /* Badges de estado */
+    .status-badge {
+        display: inline-flex; align-items: center; gap: 0.3rem;
+        font-size: 0.68rem; font-weight: 700; letter-spacing: 0.8px;
+        text-transform: uppercase; padding: 0.25rem 0.7rem; border-radius: 20px;
+        white-space: nowrap; flex-shrink: 0;
+    }
+    .status-solicitado {
+        background: rgba(243,156,18,0.12); color: #d68910;
+        border: 1px solid rgba(243,156,18,0.3);
+    }
+    .status-confirmado {
+        background: rgba(39,174,96,0.12); color: #1e8449;
+        border: 1px solid rgba(39,174,96,0.3);
+    }
+    .status-cancelado {
+        background: rgba(192,57,43,0.10); color: #c0392b;
+        border: 1px solid rgba(192,57,43,0.25);
+    }
+
+    .appt-info-row {
+        display: flex; align-items: center; gap: 0.45rem;
+        font-size: 0.82rem; color: #555;
+    }
+    .appt-info-row i { color: #c0392b; font-size: 0.8rem; flex-shrink: 0; }
+    .appt-info-row span { font-weight: 500; color: #333; }
+
+    .appt-card-footer {
+        display: flex; gap: 0.5rem; margin-top: auto; padding-top: 1rem;
+        border-top: 1px solid #f0f0f0;
+    }
+    .btn-detail-appt {
+        flex: 1; display: inline-flex; align-items: center; justify-content: center;
+        gap: 0.4rem; background: #111; color: #fff;
+        font-size: 0.8rem; font-weight: 600; padding: 0.55rem 0.8rem;
+        border-radius: 8px; text-decoration: none;
+        transition: background 0.2s, transform 0.15s;
+    }
+    .btn-detail-appt:hover { background: #333; color: #fff; transform: translateY(-1px); }
+
+    /* Empty state */
+    .appt-empty {
+        grid-column: 1/-1; text-align: center; padding: 5rem 2rem; color: #bbb;
+    }
+    .appt-empty i { font-size: 3.5rem; display: block; margin-bottom: 1rem; color: #ddd; }
+    .appt-empty p { font-size: 1rem; font-weight: 500; color: #aaa; }
+    .appt-empty a { margin-top: 1.2rem; display: inline-flex; }
+
+    /* ── PAGINACIÓN ── */
+    .pagination-bar {
+        display: flex; justify-content: center; align-items: center;
+        gap: 0.4rem; margin-top: 2.5rem; flex-wrap: wrap;
+    }
+    .page-btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 36px; height: 36px; border-radius: 8px;
+        font-size: 0.85rem; font-weight: 600; text-decoration: none;
+        border: 1.5px solid #e0e0e0; color: #555; background: #fff;
+        transition: all 0.2s;
+    }
+    .page-btn:hover { border-color: #c0392b; color: #c0392b; }
+    .page-btn.active { background: #c0392b; border-color: #c0392b; color: #fff; }
+    .page-btn.disabled { opacity: 0.35; pointer-events: none; }
+
+    @media (max-width: 640px) {
+        .page-hero { padding: calc(3rem + 64px) 1.2rem 3.5rem; }
+        .page-hero-inner { flex-direction: column; align-items: flex-start; }
+        .appt-main { padding: 0 1rem 3rem; }
+    }
+</style>
+</head>
+
+<body class="appointments-page">
+
+<!-- ── NAVBAR ── -->
+<nav th:replace="~{fragments/navbar :: navbar('appointments')}"></nav>
+
+<!-- ── PAGE HERO ── -->
+<div class="page-hero">
+    <div class="page-hero-inner">
+        <div class="page-hero-text">
+            <div class="page-label">Agenda</div>
+            <h1>Mis Citas</h1>
+            <p>Consulta y gestiona todas tus reservas en el taller.</p>
+        </div>
+        <a th:href="@{/appointments/new}" class="btn-new">
+            <i class="bi bi-plus-lg"></i> Nueva Cita
+        </a>
+    </div>
+</div>
+
+<!-- ── CONTENT ── -->
+<main class="appt-main">
+
+    <div th:if="${success}" class="alert-success-custom">
+        <i class="bi bi-check-circle-fill"></i>
+        <span th:text="${success}"></span>
+    </div>
+    <div th:if="${errorMessage}" class="alert-error-custom">
+        <i class="bi bi-exclamation-circle-fill"></i>
+        <span th:text="${errorMessage}"></span>
+    </div>
+
+    <div class="appt-grid">
+
+        <!-- Empty state -->
+        <div class="appt-empty" th:if="${appointmentsPage.empty}">
+            <i class="bi bi-calendar-x"></i>
+            <p>No tienes ninguna cita registrada todavía.</p>
+            <a th:href="@{/appointments/new}" class="btn-new">
+                <i class="bi bi-plus-lg"></i> Pedir una cita
+            </a>
+        </div>
+
+        <!-- Cards -->
+        <div class="appt-card"
+             th:each="appt, stat : ${appointmentsPage.content}"
+             th:style="'animation-delay:' + ${stat.index * 70} + 'ms'">
+
+            <!-- Franja de color según estado -->
+            <div class="appt-card-stripe"
+                 th:classappend="${appt.status.name() == 'SOLICITADO'} ? 'stripe-solicitado' : (${appt.status.name() == 'CONFIRMADO'} ? 'stripe-confirmado' : 'stripe-cancelado')">
+            </div>
+
+            <div class="appt-card-body">
+                <div class="appt-card-header">
+                    <div>
+                        <div class="appt-date"
+                             th:text="${#temporals.format(appt.startDate, 'dd MMM yyyy')}">01 Ene 2025</div>
+                        <div class="appt-time">
+                            <i class="bi bi-clock"></i>
+                            <span th:text="${#temporals.format(appt.startDate, 'HH:mm')} + ' h'"></span>
+                        </div>
+                    </div>
+                    <!-- Badge de estado -->
+                    <span class="status-badge"
+                          th:classappend="${appt.status.name() == 'SOLICITADO'} ? 'status-solicitado' : (${appt.status.name() == 'CONFIRMADO'} ? 'status-confirmado' : 'status-cancelado')">
+                        <i th:class="${appt.status.name() == 'SOLICITADO'} ? 'bi bi-hourglass-split' : (${appt.status.name() == 'CONFIRMADO'} ? 'bi bi-check-circle-fill' : 'bi bi-x-circle-fill')"></i>
+                        <span th:text="${appt.status}"></span>
                     </span>
-                </td>
-                <td>
-                    <a th:href="@{/appointments/{id}(id=${appt.id})}" class="btn btn-outline-secondary btn-sm" th:text="#{msg.appointment-list.viewDetail}">Detalle</a>
-                </td>
-            </tr>
-            <tr th:if="${appointmentsPage.empty}">
-                <td colspan="5" class="text-center text-muted" th:text="#{msg.appointment-list.empty}">No tienes citas.</td>
-            </tr>
-            </tbody>
-        </table>
+                </div>
 
-        <div class="d-flex justify-content-between align-items-center mt-3" th:if="${appointmentsPage.totalPages > 0}">
-            <div th:text="#{msg.pagination.info(${appointmentsPage.number + 1}, ${appointmentsPage.totalPages}, ${appointmentsPage.totalElements})}"></div>
-            <nav>
-                <ul class="pagination mb-0">
-                    <li class="page-item" th:classappend="${appointmentsPage.first} ? 'disabled'">
-                        <a class="page-link" th:href="@{/appointments(page=${appointmentsPage.number - 1})}">&laquo;</a>
-                    </li>
-                    <li class="page-item" th:each="i : ${#numbers.sequence(0, appointmentsPage.totalPages - 1)}" th:classappend="${i == appointmentsPage.number} ? 'active'">
-                        <a class="page-link" th:href="@{/appointments(page=${i})}" th:text="${i + 1}"></a>
-                    </li>
-                    <li class="page-item" th:classappend="${appointmentsPage.last} ? 'disabled'">
-                        <a class="page-link" th:href="@{/appointments(page=${appointmentsPage.number + 1})}">&raquo;</a>
-                    </li>
-                </ul>
-            </nav>
+                <div class="appt-info-row">
+                    <i class="bi bi-car-front-fill"></i>
+                    <span th:text="${appt.vehicleModel}">Vehículo</span>
+                </div>
+                <div class="appt-info-row">
+                    <i class="bi bi-building"></i>
+                    <span th:text="${appt.workshopName}">Taller</span>
+                </div>
+
+                <div class="appt-card-footer">
+                    <a th:href="@{/appointments/{id}(id=${appt.id})}" class="btn-detail-appt">
+                        <i class="bi bi-eye"></i> Ver detalle
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Paginación -->
+    <nav class="pagination-bar" th:if="${appointmentsPage.totalPages > 1}">
+        <a class="page-btn" th:classappend="${appointmentsPage.first} ? 'disabled'"
+           th:href="@{/appointments(page=${appointmentsPage.number - 1})}">
+            <i class="bi bi-chevron-left"></i>
+        </a>
+        <a class="page-btn"
+           th:each="i : ${#numbers.sequence(0, appointmentsPage.totalPages - 1)}"
+           th:classappend="${i == appointmentsPage.number} ? 'active'"
+           th:href="@{/appointments(page=${i})}"
+           th:text="${i + 1}"></a>
+        <a class="page-btn" th:classappend="${appointmentsPage.last} ? 'disabled'"
+           th:href="@{/appointments(page=${appointmentsPage.number + 1})}">
+            <i class="bi bi-chevron-right"></i>
+        </a>
+    </nav>
+
 </main>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 <div th:replace="~{fragments/scripts :: scripts}"></div>
+
 </body>
 </html>

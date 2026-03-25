@@ -17,8 +17,8 @@
 
     body.mechanics-page {
         font-family: 'Inter', sans-serif;
-        background: #0d0d0d;
-        color: #eee;
+        background: #f4f4f6;
+        color: #1a1a1a;
         display: block !important;
         height: auto !important;
         min-height: 100vh;
@@ -28,10 +28,20 @@
     body.mechanics-page > div,
     body.mechanics-page > footer { flex: unset !important; width: 100%; }
 
+    /* ── NAVBAR: fondo oscuro siempre visible ── */
+    .tgo-nav {
+        background: rgba(10,10,10,0.93) !important;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        box-shadow: 0 2px 24px rgba(0,0,0,0.4);
+    }
+
     /* ── HERO BANNER ── */
     .mec-hero {
-        margin-top: 64px;
-        height: 260px;
+        margin-top: 0;
+        padding-top: calc(5rem + 64px);
+        padding-bottom: 4rem;
+        height: auto;
         background: linear-gradient(135deg, #0a0a0a 0%, #1a0808 50%, #0a0a0a 100%);
         display: flex; align-items: center; justify-content: center;
         text-align: center;
@@ -66,15 +76,15 @@
         display: flex; align-items: center; justify-content: space-between;
         margin-bottom: 2rem; gap: 1rem; flex-wrap: wrap;
     }
-    .mec-toolbar h2 { font-size: 1rem; font-weight: 600; color: rgba(255,255,255,0.5); }
-    .mec-toolbar h2 span { color: #fff; font-weight: 800; }
+    .mec-toolbar h2 { font-size: 1rem; font-weight: 600; color: #888; }
+    .mec-toolbar h2 span { color: #111; font-weight: 800; }
     .btn-new-mec {
         display: inline-flex; align-items: center; gap: 0.4rem;
         background: #c0392b; color: #fff; font-size: 0.82rem; font-weight: 700;
         text-decoration: none; padding: 0.55rem 1.2rem; border-radius: 8px;
         transition: background 0.2s, transform 0.15s;
     }
-    .btn-new-mec:hover { background: #a93226; transform: translateY(-1px); }
+    .btn-new-mec:hover { background: #a93226; transform: translateY(-1px); color: #fff; }
 
     /* ── CARDS GRID ── */
     .mec-grid {
@@ -87,21 +97,22 @@
     @media (max-width: 520px)  { .mec-grid { grid-template-columns: 1fr; } }
 
     .mec-card {
-        background: #141414; border: 1px solid #1e1e1e; border-radius: 14px;
+        background: #fff; border: 1.5px solid rgba(0,0,0,0.07); border-radius: 14px;
         overflow: hidden; display: flex; flex-direction: column;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
         transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
     }
     .mec-card:hover {
         transform: translateY(-5px);
         border-color: rgba(192,57,43,0.35);
-        box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+        box-shadow: 0 16px 40px rgba(0,0,0,0.12);
     }
 
     /* Avatar icono */
     .mec-card-avatar {
         height: 140px; display: flex; align-items: center; justify-content: center;
         position: relative; background: linear-gradient(135deg, #1a1a1a 0%, #111 100%);
-        border-bottom: 1px solid #1e1e1e;
+        border-bottom: 1px solid rgba(0,0,0,0.08);
     }
     .mec-card-avatar .avatar-icon {
         font-size: 5rem; color: rgba(255,255,255,0.15);
@@ -121,33 +132,33 @@
 
     /* Card body */
     .mec-card-body { padding: 1rem 1.1rem 1.1rem; flex: 1; display: flex; flex-direction: column; }
-    .mec-card-name { font-size: 0.97rem; font-weight: 700; color: #fff; margin-bottom: 0.3rem; }
+    .mec-card-name { font-size: 0.97rem; font-weight: 700; color: #111; margin-bottom: 0.3rem; }
     .mec-card-workshop {
         display: flex; align-items: center; gap: 0.35rem;
-        color: rgba(255,255,255,0.35); font-size: 0.75rem; margin-bottom: 0.9rem;
+        color: #aaa; font-size: 0.75rem; margin-bottom: 0.9rem;
     }
     .mec-card-workshop i { color: #c0392b; font-size: 0.7rem; }
     .mec-card-actions { display: flex; gap: 0.5rem; margin-top: auto; }
     .btn-detail-mec, .btn-delete-mec {
         flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem;
         font-size: 0.75rem; font-weight: 600; padding: 0.45rem 0.6rem; border-radius: 7px;
-        text-decoration: none; cursor: pointer; border: none; transition: all 0.2s;
+        text-decoration: none; cursor: pointer; border: none; transition: all 0.2s; font-family: inherit;
     }
     .btn-detail-mec {
-        background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.7);
-        border: 1px solid rgba(255,255,255,0.1);
+        background: #111; color: #fff;
+        border: 1px solid #111;
     }
-    .btn-detail-mec:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .btn-detail-mec:hover { background: #333; color: #fff; }
     .btn-delete-mec {
-        background: rgba(192,57,43,0.1); color: #e74c3c;
-        border: 1px solid rgba(192,57,43,0.2);
+        background: rgba(192,57,43,0.08); color: #c0392b;
+        border: 1.5px solid rgba(192,57,43,0.2);
     }
-    .btn-delete-mec:hover { background: rgba(192,57,43,0.2); color: #fff; }
+    .btn-delete-mec:hover { background: #c0392b; color: #fff; border-color: #c0392b; }
 
     /* ── EMPTY ── */
     .mec-empty {
         grid-column: 1/-1; text-align: center; padding: 4rem 2rem;
-        color: rgba(255,255,255,0.3);
+        color: #aaa;
     }
     .mec-empty i { font-size: 3rem; display: block; margin-bottom: 0.8rem; opacity: 0.3; }
 
@@ -161,8 +172,8 @@
         width: 36px; height: 36px; border-radius: 8px;
         font-size: 0.8rem; font-weight: 600; text-decoration: none; transition: all 0.2s;
     }
-    .mec-pagination a { color: rgba(255,255,255,0.5); background: #161616; border: 1px solid #222; }
-    .mec-pagination a:hover { color: #fff; background: #1e1e1e; border-color: #333; }
+    .mec-pagination a { color: #555; background: #fff; border: 1.5px solid #e0e0e0; }
+    .mec-pagination a:hover { color: #c0392b; border-color: #c0392b; }
     .mec-pagination span.current { background: #c0392b; color: #fff; border: 1px solid #c0392b; }
 
     @keyframes fadeUp {
@@ -247,9 +258,6 @@
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 
 <script>
-    const nav = document.getElementById('tgoNav');
-    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 50));
-
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -266,5 +274,6 @@
     });
 </script>
 
+<div th:replace="~{fragments/scripts :: scripts}"></div>
 </body>
 </html>
