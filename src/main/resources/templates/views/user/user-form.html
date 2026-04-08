@@ -1,75 +1,131 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/head :: head(#{msg.user-form.title})}"></head>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${user.id != null} ? 'TallerGO — Editar Usuario' : 'TallerGO — Nuevo Usuario'">TallerGO — Usuario</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+    <th:block th:replace="~{fragments/navbar :: navbarCss}"></th:block>
+<style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body.user-form-page { font-family: 'Inter', sans-serif; background: #f4f4f6; color: #1a1a1a; display: block !important; height: auto !important; min-height: 100vh; }
+    body.user-form-page > nav, body.user-form-page > div, body.user-form-page > main, body.user-form-page > footer { flex: unset !important; width: 100%; }
+    .tgo-nav { background: rgba(10,10,10,0.93) !important; backdrop-filter: blur(18px); box-shadow: 0 2px 24px rgba(0,0,0,0.4); }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .page-hero { margin-top: 0; padding: calc(4rem + 64px) 2.5rem 5rem; background: linear-gradient(135deg, #111 0%, #1a1a1a 100%); position: relative; overflow: hidden; }
+    .page-hero::before { content: ''; position: absolute; top: -60px; right: -60px; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(192,57,43,0.15) 0%, transparent 70%); pointer-events: none; }
+    .page-hero-inner { max-width: 780px; margin: 0 auto; position: relative; z-index: 1; }
+    .page-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #c0392b; margin-bottom: 0.4rem; }
+    .page-hero h1 { font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+    .page-hero p { color: rgba(255,255,255,0.45); font-size: 0.88rem; margin-top: 0.3rem; }
+    .form-main { max-width: 780px; margin: 2.5rem auto; padding: 0 2rem 5rem; animation: fadeUp 0.5s ease both; }
+    .form-card { background: #fff; border: 1.5px solid rgba(0,0,0,0.07); border-radius: 20px; box-shadow: 0 4px 24px rgba(0,0,0,0.07); overflow: hidden; }
+    .form-card-header { padding: 1.5rem 2.2rem; border-bottom: 1.5px solid #f0f0f0; display: flex; align-items: center; gap: 0.7rem; }
+    .form-card-header i { font-size: 1.3rem; color: #c0392b; }
+    .form-card-header h2 { font-size: 1rem; font-weight: 700; color: #111; }
+    .form-card-body { padding: 2rem 2.2rem; }
+    .form-group { margin-bottom: 1.4rem; }
+    .form-group label { display: block; font-size: 0.78rem; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 0.5rem; }
+    .form-control { width: 100%; padding: 0.7rem 1rem; border: 1.5px solid #e0e0e0; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 0.92rem; color: #111; background: #f9f9fb; transition: border-color 0.2s, box-shadow 0.2s; outline: none; }
+    .form-control:focus { border-color: #c0392b; box-shadow: 0 0 0 3px rgba(192,57,43,0.1); background: #fff; }
+    .form-control:read-only { background: #f0f0f2; color: #888; cursor: not-allowed; }
+    select.form-control { height: auto; }
+    select[multiple].form-control { min-height: 120px; }
+    .form-hint { font-size: 0.75rem; color: #aaa; margin-top: 0.35rem; }
+    .checks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .check-item { display: flex; align-items: center; gap: 0.6rem; background: #f8f8fa; border: 1.5px solid #ebebee; border-radius: 10px; padding: 0.75rem 1rem; cursor: pointer; transition: border-color 0.2s; }
+    .check-item:hover { border-color: #c0392b; }
+    .check-item input[type=checkbox] { width: 16px; height: 16px; accent-color: #c0392b; cursor: pointer; }
+    .check-item span { font-size: 0.83rem; font-weight: 600; color: #333; }
+    .alert-error { background: rgba(192,57,43,0.07); border: 1.5px solid rgba(192,57,43,0.2); border-radius: 12px; padding: 0.9rem 1.2rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: #c0392b; display: flex; align-items: center; gap: 0.5rem; }
+    .form-card-footer { padding: 1.2rem 2.2rem; border-top: 1.5px solid #f0f0f0; display: flex; gap: 0.75rem; }
+    .btn-cancel { display: inline-flex; align-items: center; gap: 0.4rem; background: #f4f4f6; color: #555; font-size: 0.85rem; font-weight: 600; padding: 0.65rem 1.3rem; border-radius: 10px; text-decoration: none; border: 1.5px solid #e0e0e0; transition: background 0.2s; }
+    .btn-cancel:hover { background: #eaeaea; color: #111; }
+    .btn-submit { display: inline-flex; align-items: center; gap: 0.4rem; background: #c0392b; color: #fff; font-size: 0.85rem; font-weight: 700; padding: 0.65rem 1.5rem; border-radius: 10px; border: none; cursor: pointer; transition: background 0.2s; }
+    .btn-submit:hover { background: #a93226; }
+    @media (max-width: 640px) { .page-hero { padding: calc(3rem + 64px) 1.2rem 3.5rem; } .form-main { padding: 0 1rem 3rem; } .form-card-body { padding: 1.5rem; } .checks-grid { grid-template-columns: 1fr; } .form-card-footer { padding: 1rem 1.5rem; } }
+</style>
+</head>
+<body class="user-form-page">
 
-<body class="d-flex flex-column h-100">
+<nav th:replace="~{fragments/navbar :: navbar('users')}"></nav>
 
-<header th:replace="~{fragments/header :: header}"></header>
+<div class="page-hero">
+    <div class="page-hero-inner">
+        <div class="page-label">Administración</div>
+        <h1 th:text="${user.id != null} ? 'Editar Usuario' : 'Nuevo Usuario'">Usuario</h1>
+        <p th:text="${user.id != null} ? 'Modifica los datos de la cuenta.' : 'Crea una nueva cuenta de usuario.'"></p>
+    </div>
+</div>
 
-<main class="form-page">
+<main class="form-main">
     <div class="form-card">
+        <div class="form-card-header">
+            <i class="bi bi-person-gear"></i>
+            <h2 th:text="${user.id != null} ? 'Editar cuenta' : 'Crear cuenta'">Cuenta</h2>
+        </div>
 
-        <h1 th:text="${user.id == null} ? #{msg.user-form.add} : #{msg.user-form.edit}">
-            Formulario Usuario
-        </h1>
+        <form th:action="${user.id != null} ? @{/users/update} : @{/users/insert}"
+              th:object="${user}" method="post">
+            <input type="hidden" th:field="*{id}"/>
 
-        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+            <div class="form-card-body">
 
-        <form th:action="${user.id == null} ? @{/users/insert} : @{/users/update}"
-              th:object="${user}" method="post" class="mt-3">
+                <div class="alert-error" th:if="${errorMessage}">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span th:text="${errorMessage}"></span>
+                </div>
 
-            <input type="hidden" th:field="*{id}" />
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" class="form-control" th:field="*{email}" placeholder="usuario@ejemplo.com" required/>
+                </div>
 
-            <div class="mb-3">
-                <label for="email" class="form-label" th:text="#{msg.user-form.email}">Email</label>
-                <input type="email" id="email" th:field="*{email}" class="form-control"
-                       th:placeholder="#{msg.user-form.email.placeholder}" required />
-                <div th:if="${#fields.hasErrors('email')}" class="text-danger" th:errors="*{email}"></div>
-            </div>
+                <div class="form-group">
+                    <label for="roleIds">Roles</label>
+                    <select id="roleIds" name="roleIds" class="form-control" multiple>
+                        <option th:each="role : ${allRoles}"
+                                th:value="${role.id}"
+                                th:text="${role.displayName}"
+                                th:selected="${user.roleIds != null and user.roleIds.contains(role.id)}">
+                        </option>
+                    </select>
+                    <div class="form-hint">Mantén Ctrl (o Cmd) para seleccionar varios roles.</div>
+                </div>
 
-            <div class="mb-3">
-                <label for="roles" class="form-label" th:text="#{msg.user-form.roles}">Roles</label>
-                <select id="roles" class="form-select" multiple th:field="*{roleIds}" required>
-                    <option th:each="role : ${allRoles}"
-                            th:value="${role.id}"
-                            th:text="${role.displayName}"></option>
-                </select>
-                <small class="text-muted" th:text="#{msg.user-form.roles.help}">Presiona Ctrl para multiselección</small>
-            </div>
-
-            <hr class="my-4">
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-check mb-2">
-                        <input th:field="*{active}" id="active" class="form-check-input" type="checkbox" />
-                        <label for="active" class="form-check-label" th:text="#{msg.user-form.active}">Activo</label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input th:field="*{accountNonLocked}" id="accountNonLocked" class="form-check-input" type="checkbox" />
-                        <label for="accountNonLocked" class="form-check-label" th:text="#{msg.user-form.accountNonLocked}">No bloqueado</label>
+                <div class="form-group">
+                    <label>Opciones de cuenta</label>
+                    <div class="checks-grid">
+                        <label class="check-item">
+                            <input type="checkbox" th:field="*{active}"/>
+                            <span><i class="bi bi-toggle-on"></i> Activo</span>
+                        </label>
+                        <label class="check-item">
+                            <input type="checkbox" th:field="*{accountNonLocked}"/>
+                            <span><i class="bi bi-unlock"></i> Cuenta desbloqueada</span>
+                        </label>
+                        <label class="check-item">
+                            <input type="checkbox" th:field="*{emailVerified}"/>
+                            <span><i class="bi bi-envelope-check"></i> Email verificado</span>
+                        </label>
+                        <label class="check-item">
+                            <input type="checkbox" th:field="*{mustChangePassword}"/>
+                            <span><i class="bi bi-key"></i> Debe cambiar contraseña</span>
+                        </label>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-check mb-2">
-                        <input th:field="*{emailVerified}" id="emailVerified" class="form-check-input" type="checkbox" />
-                        <label for="emailVerified" class="form-check-label" th:text="#{msg.user-form.emailVerified}">Email verificado</label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input th:field="*{mustChangePassword}" id="mustChangePassword" class="form-check-input" type="checkbox" />
-                        <label for="mustChangePassword" class="form-check-label" th:text="#{msg.user-form.mustChangePassword}">Cambio pass obligatorio</label>
-                    </div>
-                </div>
+
             </div>
 
-            <div class="d-flex gap-2 mt-4">
-                <button type="submit" class="btn btn-primary"
-                        th:text="${user.id == null} ? #{msg.user-form.create} : #{msg.user-form.update}">
-                    Guardar
+            <div class="form-card-footer">
+                <a th:href="@{/users}" class="btn-cancel"><i class="bi bi-x"></i> Cancelar</a>
+                <button type="submit" class="btn-submit">
+                    <i class="bi bi-check2"></i>
+                    <span th:text="${user.id != null} ? 'Guardar cambios' : 'Crear usuario'">Guardar</span>
                 </button>
-                <a th:href="@{/users}" class="btn btn-secondary" th:text="#{msg.user-form.returnback}">
-                    Volver
-                </a>
             </div>
         </form>
     </div>
@@ -77,6 +133,5 @@
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 <div th:replace="~{fragments/scripts :: scripts}"></div>
-
 </body>
 </html>

@@ -37,6 +37,19 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
      * @param id Identificador de la cita.
      * @return Optional con la cita y sus entidades relacionadas cargadas.
      */
+    /**
+     * Recupera todas las citas de un usuario con sus relaciones cargadas (evita LazyInitializationException).
+     */
+    @Query("SELECT a FROM Appointment a JOIN FETCH a.user JOIN FETCH a.workshop JOIN FETCH a.vehicle WHERE a.user.id = :userId")
+    Page<Appointment> findByUserIdWithDetails(@Param("userId") Long userId, Pageable pageable);
+
+    /**
+     * Recupera todas las citas con sus relaciones cargadas (para admins).
+     */
+    @Query(value = "SELECT a FROM Appointment a JOIN FETCH a.user JOIN FETCH a.workshop JOIN FETCH a.vehicle",
+           countQuery = "SELECT COUNT(a) FROM Appointment a")
+    Page<Appointment> findAllWithDetails(Pageable pageable);
+
     @Query("SELECT a FROM Appointment a " +
             "JOIN FETCH a.user " +
             "JOIN FETCH a.workshop " +

@@ -2,6 +2,7 @@ package org.daw2.tallergo.crud_tallergo.services;
 
 import org.daw2.tallergo.crud_tallergo.dtos.MechanicCreateDTO;
 import org.daw2.tallergo.crud_tallergo.dtos.MechanicDTO;
+import org.daw2.tallergo.crud_tallergo.dtos.MechanicDetailDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -29,4 +30,11 @@ public interface MechanicService {
      * @param id Identificador único del mecánico.
      */
     void delete(Long id);
+
+    /**
+     * Recupera el detalle completo de un mecánico incluyendo su taller.
+     * @param id Identificador único del mecánico.
+     * @return DTO de detalle del mecánico.
+     */
+    MechanicDetailDTO getDetail(Long id);
 }

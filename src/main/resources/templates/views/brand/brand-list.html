@@ -1,71 +1,155 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head(#{msg.brand-list.title})}"></head>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>TallerGO — Marcas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+    <th:block th:replace="~{fragments/navbar :: navbarCss}"></th:block>
+<style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body.brand-list-page { font-family: 'Inter', sans-serif; background: #f4f4f6; color: #1a1a1a; display: block !important; height: auto !important; min-height: 100vh; }
+    body.brand-list-page > nav, body.brand-list-page > div, body.brand-list-page > main, body.brand-list-page > footer { flex: unset !important; width: 100%; }
+    .tgo-nav { background: rgba(10,10,10,0.93) !important; backdrop-filter: blur(18px); box-shadow: 0 2px 24px rgba(0,0,0,0.4); }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .page-hero { margin-top: 0; padding: calc(4rem + 64px) 2.5rem 5rem; background: linear-gradient(135deg, #111 0%, #1a1a1a 100%); position: relative; overflow: hidden; }
+    .page-hero::before { content: ''; position: absolute; top: -60px; right: -60px; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(192,57,43,0.15) 0%, transparent 70%); pointer-events: none; }
+    .page-hero-inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    .page-hero-text .page-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #c0392b; margin-bottom: 0.4rem; }
+    .page-hero-text h1 { font-size: 2.2rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+    .page-hero-text p { color: rgba(255,255,255,0.45); font-size: 0.88rem; margin-top: 0.3rem; }
+    .btn-hero-new { display: inline-flex; align-items: center; gap: 0.5rem; background: #c0392b; color: #fff; font-weight: 700; font-size: 0.85rem; padding: 0.7rem 1.5rem; border-radius: 50px; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
+    .btn-hero-new:hover { background: #a93226; }
+    .list-main { max-width: 1100px; margin: 2.5rem auto; padding: 0 2rem 5rem; animation: fadeUp 0.5s ease both; }
+    .alert-error { background: rgba(192,57,43,0.07); border: 1.5px solid rgba(192,57,43,0.2); border-radius: 12px; padding: 0.9rem 1.2rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: #c0392b; display: flex; align-items: center; gap: 0.5rem; }
+    .table-card { background: #fff; border: 1.5px solid rgba(0,0,0,0.07); border-radius: 20px; box-shadow: 0 4px 24px rgba(0,0,0,0.07); overflow: hidden; }
+    .table-header { padding: 1.2rem 1.8rem; border-bottom: 1.5px solid #f0f0f0; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .table-header-title { font-size: 0.9rem; font-weight: 700; color: #111; display: flex; align-items: center; gap: 0.5rem; }
+    .table-header-title i { color: #c0392b; }
+    .table-count { font-size: 0.75rem; color: #aaa; font-weight: 500; }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table thead tr { background: #111; }
+    .data-table thead th { padding: 0.85rem 1.2rem; text-align: left; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.6); white-space: nowrap; }
+    .data-table tbody tr { border-bottom: 1px solid #f4f4f6; transition: background 0.15s; }
+    .data-table tbody tr:last-child { border-bottom: none; }
+    .data-table tbody tr:hover { background: #fafafa; }
+    .data-table td { padding: 1rem 1.2rem; font-size: 0.88rem; color: #333; vertical-align: middle; }
+    .td-id { font-size: 0.78rem; font-weight: 700; color: #aaa; font-family: monospace; }
+    .td-name { font-weight: 700; color: #111; }
+    .td-country { display: inline-flex; align-items: center; gap: 0.3rem; }
+    .td-country i { color: #c0392b; font-size: 0.8rem; }
+    .actions-cell { display: flex; gap: 0.5rem; align-items: center; }
+    .btn-view { display: inline-flex; align-items: center; gap: 0.3rem; background: rgba(52,152,219,0.08); color: #2980b9; border: 1.5px solid rgba(52,152,219,0.2); font-size: 0.75rem; font-weight: 600; padding: 0.35rem 0.8rem; border-radius: 8px; text-decoration: none; transition: all 0.2s; white-space: nowrap; }
+    .btn-view:hover { background: #2980b9; color: #fff; border-color: #2980b9; }
+    .btn-edit { display: inline-flex; align-items: center; gap: 0.3rem; background: rgba(243,156,18,0.08); color: #e67e22; border: 1.5px solid rgba(243,156,18,0.2); font-size: 0.75rem; font-weight: 600; padding: 0.35rem 0.8rem; border-radius: 8px; text-decoration: none; transition: all 0.2s; white-space: nowrap; }
+    .btn-edit:hover { background: #e67e22; color: #fff; border-color: #e67e22; }
+    .btn-delete { display: inline-flex; align-items: center; gap: 0.3rem; background: rgba(192,57,43,0.07); color: #c0392b; border: 1.5px solid rgba(192,57,43,0.2); font-size: 0.75rem; font-weight: 600; padding: 0.35rem 0.8rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+    .btn-delete:hover { background: #c0392b; color: #fff; border-color: #c0392b; }
+    .form-delete { display: flex; margin: 0; padding: 0; }
+    .empty-state { text-align: center; padding: 4rem 2rem; color: #ccc; }
+    .empty-state i { font-size: 3rem; display: block; margin-bottom: 0.8rem; }
+    .empty-state p { font-size: 0.9rem; }
+    .pagination-wrap { padding: 1.2rem 1.8rem; border-top: 1.5px solid #f0f0f0; display: flex; align-items: center; justify-content: center; gap: 0.4rem; flex-wrap: wrap; }
+    .page-btn { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; text-decoration: none; border: 1.5px solid #e0e0e0; color: #555; background: #fff; transition: all 0.2s; }
+    .page-btn:hover { border-color: #c0392b; color: #c0392b; }
+    .page-btn.active { background: #c0392b; border-color: #c0392b; color: #fff; }
+    .page-btn.disabled { opacity: 0.35; pointer-events: none; }
+    @media (max-width: 700px) { .page-hero { padding: calc(3rem + 64px) 1.2rem 3.5rem; } .list-main { padding: 0 1rem 3rem; } .data-table thead th:nth-child(1), .data-table td:nth-child(1) { display: none; } }
+</style>
+</head>
+<body class="brand-list-page">
 
-<body class="d-flex flex-column h-100">
-<header th:replace="~{fragments/header :: header}"></header>
+<nav th:replace="~{fragments/navbar :: navbar('brands')}"></nav>
 
-<main class="list-page">
-    <div class="list-card">
-        <h1 th:text="#{msg.brand-list.title}">Listado de Marcas</h1>
+<div class="page-hero">
+    <div class="page-hero-inner">
+        <div class="page-hero-text">
+            <div class="page-label">Gestión</div>
+            <h1>Marcas</h1>
+            <p>Administra las marcas de vehículos del taller.</p>
+        </div>
+        <a th:href="@{/brands/new}" class="btn-hero-new" sec:authorize="hasRole('ADMIN')">
+            <i class="bi bi-plus-lg"></i> Nueva Marca
+        </a>
+    </div>
+</div>
 
-        <a th:href="@{/brands/new}" class="btn btn-success" th:text="#{msg.brand-list.add}">Nueva Marca</a>
+<main class="list-main">
+    <div class="alert-error" th:if="${errorMessage}">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span th:text="${errorMessage}"></span>
+    </div>
 
-        <div th:if="${errorMessage}" class="alert alert-danger mt-3" th:text="${errorMessage}"></div>
+    <div class="table-card">
+        <div class="table-header">
+            <div class="table-header-title"><i class="bi bi-shield-check"></i> Listado de marcas</div>
+            <div class="table-count" th:text="${page.totalElements} + ' marcas'"></div>
+        </div>
 
-        <table class="table table-bordered table-striped mt-3">
+        <div th:if="${page.isEmpty()}">
+            <div class="empty-state">
+                <i class="bi bi-shield-x"></i>
+                <p>No hay marcas registradas todavía.</p>
+            </div>
+        </div>
+
+        <table class="data-table" th:if="${!page.isEmpty()}">
             <thead>
-            <tr>
-                <th th:with="order=${page.sort.getOrderFor('id')}, dir=${order != null ? order.direction.name().toLowerCase() : 'asc'}, nextDir=${dir == 'asc' ? 'desc' : 'asc'}">
-                    <a class="text-decoration-none text-dark" th:href="@{/brands(page=${page.number}, sort=${'id,' + nextDir})}">
-                        <span th:text="#{msg.brand-list.id}">ID</span>
-                        <span th:if="${order != null}" th:text="${dir == 'asc' ? '▲' : '▼'}"></span>
-                    </a>
-                </th>
-                <th th:with="order=${page.sort.getOrderFor('name')}, dir=${order != null ? order.direction.name().toLowerCase() : 'asc'}, nextDir=${dir == 'asc' ? 'desc' : 'asc'}">
-                    <a class="text-decoration-none text-dark" th:href="@{/brands(page=${page.number}, sort=${'name,' + nextDir})}">
-                        <span th:text="#{msg.brand-list.name}">Nombre</span>
-                        <span th:if="${order != null}" th:text="${dir == 'asc' ? '▲' : '▼'}"></span>
-                    </a>
-                </th>
-                <th>
-                    <span th:text="#{msg.brand-list.country}">País</span>
-                </th>
-                <th th:text="#{msg.brand-list.actions}">Acciones</th>
-            </tr>
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>País</th>
+                    <th>Acciones</th>
+                </tr>
             </thead>
             <tbody>
-            <tr th:each="brand : ${page.content}">
-                <td th:text="${brand.id}"></td>
-                <td th:text="${brand.name}"></td>
-                <td th:text="${brand.country}"></td>
-                <td>
-                    <a th:href="@{/brands/detail(id=${brand.id})}" class="btn btn-outline-secondary btn-sm" th:text="#{msg.brand-list.viewDetail}">Detalle</a>
-                    <a th:href="@{/brands/edit(id=${brand.id})}" class="btn btn-primary btn-sm" th:text="#{msg.brand-list.edit}">Editar</a>
-                    <form th:action="@{/brands/delete}" method="post" class="d-inline">
-                        <input type="hidden" name="id" th:value="${brand.id}"/>
-                        <button type="submit" class="btn btn-danger btn-sm" th:onclick="return confirm([[#{msg.brand-list.confirm}]]);" th:text="#{msg.brand-list.delete}">Borrar</button>
-                    </form>
-                </td>
-            </tr>
+                <tr th:each="brand : ${page.content}">
+                    <td class="td-id" th:text="${brand.id}"></td>
+                    <td class="td-name" th:text="${brand.name}"></td>
+                    <td>
+                        <span class="td-country">
+                            <i class="bi bi-geo-alt"></i>
+                            <span th:text="${brand.country} ?: '—'"></span>
+                        </span>
+                    </td>
+                    <td>
+                        <div class="actions-cell">
+                            <a th:href="@{/brands/detail(id=${brand.id})}" class="btn-view">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+                            <a th:href="@{/brands/edit(id=${brand.id})}" class="btn-edit" sec:authorize="hasRole('ADMIN')">
+                                <i class="bi bi-pencil"></i> Editar
+                            </a>
+                            <form th:action="@{/brands/delete}" method="post" class="form-delete"
+                                  onsubmit="return confirm('¿Eliminar esta marca?');"
+                                  sec:authorize="hasRole('ADMIN')">
+                                <input type="hidden" name="id" th:value="${brand.id}"/>
+                                <button type="submit" class="btn-delete">
+                                    <i class="bi bi-trash"></i> Borrar
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
             </tbody>
         </table>
 
-        <div class="d-flex justify-content-between align-items-center mt-3" th:if="${page.totalPages > 0}">
-            <div th:text="#{msg.pagination.info(${page.number + 1}, ${page.totalPages}, ${page.totalElements})}"></div>
-            <nav>
-                <ul class="pagination mb-0">
-                    <li class="page-item" th:classappend="${page.first} ? 'disabled'">
-                        <a class="page-link" th:href="@{/brands(page=${page.number - 1}, sort=${sortParam})}">&laquo;</a>
-                    </li>
-                    <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}" th:classappend="${i == page.number} ? 'active'">
-                        <a class="page-link" th:href="@{/brands(page=${i}, sort=${sortParam})}" th:text="${i + 1}"></a>
-                    </li>
-                    <li class="page-item" th:classappend="${page.last} ? 'disabled'">
-                        <a class="page-link" th:href="@{/brands(page=${page.number + 1}, sort=${sortParam})}">&raquo;</a>
-                    </li>
-                </ul>
-            </nav>
+        <div class="pagination-wrap" th:if="${page.totalPages > 1}">
+            <a th:href="@{/brands(page=${page.number - 1}, sort=${sortParam})}"
+               class="page-btn" th:classappend="${page.first} ? 'disabled'">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+            <a th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+               th:href="@{/brands(page=${i}, sort=${sortParam})}"
+               class="page-btn" th:classappend="${i == page.number} ? 'active'"
+               th:text="${i + 1}"></a>
+            <a th:href="@{/brands(page=${page.number + 1}, sort=${sortParam})}"
+               class="page-btn" th:classappend="${page.last} ? 'disabled'">
+                <i class="bi bi-chevron-right"></i>
+            </a>
         </div>
     </div>
 </main>

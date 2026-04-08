@@ -3,6 +3,7 @@ package org.daw2.tallergo.crud_tallergo.services;
 import lombok.RequiredArgsConstructor;
 import org.daw2.tallergo.crud_tallergo.dtos.MechanicCreateDTO;
 import org.daw2.tallergo.crud_tallergo.dtos.MechanicDTO;
+import org.daw2.tallergo.crud_tallergo.dtos.MechanicDetailDTO;
 import org.daw2.tallergo.crud_tallergo.entities.Mechanic;
 import org.daw2.tallergo.crud_tallergo.exceptions.ResourceNotFoundException;
 import org.daw2.tallergo.crud_tallergo.mappers.MechanicMapper;
@@ -55,5 +56,16 @@ public class MechanicServiceImpl implements MechanicService {
             throw new ResourceNotFoundException("mechanic", "id", id);
         }
         mechanicRepository.deleteById(id);
+    }
+
+    /**
+     * Obtiene el detalle completo de un mecánico con su taller asociado.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public MechanicDetailDTO getDetail(Long id) {
+        Mechanic mechanic = mechanicRepository.findByIdWithWorkshop(id)
+                .orElseThrow(() -> new ResourceNotFoundException("mechanic", "id", id));
+        return MechanicMapper.toDetailDTO(mechanic);
     }
 }

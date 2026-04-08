@@ -3,6 +3,7 @@ package org.daw2.tallergo.crud_tallergo.controllers;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.daw2.tallergo.crud_tallergo.dtos.MechanicCreateDTO;
+import org.daw2.tallergo.crud_tallergo.dtos.MechanicDetailDTO;
 import org.daw2.tallergo.crud_tallergo.services.MechanicService;
 import org.daw2.tallergo.crud_tallergo.services.WorkshopService;
 import org.springframework.data.domain.Pageable;
@@ -26,10 +27,6 @@ public class MechanicController {
 
     /**
      * Lista los mecánicos existentes con paginación.
-     *
-     * @param pageable Configuración de la paginación (tamaño de página, orden).
-     * @param model    Modelo para pasar atributos a la vista.
-     * @return Vista del listado de mecánicos ("views/mechanic/mechanic-list").
      */
     @GetMapping
     public String list(@PageableDefault(size = 10) Pageable pageable, Model model) {
@@ -38,11 +35,16 @@ public class MechanicController {
     }
 
     /**
+     * Muestra el detalle de un mecánico por su ID.
+     */
+    @GetMapping("/detail")
+    public String detail(@RequestParam("id") Long id, Model model) {
+        model.addAttribute("mechanic", mechanicService.getDetail(id));
+        return "views/mechanic/mechanic-detail";
+    }
+
+    /**
      * Muestra el formulario para crear un nuevo mecánico.
-     * Se incluyen todas las talleres disponibles para seleccionar.
-     *
-     * @param model Modelo para pasar atributos a la vista.
-     * @return Vista del formulario de mecánico ("views/mechanic/mechanic-form").
      */
     @GetMapping("/new")
     public String showForm(Model model) {

@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Implementación del servicio de gestión de usuarios.
@@ -71,12 +72,18 @@ public class UserServiceImpl implements UserService {
         dto.setLastPasswordChange(now);
         dto.setPasswordExpiresAt(now.plusDays(PASSWORD_EXPIRY_DAYS));
 
+        // Generar contraseña temporal aleatoria y hashearla (el usuario deberá cambiarla)
+        String tempPassword = UUID.randomUUID().toString().replace("-", "").substring(0, 12);
+        String hashedPassword = passwordEncoder.encode(tempPassword);
+
         // Mapeo de roles desde IDs recibidos del formulario
         Set<Role> roles = new HashSet<>(roleRepository.findAllById(dto.getRoleIds()));
 
         User user = UserMapper.toEntity(dto, roles);
+        user.setPasswordHash(hashedPassword);
+        user.setMustChangePassword(true);
         userRepository.save(user);
-        logger.info("Usuario creado por administrador: {}", user.getEmail());
+        logger.info("Usuario creado por administrador: {} (contraseña temporal generada)", user.getEmail());
     }
 
     @Override

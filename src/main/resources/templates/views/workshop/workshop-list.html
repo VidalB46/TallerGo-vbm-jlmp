@@ -1,57 +1,302 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head (#{msg.title} + ' - ' + #{msg.workshop-list.title})}"></head>
-<body class="d-flex flex-column h-100">
-<header th:replace="~{fragments/header :: header}"></header>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>TallerGO — Talleres</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+    <th:block th:replace="~{fragments/navbar :: navbarCss}"></th:block>
+<style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-<main class="list-page">
-    <div class="list-card">
-        <h1 th:text="#{msg.workshop-list.title}">Listado de Talleres</h1>
+    body.workshops-page {
+        display: block !important;
+        height: auto !important;
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+        background: #f4f4f6;
+        color: #1a1a1a;
+    }
+    body.workshops-page > nav,
+    body.workshops-page > main,
+    body.workshops-page > footer { flex: unset !important; width: 100%; }
 
-        <a th:href="@{/workshops/new}" class="btn btn-success mb-3" th:text="#{msg.workshop-list.add}">Nuevo Taller</a>
+    /* ── NAVBAR: fondo oscuro siempre visible en esta página ── */
+    .tgo-nav {
+        background: rgba(10,10,10,0.93) !important;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        box-shadow: 0 2px 24px rgba(0,0,0,0.4);
+    }
 
-        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    @keyframes pulse-red {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.45); }
+        50%       { box-shadow: 0 0 0 7px rgba(192,57,43,0); }
+    }
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(24px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
 
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th th:text="#{msg.workshop-list.nif}">NIF</th>
-                <th th:text="#{msg.workshop-list.name}">Nombre</th>
-                <th th:text="#{msg.workshop-list.location}">Ubicación</th>
-                <th th:text="#{msg.workshop-list.actions}">Acciones</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="w : ${page.content}">
-                <td th:text="${w.id}"></td>
-                <td th:text="${w.nif}"></td>
-                <td th:text="${w.name}"></td>
-                <td th:text="${w.location}"></td>
-                <td>
-                    <a th:href="@{/workshops/detail(id=${w.id})}" class="btn btn-sm btn-outline-secondary" th:text="#{msg.common.viewDetail}">Ver Detalle</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+    /* ── PAGE HEADER ── */
+    .page-hero {
+        margin-top: 0;
+        padding: calc(4rem + 64px) 2.5rem 5rem;
+        background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
+        position: relative; overflow: hidden;
+    }
+    .page-hero::before {
+        content: '';
+        position: absolute; top: -60px; right: -60px;
+        width: 300px; height: 300px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(192,57,43,0.15) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .page-hero-inner {
+        max-width: 1200px; margin: 0 auto;
+        display: flex; align-items: center; justify-content: space-between;
+        flex-wrap: wrap; gap: 1.5rem;
+        position: relative; z-index: 1;
+    }
+    .page-hero-text .page-label {
+        font-size: 0.7rem; font-weight: 700; letter-spacing: 2.5px;
+        text-transform: uppercase; color: #c0392b; margin-bottom: 0.4rem;
+    }
+    .page-hero-text h1 {
+        font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: -0.5px;
+    }
+    .page-hero-text p {
+        color: rgba(255,255,255,0.45); font-size: 0.88rem; margin-top: 0.3rem;
+    }
+    .btn-new {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        background: linear-gradient(135deg, #c0392b, #96281b);
+        color: #fff; font-weight: 700; font-size: 0.88rem;
+        padding: 0.7rem 1.4rem; border-radius: 10px; text-decoration: none;
+        box-shadow: 0 4px 16px rgba(192,57,43,0.35);
+        transition: transform 0.2s, box-shadow 0.2s;
+        white-space: nowrap;
+    }
+    .btn-new:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(192,57,43,0.45); color: #fff; }
 
-        <nav th:if="${page.totalPages > 0}">
-            <ul class="pagination">
-                <li class="page-item" th:classappend="${page.first} ? 'disabled'">
-                    <a class="page-link" th:href="@{/workshops(page=${page.number - 1})}">&laquo;</a>
-                </li>
-                <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}" th:classappend="${i == page.number} ? 'active'">
-                    <a class="page-link" th:href="@{/workshops(page=${i})}" th:text="${i + 1}"></a>
-                </li>
-                <li class="page-item" th:classappend="${page.last} ? 'disabled'">
-                    <a class="page-link" th:href="@{/workshops(page=${page.number + 1})}">&raquo;</a>
-                </li>
-            </ul>
-        </nav>
+    /* ── MAIN CONTENT ── */
+    .workshops-main {
+        max-width: 1200px; margin: 2.5rem auto;
+        padding: 0 2rem 4rem;
+        animation: fadeUp 0.5s ease both;
+    }
+
+    /* Alert flash */
+    .alert-success-custom {
+        background: rgba(39,174,96,0.08); border: 1px solid rgba(39,174,96,0.25);
+        color: #1e8449; border-radius: 10px; padding: 0.75rem 1rem;
+        font-size: 0.88rem; display: flex; align-items: center; gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* ── GRID DE CARDS ── */
+    .workshops-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+    }
+    .ws-card {
+        background: #fff; border-radius: 16px;
+        border: 1.5px solid rgba(0,0,0,0.07);
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        overflow: hidden; display: flex; flex-direction: column;
+        transition: transform 0.3s, box-shadow 0.3s;
+        animation: fadeUp 0.5s ease both;
+    }
+    .ws-card:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(0,0,0,0.12); }
+    .ws-card-img {
+        width: 100%; height: 160px; object-fit: cover; display: block;
+        background: #e0e0e0;
+    }
+    .ws-card-img-placeholder {
+        width: 100%; height: 160px;
+        background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 2.5rem; color: rgba(255,255,255,0.1);
+    }
+    .ws-card-body { padding: 1.3rem; flex: 1; display: flex; flex-direction: column; }
+    .ws-card-id {
+        font-size: 0.7rem; font-weight: 700; letter-spacing: 1.5px;
+        text-transform: uppercase; color: #bbb; margin-bottom: 0.4rem;
+    }
+    .ws-card-name {
+        font-size: 1.05rem; font-weight: 700; color: #111; margin-bottom: 0.4rem;
+    }
+    .ws-card-nif {
+        font-size: 0.78rem; color: #aaa; margin-bottom: 0.7rem;
+        display: flex; align-items: center; gap: 0.3rem;
+    }
+    .ws-card-location {
+        font-size: 0.83rem; color: #666; display: flex;
+        align-items: center; gap: 0.35rem; margin-bottom: 0.4rem;
+    }
+    .ws-card-footer {
+        display: flex; gap: 0.5rem; margin-top: auto; padding-top: 1rem;
+        border-top: 1px solid #f0f0f0; flex-wrap: wrap;
+    }
+    .btn-detail {
+        flex: 1; display: inline-flex; align-items: center; justify-content: center;
+        gap: 0.4rem; background: #111; color: #fff;
+        font-size: 0.8rem; font-weight: 600; padding: 0.55rem 0.8rem;
+        border-radius: 8px; text-decoration: none;
+        transition: background 0.2s, transform 0.15s;
+    }
+    .btn-detail:hover { background: #333; color: #fff; transform: translateY(-1px); }
+    .btn-delete {
+        display: inline-flex; align-items: center; justify-content: center;
+        gap: 0.4rem; background: rgba(192,57,43,0.08);
+        border: 1.5px solid rgba(192,57,43,0.2); color: #c0392b;
+        font-size: 0.8rem; font-weight: 600; padding: 0.55rem 0.8rem;
+        border-radius: 8px; cursor: pointer; font-family: inherit;
+        transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    }
+    .btn-delete:hover {
+        background: #c0392b; border-color: #c0392b;
+        color: #fff; transform: translateY(-1px);
+    }
+
+    /* ── PAGINACIÓN ── */
+    .pagination-bar {
+        display: flex; justify-content: center; align-items: center;
+        gap: 0.4rem; margin-top: 2.5rem; flex-wrap: wrap;
+    }
+    .page-btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 36px; height: 36px; border-radius: 8px;
+        font-size: 0.85rem; font-weight: 600; text-decoration: none;
+        border: 1.5px solid #e0e0e0; color: #555; background: #fff;
+        transition: all 0.2s;
+    }
+    .page-btn:hover { border-color: #c0392b; color: #c0392b; }
+    .page-btn.active { background: #c0392b; border-color: #c0392b; color: #fff; }
+    .page-btn.disabled { opacity: 0.35; pointer-events: none; }
+
+    @media (max-width: 1100px) {
+        .workshops-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px) {
+        .workshops-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+        .workshops-grid { grid-template-columns: 1fr; }
+        .page-hero-inner { flex-direction: column; align-items: flex-start; }
+        .workshops-main { padding: 0 1rem 3rem; }
+    }
+</style>
+</head>
+
+<body class="workshops-page">
+
+<!-- ── NAVBAR ── -->
+<!-- Navbar compartido -->
+<nav th:replace="~{fragments/navbar :: navbar('workshops')}"></nav>
+
+<!-- ── PAGE HERO ── -->
+<div class="page-hero">
+    <div class="page-hero-inner">
+        <div class="page-hero-text">
+            <div class="page-label">Directorio</div>
+            <h1>Talleres</h1>
+            <p>Encuentra el taller que más confianza te transmita.</p>
+        </div>
+        <a th:href="@{/workshops/new}" class="btn-new" sec:authorize="hasRole('ADMIN')">
+            <i class="bi bi-plus-lg"></i> Nuevo Taller
+        </a>
     </div>
+</div>
+
+<!-- ── CONTENT ── -->
+<main class="workshops-main">
+
+    <div th:if="${successMessage}" class="alert-success-custom">
+        <i class="bi bi-check-circle-fill"></i>
+        <span th:text="${successMessage}"></span>
+    </div>
+
+    <!-- Grid de talleres -->
+    <div class="workshops-grid">
+        <div th:each="w, stat : ${page.content}" class="ws-card"
+             th:style="'animation-delay:' + ${stat.index * 80} + 'ms'">
+
+            <!-- Imagen placeholder (JS la sustituirá) -->
+            <div class="ws-card-img-placeholder">
+                <i class="bi bi-tools"></i>
+            </div>
+
+            <div class="ws-card-body">
+                <div class="ws-card-id"># <span th:text="${w.id}"></span></div>
+                <div class="ws-card-name" th:text="${w.name}">Nombre Taller</div>
+                <div class="ws-card-nif">
+                    <i class="bi bi-building"></i>
+                    <span th:text="${w.nif}">B12345678</span>
+                </div>
+                <div class="ws-card-location" th:if="${w.location}">
+                    <i class="bi bi-geo-alt"></i>
+                    <span th:text="${w.location}">Ubicación</span>
+                </div>
+
+                <div class="ws-card-footer">
+                    <a th:href="@{/workshops/detail(id=${w.id})}" class="btn-detail">
+                        <i class="bi bi-eye"></i> Ver detalle
+                    </a>
+                    <form th:action="@{/workshops/delete/{id}(id=${w.id})}" method="post"
+                          sec:authorize="hasRole('ADMIN')"
+                          onsubmit="return confirm('¿Eliminar este taller?')">
+                        <button type="submit" class="btn-delete">
+                            <i class="bi bi-trash3"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paginación -->
+    <nav class="pagination-bar" th:if="${page.totalPages > 1}">
+        <a class="page-btn" th:classappend="${page.first} ? 'disabled'"
+           th:href="@{/workshops(page=${page.number - 1})}">
+            <i class="bi bi-chevron-left"></i>
+        </a>
+        <a class="page-btn" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+           th:classappend="${i == page.number} ? 'active'"
+           th:href="@{/workshops(page=${i})}"
+           th:text="${i + 1}"></a>
+        <a class="page-btn" th:classappend="${page.last} ? 'disabled'"
+           th:href="@{/workshops(page=${page.number + 1})}">
+            <i class="bi bi-chevron-right"></i>
+        </a>
+    </nav>
+
 </main>
 
+<!-- ── FOOTER ── -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
+
 <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    const workshopImgs = [
+        'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600&q=80',
+        'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
+        'https://images.unsplash.com/photo-1625047509248-ec889cbff17f?w=600&q=80',
+        'https://images.unsplash.com/photo-1609630875171-b1321377ee65?w=600&q=80',
+        'https://images.unsplash.com/photo-1530046339160-ce3e530c7d2f?w=600&q=80',
+        'https://images.unsplash.com/photo-1617469767987-a8ba26b4ee1c?w=600&q=80',
+    ];
+    document.querySelectorAll('.ws-card-img-placeholder').forEach((el, i) => {
+        const img = document.createElement('img');
+        img.src = workshopImgs[i % workshopImgs.length];
+        img.alt = 'Taller';
+        img.className = 'ws-card-img';
+        el.replaceWith(img);
+    });
+</script>
 </body>
 </html>

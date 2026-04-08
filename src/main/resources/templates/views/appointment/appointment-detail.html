@@ -1,60 +1,294 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="~{fragments/head :: head(#{msg.appointment-detail.title})}"></head>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>TallerGO — Detalle Cita</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+    <th:block th:replace="~{fragments/navbar :: navbarCss}"></th:block>
+<style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-<body class="d-flex flex-column h-100">
-<header th:replace="~{fragments/header :: header}"></header>
+    body.appt-detail-page {
+        font-family: 'Inter', sans-serif;
+        background: #f4f4f6;
+        color: #1a1a1a;
+        display: block !important;
+        height: auto !important;
+        min-height: 100vh;
+    }
+    body.appt-detail-page > nav,
+    body.appt-detail-page > div,
+    body.appt-detail-page > main,
+    body.appt-detail-page > footer { flex: unset !important; width: 100%; }
 
-<main class="form-page">
-    <div class="form-card" style="max-width: 800px;">
-        <h1><span th:text="#{msg.appointment-detail.title}">Detalle Cita</span> #<span th:text="${appointment.id}"></span></h1>
+    .tgo-nav {
+        background: rgba(10,10,10,0.93) !important;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        box-shadow: 0 2px 24px rgba(0,0,0,0.4);
+    }
 
-        <div th:if="${success}" class="alert alert-success mt-3" th:text="${success}"></div>
-        <div th:if="${error}" class="alert alert-danger mt-3" th:text="${error}"></div>
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
 
-        <div class="mt-4">
-            <h5 th:text="#{msg.appointment-detail.section.data}">Datos de la Cita</h5>
-            <dl class="row">
-                <dt class="col-sm-3" th:text="#{msg.appointment-detail.field.status}">Estado</dt>
-                <dd class="col-sm-9">
-                    <span class="badge px-3 py-2 text-white"
-                          th:classappend="${#strings.toString(appointment.status) == 'SOLICITADO' ? 'bg-warning text-dark' :
-                                        (#strings.toString(appointment.status) == 'CONFIRMADO' ? 'bg-success' :
-                                        (#strings.toString(appointment.status) == 'CANCELADO' or #strings.toString(appointment.status) == 'RECHAZADA' ? 'bg-danger' :
-                                        (#strings.toString(appointment.status) == 'EN_TALLER' ? 'bg-secondary' :
-                                        (#strings.toString(appointment.status) == 'EN_REPARACION' ? 'bg-info text-dark' :
-                                        (#strings.toString(appointment.status) == 'LISTO_RECOGIDA' ? 'bg-success' : 'bg-dark')))))}"
-                          th:text="${appointment.status.displayName}">
-                    </span>
-                </dd>
+    /* ── HERO ── */
+    .page-hero {
+        margin-top: 0;
+        padding: calc(4rem + 64px) 2.5rem 5rem;
+        background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
+        position: relative; overflow: hidden;
+    }
+    .page-hero::before {
+        content: '';
+        position: absolute; top: -60px; right: -60px;
+        width: 300px; height: 300px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(192,57,43,0.15) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .page-hero-inner {
+        max-width: 900px; margin: 0 auto;
+        position: relative; z-index: 1;
+    }
+    .page-label {
+        font-size: 0.7rem; font-weight: 700; letter-spacing: 2.5px;
+        text-transform: uppercase; color: #c0392b; margin-bottom: 0.4rem;
+    }
+    .page-hero h1 {
+        font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: -0.5px;
+    }
+    .page-hero p { color: rgba(255,255,255,0.45); font-size: 0.88rem; margin-top: 0.3rem; }
 
-                <dt class="col-sm-3" th:text="#{msg.appointment-detail.field.startDate}">Fecha</dt>
-                <dd class="col-sm-9" th:text="${#temporals.format(appointment.startDate, 'dd/MM/yyyy HH:mm')}"></dd>
+    /* ── CONTENT ── */
+    .detail-main {
+        max-width: 900px; margin: 2.5rem auto;
+        padding: 0 2rem 5rem;
+        animation: fadeUp 0.5s ease both;
+    }
 
-                <dt class="col-sm-3" th:text="#{msg.appointment-detail.field.user}">Usuario</dt>
-                <dd class="col-sm-9" th:text="${appointment.userEmail}"></dd>
-            </dl>
+    /* ── CARD PRINCIPAL ── */
+    .detail-card {
+        background: #fff;
+        border: 1.5px solid rgba(0,0,0,0.07);
+        border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+        overflow: hidden;
+    }
+
+    /* Franja de estado en top */
+    .detail-stripe {
+        height: 6px; width: 100%;
+    }
+    .stripe-solicitado { background: linear-gradient(90deg, #f39c12, #f1c40f); }
+    .stripe-confirmado { background: linear-gradient(90deg, #27ae60, #2ecc71); }
+    .stripe-cancelado  { background: linear-gradient(90deg, #c0392b, #e74c3c); }
+    .stripe-taller     { background: linear-gradient(90deg, #34495e, #7f8c8d); }
+    .stripe-reparacion { background: linear-gradient(90deg, #2980b9, #3498db); }
+
+    .detail-card-body { padding: 2rem 2.5rem; }
+
+    /* Header de la card */
+    .detail-header {
+        display: flex; align-items: center; justify-content: space-between;
+        flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;
+        padding-bottom: 1.5rem; border-bottom: 1.5px solid #f0f0f0;
+    }
+    .detail-id { font-size: 0.75rem; color: #bbb; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 0.2rem; }
+    .detail-date-big { font-size: 1.5rem; font-weight: 800; color: #111; }
+    .detail-time-big { font-size: 0.9rem; color: #888; margin-top: 0.15rem; display: flex; align-items: center; gap: 0.4rem; }
+
+    /* Badge de estado */
+    .status-badge {
+        display: inline-flex; align-items: center; gap: 0.4rem;
+        font-size: 0.78rem; font-weight: 700; letter-spacing: 0.8px;
+        text-transform: uppercase; padding: 0.4rem 1rem; border-radius: 20px;
+        white-space: nowrap;
+    }
+    .status-solicitado { background: rgba(243,156,18,0.12); color: #d68910; border: 1px solid rgba(243,156,18,0.3); }
+    .status-confirmado { background: rgba(39,174,96,0.12); color: #1e8449; border: 1px solid rgba(39,174,96,0.3); }
+    .status-cancelado  { background: rgba(192,57,43,0.10); color: #c0392b; border: 1px solid rgba(192,57,43,0.25); }
+    .status-taller     { background: rgba(108,117,125,0.12); color: #495057; border: 1px solid rgba(108,117,125,0.3); }
+    .status-reparacion { background: rgba(23,162,184,0.12); color: #138496; border: 1px solid rgba(23,162,184,0.3); }
+
+    /* Secciones de info */
+    .detail-section { margin-bottom: 2rem; }
+    .detail-section-title {
+        font-size: 0.7rem; font-weight: 700; letter-spacing: 2px;
+        text-transform: uppercase; color: #c0392b; margin-bottom: 1rem;
+    }
+    .detail-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+    }
+    .detail-field label {
+        font-size: 0.72rem; font-weight: 600; color: #aaa;
+        text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 0.2rem;
+    }
+    .detail-field span {
+        font-size: 0.93rem; font-weight: 600; color: #111;
+        display: flex; align-items: center; gap: 0.4rem;
+    }
+    .detail-field span i { color: #c0392b; }
+
+    /* Notas */
+    .notes-box {
+        background: #f8f8fa; border: 1.5px solid #ebebee;
+        border-radius: 12px; padding: 1.2rem 1.4rem;
+        font-size: 0.9rem; color: #555; line-height: 1.6;
+    }
+    .notes-empty { color: #bbb; font-style: italic; }
+
+    /* Footer de la card */
+    .detail-card-footer {
+        padding: 1.2rem 2.5rem;
+        border-top: 1.5px solid #f0f0f0;
+        display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    }
+    .btn-back {
+        display: inline-flex; align-items: center; gap: 0.4rem;
+        background: #f4f4f6; color: #555; font-size: 0.85rem; font-weight: 600;
+        padding: 0.6rem 1.2rem; border-radius: 10px; text-decoration: none;
+        border: 1.5px solid #e0e0e0;
+        transition: background 0.2s, color 0.2s;
+    }
+    .btn-back:hover { background: #eaeaea; color: #111; }
+
+    @media (max-width: 640px) {
+        .page-hero { padding: calc(3rem + 64px) 1.2rem 3.5rem; }
+        .detail-main { padding: 0 1rem 3rem; }
+        .detail-card-body { padding: 1.5rem; }
+        .detail-card-footer { padding: 1rem 1.5rem; flex-direction: column; align-items: stretch; }
+        .detail-grid { grid-template-columns: 1fr; }
+    }
+</style>
+</head>
+
+<body class="appt-detail-page">
+
+<nav th:replace="~{fragments/navbar :: navbar('')}"></nav>
+
+<div class="page-hero">
+    <div class="page-hero-inner">
+        <div class="page-label">Agenda</div>
+        <h1>Detalle de Cita <span style="color:#c0392b;">#<span th:text="${appointment.id}"></span></span></h1>
+        <p>Información completa sobre tu reserva en el taller.</p>
+    </div>
+</div>
+
+<main class="detail-main">
+
+    <div th:if="${success}" class="alert alert-success mb-4" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger mb-4" th:text="${error}"></div>
+
+    <div class="detail-card">
+
+        <div class="detail-stripe"
+             th:classappend="${#strings.toString(appointment.status) == 'SOLICITADO'} ? 'stripe-solicitado' :
+                           (${#strings.toString(appointment.status) == 'CONFIRMADO' or #strings.toString(appointment.status) == 'LISTO_RECOGIDA'} ? 'stripe-confirmado' :
+                           (${#strings.toString(appointment.status) == 'CANCELADO' or #strings.toString(appointment.status) == 'RECHAZADA'} ? 'stripe-cancelado' :
+                           (${#strings.toString(appointment.status) == 'EN_TALLER' or #strings.toString(appointment.status) == 'RECOGIDO'} ? 'stripe-taller' : 'stripe-reparacion')))">
         </div>
 
-        <div class="mt-4">
-            <h5 th:text="#{msg.appointment-detail.section.notes}">Motivo / Notas</h5>
-            <div class="alert alert-secondary">
-                <p class="mb-0" th:text="${appointment.notes != null and !#strings.isEmpty(appointment.notes) ? appointment.notes : 'Sin notas adicionales.'}"></p>
+        <div class="detail-card-body">
+
+            <div class="detail-header">
+                <div>
+                    <div class="detail-id"># <span th:text="${appointment.id}"></span></div>
+                    <div class="detail-date-big"
+                         th:text="${#temporals.format(appointment.startDate, 'dd MMM yyyy')}">01 Ene 2025</div>
+                    <div class="detail-time-big">
+                        <i class="bi bi-clock"></i>
+                        <span th:text="${#temporals.format(appointment.startDate, 'HH:mm')} + ' h'"></span>
+                    </div>
+                </div>
+                
+                <span class="status-badge"
+                      th:classappend="${#strings.toString(appointment.status) == 'SOLICITADO'} ? 'status-solicitado' :
+                                    (${#strings.toString(appointment.status) == 'CONFIRMADO' or #strings.toString(appointment.status) == 'LISTO_RECOGIDA'} ? 'status-confirmado' :
+                                    (${#strings.toString(appointment.status) == 'CANCELADO' or #strings.toString(appointment.status) == 'RECHAZADA'} ? 'status-cancelado' :
+                                    (${#strings.toString(appointment.status) == 'EN_TALLER' or #strings.toString(appointment.status) == 'RECOGIDO'} ? 'status-taller' : 'status-reparacion')))">
+                    <i th:class="${#strings.toString(appointment.status) == 'SOLICITADO'} ? 'bi bi-hourglass-split' :
+                               (${#strings.toString(appointment.status) == 'CONFIRMADO' or #strings.toString(appointment.status) == 'LISTO_RECOGIDA'} ? 'bi bi-check-circle-fill' :
+                               (${#strings.toString(appointment.status) == 'CANCELADO' or #strings.toString(appointment.status) == 'RECHAZADA'} ? 'bi bi-x-circle-fill' : 'bi bi-gear-fill'))"></i>
+                    <span th:text="${appointment.status.displayName}"></span>
+                </span>
             </div>
+
+            <div class="detail-section" th:if="${appointment.vehicle != null}">
+                <div class="detail-section-title"><i class="bi bi-car-front-fill"></i> Vehículo</div>
+                <div class="detail-grid">
+                    <div class="detail-field">
+                        <label>Marca / Modelo</label>
+                        <span><i class="bi bi-car-front"></i>
+                            <span th:text="${appointment.vehicle.brandName + ' ' + appointment.vehicle.model}"></span>
+                        </span>
+                    </div>
+                    <div class="detail-field">
+                        <label>Matrícula</label>
+                        <span><i class="bi bi-card-text"></i>
+                            <span th:text="${appointment.vehicle.matricula}"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-section" th:if="${appointment.workshop != null}">
+                <div class="detail-section-title"><i class="bi bi-building"></i> Taller</div>
+                <div class="detail-grid">
+                    <div class="detail-field">
+                        <label>Nombre</label>
+                        <span><i class="bi bi-tools"></i>
+                            <span th:text="${appointment.workshop.name}"></span>
+                        </span>
+                    </div>
+                    <div class="detail-field">
+                        <label>Ubicación</label>
+                        <span><i class="bi bi-geo-alt"></i>
+                            <span th:text="${appointment.workshop.location ?: '-'}"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <div class="detail-section-title"><i class="bi bi-person"></i> Cliente</div>
+                <div class="detail-field">
+                    <label>Email</label>
+                    <span><i class="bi bi-envelope"></i>
+                        <span th:text="${appointment.userEmail}"></span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <div class="detail-section-title"><i class="bi bi-chat-left-text"></i> Motivo / Notas</div>
+                <div class="notes-box">
+                    <span th:if="${appointment.notes != null and !#strings.isEmpty(appointment.notes)}"
+                          th:text="${appointment.notes}"></span>
+                    <span class="notes-empty" th:if="${appointment.notes == null or #strings.isEmpty(appointment.notes)}">
+                        Sin notas adicionales.
+                    </span>
+                </div>
+            </div>
+
         </div>
 
-        <hr class="mt-5 mb-4">
+        <div class="detail-card-footer">
+            <a th:href="@{/appointments}" class="btn-back">
+                <i class="bi bi-arrow-left"></i> Volver al listado
+            </a>
 
-        <div class="d-flex justify-content-between align-items-center">
-            <a th:href="@{/appointments}" class="btn btn-outline-secondary">Volver al listado</a>
-
-            <div class="d-flex gap-2">
-
+            <div class="d-flex flex-wrap gap-2">
+                
                 <form sec:authorize="hasRole('CLIENT')"
                       th:if="${#strings.toString(appointment.status) == 'SOLICITADO' or #strings.toString(appointment.status) == 'CONFIRMADO'}"
                       th:action="@{/appointments/{id}/cancel(id=${appointment.id})}" method="post"
                       onsubmit="return confirm('¿Estás seguro de que deseas cancelar esta cita?');">
-                    <button type="submit" class="btn btn-danger">
+                    <button type="submit" class="btn btn-danger btn-sm">
                         <i class="bi bi-x-circle"></i> Cancelar Cita
                     </button>
                 </form>
@@ -62,33 +296,33 @@
                 <a sec:authorize="hasRole('CLIENT')"
                    th:if="${#strings.toString(appointment.status) == 'EN_TALLER' or #strings.toString(appointment.status) == 'EN_REPARACION' or #strings.toString(appointment.status) == 'LISTO_RECOGIDA' or #strings.toString(appointment.status) == 'RECOGIDO'}"
                    th:href="@{/budgets/repair/{id}(id=${appointment.repairId})}"
-                   class="btn btn-info text-white">
+                   class="btn btn-info text-white btn-sm">
                     <i class="bi bi-receipt"></i> Ver Presupuesto
                 </a>
 
                 <a sec:authorize="hasRole('ADMIN')"
                    th:if="${appointment.repairId != null}"
                    th:href="@{/repairs/{id}(id=${appointment.repairId})}"
-                   class="btn btn-secondary text-white">
+                   class="btn btn-secondary text-white btn-sm">
                     <i class="bi bi-gear"></i> Gestión de Reparación
                 </a>
 
                 <form sec:authorize="hasRole('ADMIN')"
                       th:if="${#strings.toString(appointment.status) == 'SOLICITADO'}"
                       th:action="@{/appointments/{id}/confirm(id=${appointment.id})}" method="post">
-                    <button type="submit" class="btn btn-success">Confirmar Cita</button>
+                    <button type="submit" class="btn btn-success btn-sm"><i class="bi bi-check-lg"></i> Confirmar Cita</button>
                 </form>
 
                 <form sec:authorize="hasRole('ADMIN')"
                       th:if="${#strings.toString(appointment.status) == 'SOLICITADO'}"
                       th:action="@{/appointments/{id}/cancel(id=${appointment.id})}" method="post">
-                    <button type="submit" class="btn btn-danger">Rechazar Cita</button>
+                    <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-x-lg"></i> Rechazar Cita</button>
                 </form>
 
                 <a sec:authorize="hasRole('ADMIN')"
                    th:if="${#strings.toString(appointment.status) == 'CONFIRMADO'}"
                    th:href="@{/repairs/new(appointmentId=${appointment.id}, vehicleId=${appointment.vehicle.id})}"
-                   class="btn btn-primary">Recepcionar Vehículo</a>
+                   class="btn btn-primary btn-sm"><i class="bi bi-box-arrow-in-right"></i> Recepcionar Vehículo</a>
             </div>
         </div>
     </div>
