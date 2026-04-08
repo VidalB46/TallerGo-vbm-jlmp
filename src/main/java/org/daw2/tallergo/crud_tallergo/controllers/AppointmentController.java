@@ -52,7 +52,6 @@ public class AppointmentController {
         }
 
         model.addAttribute("appointmentsPage", appointments);
-        // RUTA ACTUALIZADA A TU ESTRUCTURA
         return "views/appointment/appointment-list";
     }
 
@@ -65,7 +64,6 @@ public class AppointmentController {
         model.addAttribute("vehicles", vehicleService.getVehiclesByUserId(user.getId()));
         model.addAttribute("workshops", workshopService.listAll());
 
-        // RUTA ACTUALIZADA A TU ESTRUCTURA
         return "views/appointment/appointment-form";
     }
 
@@ -82,14 +80,12 @@ public class AppointmentController {
         if (result.hasErrors()) {
             model.addAttribute("vehicles", vehicleService.getVehiclesByUserId(user.getId()));
             model.addAttribute("workshops", workshopService.listAll());
-            // RUTA ACTUALIZADA A TU ESTRUCTURA
             return "views/appointment/appointment-form";
         }
 
         try {
             appointmentService.createAppointment(dto, authentication.getName());
             redirectAttributes.addFlashAttribute("success", "¡Tu cita ha sido solicitada correctamente!");
-            // El redirect se queda igual porque apunta a la URL del navegador, no a la carpeta física
             return "redirect:/appointments";
 
         } catch (IllegalArgumentException e) {
@@ -105,5 +101,30 @@ public class AppointmentController {
         AppointmentDetailDTO detail = appointmentService.getAppointmentById(id);
         model.addAttribute("appointment", detail);
         return "views/appointment/appointment-detail";
+    }
+
+    // --- ACCIONES RÁPIDAS DE ESTADO ---
+
+    @PostMapping("/{id}/confirm")
+    public String confirmAppointment(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            appointmentService.updateStatus(id, org.daw2.tallergo.crud_tallergo.enums.AppointmentStatus.CONFIRMADO);
+            redirectAttributes.addFlashAttribute("success", "Cita confirmada. El cliente será notificado.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al confirmar la cita: " + e.getMessage());
+        }
+        return "redirect:/appointments/" + id;
+    }
+
+    // Sirve tanto para cancelar (Cliente) como para rechazar (Admin)
+    @PostMapping("/{id}/cancel")
+    public String cancelAppointment(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            appointmentService.updateStatus(id, org.daw2.tallergo.crud_tallergo.enums.AppointmentStatus.CANCELADO);
+            redirectAttributes.addFlashAttribute("success", "Cita cancelada/rechazada correctamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al cancelar: " + e.getMessage());
+        }
+        return "redirect:/appointments";
     }
 }

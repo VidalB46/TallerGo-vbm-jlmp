@@ -73,11 +73,11 @@ INSERT IGNORE INTO workshop_services (id, workshop_id, service_id, price, durati
 -- 3. FLUJO DE PRUEBA (Cita -> Reparación -> Presupuesto)
 -- =======================================================
 INSERT IGNORE INTO appointments (id, user_id, workshop_id, vehicle_id, start_date, end_date, status, notes) VALUES
-(1, 1, 1, 1, '2025-10-20 09:00:00', '2025-10-20 11:00:00', 'SOLICITADO', 'Ruido al frenar');
+(1, 1, 1, 1, '2025-10-20 09:00:00', '2025-10-20 11:00:00', 'EN_TALLER', 'Ruido al frenar');
 
 INSERT IGNORE INTO repairs (id, appointment_id, vehicle_id, entry_date, status, notes) VALUES
-(1, 1, 1, '2025-10-20', 'ACTIVO', 'Pastillas de freno desgastadas');
+(1, 1, 1, '2025-10-20', 'STANDBY', 'Pastillas de freno desgastadas');
 
--- IMPORTANTE: Aquí mantenemos la columna 'accepted' con el valor FALSE
+-- Presupuesto pendiente de aceptar
 INSERT IGNORE INTO budgets (id, repair_id, total_gross, total_net, accepted) VALUES
 (1, 1, 100.00, 121.00, FALSE);

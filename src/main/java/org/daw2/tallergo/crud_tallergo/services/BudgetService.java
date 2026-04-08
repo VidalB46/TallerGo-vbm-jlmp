@@ -10,4 +10,5 @@ public interface BudgetService {
     BudgetDetailDTO getBudgetByRepairId(Long repairId);
     BudgetDTO createBudget(BudgetCreateDTO dto);
     BudgetDTO updateBudget(BudgetUpdateDTO dto);
+    void deleteBudget(Long id);
 }

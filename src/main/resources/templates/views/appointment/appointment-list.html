@@ -131,6 +131,8 @@
     .stripe-solicitado { background: linear-gradient(90deg, #f39c12, #f1c40f); }
     .stripe-confirmado { background: linear-gradient(90deg, #27ae60, #2ecc71); }
     .stripe-cancelado  { background: linear-gradient(90deg, #c0392b, #e74c3c); }
+    .stripe-taller     { background: linear-gradient(90deg, #34495e, #7f8c8d); }
+    .stripe-reparacion { background: linear-gradient(90deg, #2980b9, #3498db); }
 
     .appt-card-body { padding: 1.3rem; flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
 
@@ -152,18 +154,11 @@
         text-transform: uppercase; padding: 0.25rem 0.7rem; border-radius: 20px;
         white-space: nowrap; flex-shrink: 0;
     }
-    .status-solicitado {
-        background: rgba(243,156,18,0.12); color: #d68910;
-        border: 1px solid rgba(243,156,18,0.3);
-    }
-    .status-confirmado {
-        background: rgba(39,174,96,0.12); color: #1e8449;
-        border: 1px solid rgba(39,174,96,0.3);
-    }
-    .status-cancelado {
-        background: rgba(192,57,43,0.10); color: #c0392b;
-        border: 1px solid rgba(192,57,43,0.25);
-    }
+    .status-solicitado { background: rgba(243,156,18,0.12); color: #d68910; border: 1px solid rgba(243,156,18,0.3); }
+    .status-confirmado { background: rgba(39,174,96,0.12); color: #1e8449; border: 1px solid rgba(39,174,96,0.3); }
+    .status-cancelado  { background: rgba(192,57,43,0.10); color: #c0392b; border: 1px solid rgba(192,57,43,0.25); }
+    .status-taller     { background: rgba(108,117,125,0.12); color: #495057; border: 1px solid rgba(108,117,125,0.3); }
+    .status-reparacion { background: rgba(23,162,184,0.12); color: #138496; border: 1px solid rgba(23,162,184,0.3); }
 
     .appt-info-row {
         display: flex; align-items: center; gap: 0.45rem;
@@ -184,6 +179,15 @@
         transition: background 0.2s, transform 0.15s;
     }
     .btn-detail-appt:hover { background: #333; color: #fff; transform: translateY(-1px); }
+    
+    .btn-cancel-appt {
+        flex: 1; display: inline-flex; align-items: center; justify-content: center;
+        gap: 0.4rem; background: #c0392b; color: #fff; border: none;
+        font-size: 0.8rem; font-weight: 600; padding: 0.55rem 0.8rem;
+        border-radius: 8px; cursor: pointer;
+        transition: background 0.2s, transform 0.15s;
+    }
+    .btn-cancel-appt:hover { background: #a93226; color: #fff; transform: translateY(-1px); }
 
     /* Empty state */
     .appt-empty {
@@ -219,10 +223,8 @@
 
 <body class="appointments-page">
 
-<!-- ── NAVBAR ── -->
 <nav th:replace="~{fragments/navbar :: navbar('appointments')}"></nav>
 
-<!-- ── PAGE HERO ── -->
 <div class="page-hero">
     <div class="page-hero-inner">
         <div class="page-hero-text">
@@ -230,13 +232,12 @@
             <h1>Mis Citas</h1>
             <p>Consulta y gestiona todas tus reservas en el taller.</p>
         </div>
-        <a th:href="@{/appointments/new}" class="btn-new">
-            <i class="bi bi-plus-lg"></i> Nueva Cita
+        <a sec:authorize="hasRole('CLIENT')" th:href="@{/appointments/new}" class="btn-new">
+            <i class="bi bi-plus-lg"></i> Pedir Cita
         </a>
     </div>
 </div>
 
-<!-- ── CONTENT ── -->
 <main class="appt-main">
 
     <div th:if="${success}" class="alert-success-custom">
@@ -250,40 +251,45 @@
 
     <div class="appt-grid">
 
-        <!-- Empty state -->
         <div class="appt-empty" th:if="${appointmentsPage.empty}">
             <i class="bi bi-calendar-x"></i>
-            <p>No tienes ninguna cita registrada todavía.</p>
-            <a th:href="@{/appointments/new}" class="btn-new">
+            <p th:text="#{msg.appointment-list.empty}">No tienes ninguna cita registrada todavía.</p>
+            <a sec:authorize="hasRole('CLIENT')" th:href="@{/appointments/new}" class="btn-new">
                 <i class="bi bi-plus-lg"></i> Pedir una cita
             </a>
         </div>
 
-        <!-- Cards -->
         <div class="appt-card"
              th:each="appt, stat : ${appointmentsPage.content}"
              th:style="'animation-delay:' + ${stat.index * 70} + 'ms'">
 
-            <!-- Franja de color según estado -->
             <div class="appt-card-stripe"
-                 th:classappend="${appt.status.name() == 'SOLICITADO'} ? 'stripe-solicitado' : (${appt.status.name() == 'CONFIRMADO'} ? 'stripe-confirmado' : 'stripe-cancelado')">
+                 th:classappend="${#strings.toString(appt.status) == 'SOLICITADO'} ? 'stripe-solicitado' :
+                               (${#strings.toString(appt.status) == 'CONFIRMADO' or #strings.toString(appt.status) == 'LISTO_RECOGIDA'} ? 'stripe-confirmado' :
+                               (${#strings.toString(appt.status) == 'CANCELADO' or #strings.toString(appt.status) == 'RECHAZADA'} ? 'stripe-cancelado' :
+                               (${#strings.toString(appt.status) == 'EN_TALLER' or #strings.toString(appt.status) == 'RECOGIDO'} ? 'stripe-taller' : 'stripe-reparacion')))">
             </div>
 
             <div class="appt-card-body">
                 <div class="appt-card-header">
                     <div>
                         <div class="appt-date"
-                             th:text="${#temporals.format(appt.startDate, 'dd MMM yyyy')}">01 Ene 2025</div>
+                             th:text="${#temporals.format(appt.startDate, 'dd MMM yyyy')}"></div>
                         <div class="appt-time">
                             <i class="bi bi-clock"></i>
                             <span th:text="${#temporals.format(appt.startDate, 'HH:mm')} + ' h'"></span>
                         </div>
                     </div>
-                    <!-- Badge de estado -->
+                    
                     <span class="status-badge"
-                          th:classappend="${appt.status.name() == 'SOLICITADO'} ? 'status-solicitado' : (${appt.status.name() == 'CONFIRMADO'} ? 'status-confirmado' : 'status-cancelado')">
-                        <i th:class="${appt.status.name() == 'SOLICITADO'} ? 'bi bi-hourglass-split' : (${appt.status.name() == 'CONFIRMADO'} ? 'bi bi-check-circle-fill' : 'bi bi-x-circle-fill')"></i>
-                        <span th:text="${appt.status}"></span>
+                          th:classappend="${#strings.toString(appt.status) == 'SOLICITADO'} ? 'status-solicitado' :
+                                        (${#strings.toString(appt.status) == 'CONFIRMADO' or #strings.toString(appt.status) == 'LISTO_RECOGIDA'} ? 'status-confirmado' :
+                                        (${#strings.toString(appt.status) == 'CANCELADO' or #strings.toString(appt.status) == 'RECHAZADA'} ? 'status-cancelado' :
+                                        (${#strings.toString(appt.status) == 'EN_TALLER' or #strings.toString(appt.status) == 'RECOGIDO'} ? 'status-taller' : 'status-reparacion')))">
+                        <i th:class="${#strings.toString(appt.status) == 'SOLICITADO'} ? 'bi bi-hourglass-split' :
+                                   (${#strings.toString(appt.status) == 'CONFIRMADO' or #strings.toString(appt.status) == 'LISTO_RECOGIDA'} ? 'bi bi-check-circle-fill' :
+                                   (${#strings.toString(appt.status) == 'CANCELADO' or #strings.toString(appt.status) == 'RECHAZADA'} ? 'bi bi-x-circle-fill' : 'bi bi-gear-fill'))"></i>
+                        <span th:text="${appt.status.displayName}"></span>
                     </span>
                 </div>
 
@@ -291,21 +297,30 @@
                     <i class="bi bi-car-front-fill"></i>
                     <span th:text="${appt.vehicleModel}">Vehículo</span>
                 </div>
-                <div class="appt-info-row">
+                <div class="appt-info-row mt-1">
                     <i class="bi bi-building"></i>
                     <span th:text="${appt.workshopName}">Taller</span>
                 </div>
 
                 <div class="appt-card-footer">
                     <a th:href="@{/appointments/{id}(id=${appt.id})}" class="btn-detail-appt">
-                        <i class="bi bi-eye"></i> Ver detalle
+                        <i class="bi bi-eye"></i> Detalle
                     </a>
+
+                    <form sec:authorize="hasRole('CLIENT')"
+                          th:if="${#strings.toString(appt.status) == 'SOLICITADO' or #strings.toString(appt.status) == 'CONFIRMADO'}"
+                          th:action="@{/appointments/{id}/cancel(id=${appt.id})}" method="post"
+                          onsubmit="return confirm('¿Estás seguro de que deseas cancelar esta cita?');"
+                          style="flex: 1; display: flex;">
+                        <button type="submit" class="btn-cancel-appt w-100">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Paginación -->
     <nav class="pagination-bar" th:if="${appointmentsPage.totalPages > 1}">
         <a class="page-btn" th:classappend="${appointmentsPage.first} ? 'disabled'"
            th:href="@{/appointments(page=${appointmentsPage.number - 1})}">

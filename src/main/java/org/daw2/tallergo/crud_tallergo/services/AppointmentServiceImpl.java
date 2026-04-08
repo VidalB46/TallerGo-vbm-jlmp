@@ -9,6 +9,7 @@ import org.daw2.tallergo.crud_tallergo.entities.Appointment;
 import org.daw2.tallergo.crud_tallergo.entities.User;
 import org.daw2.tallergo.crud_tallergo.entities.Vehicle;
 import org.daw2.tallergo.crud_tallergo.entities.Workshop;
+import org.daw2.tallergo.crud_tallergo.enums.AppointmentStatus;
 import org.daw2.tallergo.crud_tallergo.mappers.AppointmentMapper;
 import org.daw2.tallergo.crud_tallergo.repositories.AppointmentRepository;
 import org.daw2.tallergo.crud_tallergo.repositories.UserRepository;
@@ -97,5 +98,14 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new IllegalArgumentException("Cita no encontrada");
         }
         appointmentRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void updateStatus(Long id, AppointmentStatus newStatus) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Cita no encontrada con ID: " + id));
+        appointment.setStatus(newStatus);
+        appointmentRepository.save(appointment);
     }
 }

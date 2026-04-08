@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(#{msg.review-form.title})}"></head>
+
+<body class="d-flex flex-column h-100">
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="form-page">
+    <div class="form-card" style="max-width: 600px;">
+        <div class="text-center mb-4">
+            <h1 th:text="#{msg.review-form.title}">Cuéntanos tu experiencia</h1>
+            <h5 class="text-muted">Valorando a: <span class="fw-bold text-primary" th:text="${workshop.name}">Nombre Taller</span></h5>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <form th:action="@{/reviews/new}" th:object="${review}" method="post">
+            <input type="hidden" th:field="*{workshopId}" />
+
+            <div class="mb-3">
+                <label for="rating" class="form-label" th:text="#{msg.review-form.rating}">Puntuación (1-5)</label>
+                <select th:field="*{rating}" id="rating" class="form-select" th:classappend="${#fields.hasErrors('rating')} ? 'is-invalid'">
+                    <option value="5">⭐⭐⭐⭐⭐ (5 - Excelente)</option>
+                    <option value="4">⭐⭐⭐⭐ (4 - Muy bueno)</option>
+                    <option value="3">⭐⭐⭐ (3 - Normal)</option>
+                    <option value="2">⭐⭐ (2 - Regular)</option>
+                    <option value="1">⭐ (1 - Malo)</option>
+                </select>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></div>
+            </div>
+
+            <div class="mb-4">
+                <label for="comment" class="form-label" th:text="#{msg.review-form.comment}">Tu comentario</label>
+                <textarea th:field="*{comment}" id="comment" class="form-control" rows="4"
+                          th:classappend="${#fields.hasErrors('comment')} ? 'is-invalid'"
+                          placeholder="¿Qué tal fue la reparación? ¿Lo recomiendas?"></textarea>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}"></div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a th:href="@{/workshops}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary" th:text="#{msg.review-form.submit}">Enviar Reseña</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

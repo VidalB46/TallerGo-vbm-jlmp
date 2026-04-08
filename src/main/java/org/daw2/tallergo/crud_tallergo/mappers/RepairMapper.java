@@ -38,9 +38,14 @@ public class RepairMapper {
         dto.setEntryDate(entity.getEntryDate());
         dto.setStatus(entity.getStatus());
         dto.setNotes(entity.getNotes());
+
         dto.setVehicle(VehicleMapper.toDTO(entity.getVehicle()));
         dto.setAppointment(AppointmentMapper.toDTO(entity.getAppointment()));
-        dto.setBudget(BudgetMapper.toDTO(entity.getBudget()));
+
+        // Mapeo del presupuesto para que la vista RepairDetail tenga acceso a budget.accepted
+        if (entity.getBudget() != null) {
+            dto.setBudget(BudgetMapper.toDTO(entity.getBudget()));
+        }
 
         return dto;
     }
@@ -51,7 +56,7 @@ public class RepairMapper {
         Repair entity = new Repair();
         entity.setEntryDate(dto.getEntryDate());
         entity.setNotes(dto.getNotes());
-        entity.setStatus(RepairStatus.STANDBY); // Estado inicial por defecto
+        entity.setStatus(RepairStatus.STANDBY);
 
         entity.setAppointment(appointment);
         entity.setVehicle(vehicle);

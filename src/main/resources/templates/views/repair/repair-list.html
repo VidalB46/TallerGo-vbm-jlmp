@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head(#{msg.repair-list.title})}"></head>
+
+<body class="d-flex flex-column h-100">
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="list-page">
+    <div class="list-card">
+        <h1 th:text="#{msg.repair-list.title}">Gestión de Reparaciones</h1>
+
+        <div th:if="${success}" class="alert alert-success mt-3" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger mt-3" th:text="${error}"></div>
+
+        <table class="table table-bordered table-striped mt-3 align-middle">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th th:text="#{msg.repair-list.vehicle}">Vehículo</th>
+                <th th:text="#{msg.repair-list.entryDate}">Fecha Entrada</th>
+                <th th:text="#{msg.repair-list.status}">Estado</th>
+                <th th:text="#{msg.appointment-list.actions}">Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="repair : ${repairsPage.content}">
+                <td th:text="${repair.id}" class="fw-bold"></td>
+                <td th:text="${repair.vehicleModel + ' (' + repair.vehicleMatricula + ')'}"></td>
+                <td th:text="${#temporals.format(repair.entryDate, 'dd/MM/yyyy')}"></td>
+                <td>
+                    <span class="badge px-2 py-2 text-white"
+                          th:classappend="${#strings.toString(repair.status) == 'STANDBY' ? 'bg-secondary' : (#strings.toString(repair.status) == 'ACTIVO' ? 'bg-info text-dark' : 'bg-success')}"
+                          th:text="${repair.status.displayName}">
+                    </span>
+                </td>
+                <td>
+                    <a th:href="@{/repairs/{id}(id=${repair.id})}" class="btn btn-outline-info btn-sm">
+                        <i class="bi bi-eye"></i> <span th:text="#{msg.common.viewDetail}">Detalle</span>
+                    </a>
+                </td>
+            </tr>
+            <tr th:if="${repairsPage.empty}">
+                <td colspan="5" class="text-center text-muted py-4">
+                    <i class="bi bi-tools fs-4 d-block mb-2"></i> No hay reparaciones registradas.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="d-flex justify-content-between align-items-center mt-3" th:if="${repairsPage.totalPages > 0}">
+            <div class="text-muted small" th:text="#{msg.pagination.info(${repairsPage.number + 1}, ${repairsPage.totalPages}, ${repairsPage.totalElements})}"></div>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item" th:classappend="${repairsPage.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/repairs(page=${repairsPage.number - 1})}">&laquo;</a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, repairsPage.totalPages - 1)}" th:classappend="${i == repairsPage.number} ? 'active'">
+                        <a class="page-link" th:href="@{/repairs(page=${i})}" th:text="${i + 1}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${repairsPage.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/repairs(page=${repairsPage.number + 1})}">&raquo;</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

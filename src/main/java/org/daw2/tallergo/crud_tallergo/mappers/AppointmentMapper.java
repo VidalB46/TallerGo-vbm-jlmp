@@ -46,6 +46,10 @@ public class AppointmentMapper {
         dto.setUserEmail(entity.getUser() != null ? entity.getUser().getEmail() : "Desconocido");
         dto.setVehicle(VehicleMapper.toDTO(entity.getVehicle()));
         dto.setWorkshop(WorkshopMapper.toDTO(entity.getWorkshop()));
+        // Sacamos el ID real de la reparación si existe
+        if (entity.getRepair() != null) {
+            dto.setRepairId(entity.getRepair().getId());
+        }
 
         return dto;
     }
