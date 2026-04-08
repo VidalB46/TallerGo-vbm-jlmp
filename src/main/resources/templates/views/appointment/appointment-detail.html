@@ -9,162 +9,173 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
     <th:block th:replace="~{fragments/navbar :: navbarCss}"></th:block>
-<style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body.appt-detail-page {
-        font-family: 'Inter', sans-serif;
-        background: #f4f4f6;
-        color: #1a1a1a;
-        display: block !important;
-        height: auto !important;
-        min-height: 100vh;
-    }
-    body.appt-detail-page > nav,
-    body.appt-detail-page > div,
-    body.appt-detail-page > main,
-    body.appt-detail-page > footer { flex: unset !important; width: 100%; }
+        body.appt-detail-page {
+            font-family: 'Inter', sans-serif;
+            background: #f4f4f6;
+            color: #1a1a1a;
+            display: block !important;
+            height: auto !important;
+            min-height: 100vh;
+        }
+        body.appt-detail-page > nav,
+        body.appt-detail-page > div,
+        body.appt-detail-page > main,
+        body.appt-detail-page > footer { flex: unset !important; width: 100%; }
 
-    .tgo-nav {
-        background: rgba(10,10,10,0.93) !important;
-        backdrop-filter: blur(18px);
-        -webkit-backdrop-filter: blur(18px);
-        box-shadow: 0 2px 24px rgba(0,0,0,0.4);
-    }
+        .tgo-nav {
+            background: rgba(10,10,10,0.93) !important;
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            box-shadow: 0 2px 24px rgba(0,0,0,0.4);
+        }
 
-    @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
 
-    /* ── HERO ── */
-    .page-hero {
-        margin-top: 0;
-        padding: calc(4rem + 64px) 2.5rem 5rem;
-        background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
-        position: relative; overflow: hidden;
-    }
-    .page-hero::before {
-        content: '';
-        position: absolute; top: -60px; right: -60px;
-        width: 300px; height: 300px; border-radius: 50%;
-        background: radial-gradient(circle, rgba(192,57,43,0.15) 0%, transparent 70%);
-        pointer-events: none;
-    }
-    .page-hero-inner {
-        max-width: 900px; margin: 0 auto;
-        position: relative; z-index: 1;
-    }
-    .page-label {
-        font-size: 0.7rem; font-weight: 700; letter-spacing: 2.5px;
-        text-transform: uppercase; color: #c0392b; margin-bottom: 0.4rem;
-    }
-    .page-hero h1 {
-        font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: -0.5px;
-    }
-    .page-hero p { color: rgba(255,255,255,0.45); font-size: 0.88rem; margin-top: 0.3rem; }
+        /* ── HERO ── */
+        .page-hero {
+            margin-top: 0;
+            padding: calc(4rem + 64px) 2.5rem 5rem;
+            background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
+            position: relative; overflow: hidden;
+        }
+        .page-hero::before {
+            content: '';
+            position: absolute; top: -60px; right: -60px;
+            width: 300px; height: 300px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(192,57,43,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .page-hero-inner {
+            max-width: 900px; margin: 0 auto;
+            position: relative; z-index: 1;
+        }
+        .page-label {
+            font-size: 0.7rem; font-weight: 700; letter-spacing: 2.5px;
+            text-transform: uppercase; color: #c0392b; margin-bottom: 0.4rem;
+        }
+        .page-hero h1 {
+            font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: -0.5px;
+        }
+        .page-hero p { color: rgba(255,255,255,0.45); font-size: 0.88rem; margin-top: 0.3rem; }
 
-    /* ── CONTENT ── */
-    .detail-main {
-        max-width: 900px; margin: 2.5rem auto;
-        padding: 0 2rem 5rem;
-        animation: fadeUp 0.5s ease both;
-    }
+        /* ── CONTENT ── */
+        .detail-main {
+            max-width: 900px; margin: -2.5rem auto 5rem;
+            padding: 0 2rem;
+            animation: fadeUp 0.5s ease both;
+            position: relative; z-index: 10;
+        }
 
-    /* ── CARD PRINCIPAL ── */
-    .detail-card {
-        background: #fff;
-        border: 1.5px solid rgba(0,0,0,0.07);
-        border-radius: 20px;
-        box-shadow: 0 4px 24px rgba(0,0,0,0.07);
-        overflow: hidden;
-    }
+        /* ── CARD PRINCIPAL ── */
+        .detail-card {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
 
-    /* Franja de estado en top */
-    .detail-stripe {
-        height: 6px; width: 100%;
-    }
-    .stripe-solicitado { background: linear-gradient(90deg, #f39c12, #f1c40f); }
-    .stripe-confirmado { background: linear-gradient(90deg, #27ae60, #2ecc71); }
-    .stripe-cancelado  { background: linear-gradient(90deg, #c0392b, #e74c3c); }
-    .stripe-taller     { background: linear-gradient(90deg, #34495e, #7f8c8d); }
-    .stripe-reparacion { background: linear-gradient(90deg, #2980b9, #3498db); }
+        /* Franja de estado en top */
+        .detail-stripe {
+            height: 6px; width: 100%;
+        }
+        .stripe-solicitado { background: linear-gradient(90deg, #f39c12, #f1c40f); }
+        .stripe-confirmado { background: linear-gradient(90deg, #27ae60, #2ecc71); }
+        .stripe-cancelado  { background: linear-gradient(90deg, #c0392b, #e74c3c); }
+        .stripe-taller     { background: linear-gradient(90deg, #34495e, #7f8c8d); }
+        .stripe-reparacion { background: linear-gradient(90deg, #2980b9, #3498db); }
 
-    .detail-card-body { padding: 2rem 2.5rem; }
+        .detail-card-body { padding: 2.5rem; }
 
-    /* Header de la card */
-    .detail-header {
-        display: flex; align-items: center; justify-content: space-between;
-        flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;
-        padding-bottom: 1.5rem; border-bottom: 1.5px solid #f0f0f0;
-    }
-    .detail-id { font-size: 0.75rem; color: #bbb; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 0.2rem; }
-    .detail-date-big { font-size: 1.5rem; font-weight: 800; color: #111; }
-    .detail-time-big { font-size: 0.9rem; color: #888; margin-top: 0.15rem; display: flex; align-items: center; gap: 0.4rem; }
+        /* Header de la card */
+        .detail-header {
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;
+            padding-bottom: 1.5rem; border-bottom: 1.5px solid #f0f0f0;
+        }
+        .detail-id { font-size: 0.85rem; color: #888; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 0.2rem; }
+        .detail-date-big { font-size: 1.6rem; font-weight: 800; color: #111; }
+        .detail-time-big { font-size: 0.95rem; color: #888; margin-top: 0.2rem; display: flex; align-items: center; gap: 0.4rem; font-weight: 500;}
 
-    /* Badge de estado */
-    .status-badge {
-        display: inline-flex; align-items: center; gap: 0.4rem;
-        font-size: 0.78rem; font-weight: 700; letter-spacing: 0.8px;
-        text-transform: uppercase; padding: 0.4rem 1rem; border-radius: 20px;
-        white-space: nowrap;
-    }
-    .status-solicitado { background: rgba(243,156,18,0.12); color: #d68910; border: 1px solid rgba(243,156,18,0.3); }
-    .status-confirmado { background: rgba(39,174,96,0.12); color: #1e8449; border: 1px solid rgba(39,174,96,0.3); }
-    .status-cancelado  { background: rgba(192,57,43,0.10); color: #c0392b; border: 1px solid rgba(192,57,43,0.25); }
-    .status-taller     { background: rgba(108,117,125,0.12); color: #495057; border: 1px solid rgba(108,117,125,0.3); }
-    .status-reparacion { background: rgba(23,162,184,0.12); color: #138496; border: 1px solid rgba(23,162,184,0.3); }
+        /* Badge de estado */
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            font-size: 0.8rem; font-weight: 700; letter-spacing: 0.8px;
+            text-transform: uppercase; padding: 0.5rem 1.2rem; border-radius: 30px;
+            white-space: nowrap;
+        }
+        .status-solicitado { background: rgba(243,156,18,0.12); color: #d68910; border: 1px solid rgba(243,156,18,0.3); }
+        .status-confirmado { background: rgba(39,174,96,0.12); color: #1e8449; border: 1px solid rgba(39,174,96,0.3); }
+        .status-cancelado  { background: rgba(192,57,43,0.10); color: #c0392b; border: 1px solid rgba(192,57,43,0.25); }
+        .status-taller     { background: rgba(108,117,125,0.12); color: #495057; border: 1px solid rgba(108,117,125,0.3); }
+        .status-reparacion { background: rgba(52,152,219,0.12); color: #2980b9; border: 1px solid rgba(52,152,219,0.3); }
 
-    /* Secciones de info */
-    .detail-section { margin-bottom: 2rem; }
-    .detail-section-title {
-        font-size: 0.7rem; font-weight: 700; letter-spacing: 2px;
-        text-transform: uppercase; color: #c0392b; margin-bottom: 1rem;
-    }
-    .detail-grid {
-        display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
-    }
-    .detail-field label {
-        font-size: 0.72rem; font-weight: 600; color: #aaa;
-        text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 0.2rem;
-    }
-    .detail-field span {
-        font-size: 0.93rem; font-weight: 600; color: #111;
-        display: flex; align-items: center; gap: 0.4rem;
-    }
-    .detail-field span i { color: #c0392b; }
+        /* Secciones de info */
+        .detail-section { margin-bottom: 2rem; }
+        .detail-section-title {
+            font-size: 0.75rem; font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase; color: #c0392b; margin-bottom: 1rem;
+        }
+        .detail-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+        }
+        .detail-field label {
+            font-size: 0.75rem; font-weight: 600; color: #aaa;
+            text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 0.3rem;
+        }
+        .detail-field span {
+            font-size: 1rem; font-weight: 600; color: #111;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .detail-field span i { color: #c0392b; }
 
-    /* Notas */
-    .notes-box {
-        background: #f8f8fa; border: 1.5px solid #ebebee;
-        border-radius: 12px; padding: 1.2rem 1.4rem;
-        font-size: 0.9rem; color: #555; line-height: 1.6;
-    }
-    .notes-empty { color: #bbb; font-style: italic; }
+        /* Notas */
+        .notes-box {
+            background: #f8f8fa; border: 1.5px solid #ebebee;
+            border-radius: 12px; padding: 1.2rem 1.4rem;
+            font-size: 0.95rem; color: #555; line-height: 1.6;
+        }
+        .notes-empty { color: #bbb; font-style: italic; }
 
-    /* Footer de la card */
-    .detail-card-footer {
-        padding: 1.2rem 2.5rem;
-        border-top: 1.5px solid #f0f0f0;
-        display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
-    }
-    .btn-back {
-        display: inline-flex; align-items: center; gap: 0.4rem;
-        background: #f4f4f6; color: #555; font-size: 0.85rem; font-weight: 600;
-        padding: 0.6rem 1.2rem; border-radius: 10px; text-decoration: none;
-        border: 1.5px solid #e0e0e0;
-        transition: background 0.2s, color 0.2s;
-    }
-    .btn-back:hover { background: #eaeaea; color: #111; }
+        /* Footer de la card */
+        .detail-card-footer {
+            padding: 1.5rem 2.5rem;
+            border-top: 1.5px solid #f0f0f0;
+            background: #fafafa;
+            display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+        }
 
-    @media (max-width: 640px) {
-        .page-hero { padding: calc(3rem + 64px) 1.2rem 3.5rem; }
-        .detail-main { padding: 0 1rem 3rem; }
-        .detail-card-body { padding: 1.5rem; }
-        .detail-card-footer { padding: 1rem 1.5rem; flex-direction: column; align-items: stretch; }
-        .detail-grid { grid-template-columns: 1fr; }
-    }
-</style>
+        /* MODERN BUTTONS */
+        .btn-modern { border-radius: 8px; padding: 0.6rem 1.2rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: transform 0.15s, box-shadow 0.15s; border: none; cursor: pointer; text-decoration: none; font-size: 0.9rem;}
+        .btn-modern:hover { transform: translateY(-1px); }
+        .btn-outline { background: #fff; border: 1.5px solid #ccc; color: #555; }
+        .btn-outline:hover { background: #f4f4f4; color: #111; }
+        .btn-warning-modern { background: #ffc107; color: #000; box-shadow: 0 2px 8px rgba(255,193,7,0.3); }
+        .btn-info-modern { background: #0dcaf0; color: #fff; box-shadow: 0 2px 8px rgba(13,202,240,0.3); }
+        .btn-primary-modern { background: #0d6efd; color: #fff; box-shadow: 0 2px 8px rgba(13,110,253,0.3); }
+        .btn-success-modern { background: #198754; color: #fff; box-shadow: 0 2px 8px rgba(25,135,84,0.3); }
+        .btn-danger-modern { background: #dc3545; color: #fff; box-shadow: 0 2px 8px rgba(220,53,69,0.3); }
+        .btn-danger-outline-modern { background: transparent; border: 1.5px solid #dc3545; color: #dc3545; }
+        .btn-danger-outline-modern:hover { background: #dc3545; color: #fff; }
+        .btn-dark-modern { background: #212529; color: #fff; box-shadow: 0 2px 8px rgba(33,37,41,0.3); }
+
+        /* Custom Alerts */
+        .alert-custom { border-radius: 12px; border: none; padding: 1rem 1.2rem; display: flex; align-items: center; gap: 0.8rem; font-weight: 500; font-size: 0.95rem;}
+        .alert-custom i { font-size: 1.2rem; }
+
+        @media (max-width: 640px) {
+            .page-hero { padding: calc(3rem + 64px) 1.2rem 3.5rem; }
+            .detail-main { padding: 0 1rem; margin-top: -1.5rem; margin-bottom: 3rem;}
+            .detail-card-body { padding: 1.5rem; }
+            .detail-card-footer { padding: 1.5rem; flex-direction: column; align-items: stretch; }
+            .detail-grid { grid-template-columns: 1fr; gap: 1rem;}
+        }
+    </style>
 </head>
 
 <body class="appt-detail-page">
@@ -181,8 +192,8 @@
 
 <main class="detail-main">
 
-    <div th:if="${success}" class="alert alert-success mb-4" th:text="${success}"></div>
-    <div th:if="${error}" class="alert alert-danger mb-4" th:text="${error}"></div>
+    <div th:if="${success}" class="alert alert-success alert-custom mb-4 shadow-sm"><i class="bi bi-check-circle-fill"></i> <span th:text="${success}"></span></div>
+    <div th:if="${error}" class="alert alert-danger alert-custom mb-4 shadow-sm"><i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span></div>
 
     <div class="detail-card">
 
@@ -197,15 +208,15 @@
 
             <div class="detail-header">
                 <div>
-                    <div class="detail-id"># <span th:text="${appointment.id}"></span></div>
+                    <div class="detail-id">Gestión #<span th:text="${appointment.id}"></span></div>
                     <div class="detail-date-big"
-                         th:text="${#temporals.format(appointment.startDate, 'dd MMM yyyy')}">01 Ene 2025</div>
+                         th:text="${#temporals.format(appointment.startDate, 'dd MMM yyyy')}"></div>
                     <div class="detail-time-big">
                         <i class="bi bi-clock"></i>
                         <span th:text="${#temporals.format(appointment.startDate, 'HH:mm')} + ' h'"></span>
                     </div>
                 </div>
-                
+
                 <span class="status-badge"
                       th:classappend="${#strings.toString(appointment.status) == 'SOLICITADO'} ? 'status-solicitado' :
                                     (${#strings.toString(appointment.status) == 'CONFIRMADO' or #strings.toString(appointment.status) == 'LISTO_RECOGIDA'} ? 'status-confirmado' :
@@ -264,7 +275,7 @@
                 </div>
             </div>
 
-            <div class="detail-section">
+            <div class="detail-section mb-0">
                 <div class="detail-section-title"><i class="bi bi-chat-left-text"></i> Motivo / Notas</div>
                 <div class="notes-box">
                     <span th:if="${appointment.notes != null and !#strings.isEmpty(appointment.notes)}"
@@ -278,52 +289,85 @@
         </div>
 
         <div class="detail-card-footer">
-            <a th:href="@{/appointments}" class="btn-back">
+            <a th:href="@{/appointments}" class="btn-modern btn-outline">
                 <i class="bi bi-arrow-left"></i> Volver al listado
             </a>
 
-            <div class="d-flex flex-wrap gap-2">
-                
-                <form sec:authorize="hasRole('CLIENT')"
-                      th:if="${#strings.toString(appointment.status) == 'SOLICITADO' or #strings.toString(appointment.status) == 'CONFIRMADO'}"
+            <div sec:authorize="hasRole('CLIENT')" class="d-flex flex-wrap gap-2">
+
+                <form th:if="${#strings.toString(appointment.status) == 'SOLICITADO' or #strings.toString(appointment.status) == 'CONFIRMADO'}"
                       th:action="@{/appointments/{id}/cancel(id=${appointment.id})}" method="post"
-                      onsubmit="return confirm('¿Estás seguro de que deseas cancelar esta cita?');">
-                    <button type="submit" class="btn btn-danger btn-sm">
+                      onsubmit="return confirm('¿Estás seguro de que deseas cancelar esta cita?');"
+                      class="m-0">
+                    <button type="submit" class="btn-modern btn-danger-modern">
                         <i class="bi bi-x-circle"></i> Cancelar Cita
                     </button>
                 </form>
 
-                <a sec:authorize="hasRole('CLIENT')"
-                   th:if="${#strings.toString(appointment.status) == 'EN_TALLER' or #strings.toString(appointment.status) == 'EN_REPARACION' or #strings.toString(appointment.status) == 'LISTO_RECOGIDA' or #strings.toString(appointment.status) == 'RECOGIDO'}"
+                <a th:if="${(#strings.toString(appointment.status) == 'EN_TALLER' or #strings.toString(appointment.status) == 'EN_REPARACION' or #strings.toString(appointment.status) == 'LISTO_RECOGIDA' or #strings.toString(appointment.status) == 'RECOGIDO') and appointment.hasBudget}"
                    th:href="@{/budgets/repair/{id}(id=${appointment.repairId})}"
-                   class="btn btn-info text-white btn-sm">
+                   class="btn-modern btn-info-modern">
                     <i class="bi bi-receipt"></i> Ver Presupuesto
                 </a>
 
-                <a sec:authorize="hasRole('ADMIN')"
-                   th:if="${appointment.repairId != null}"
-                   th:href="@{/repairs/{id}(id=${appointment.repairId})}"
-                   class="btn btn-secondary text-white btn-sm">
-                    <i class="bi bi-gear"></i> Gestión de Reparación
-                </a>
-
-                <form sec:authorize="hasRole('ADMIN')"
-                      th:if="${#strings.toString(appointment.status) == 'SOLICITADO'}"
-                      th:action="@{/appointments/{id}/confirm(id=${appointment.id})}" method="post">
-                    <button type="submit" class="btn btn-success btn-sm"><i class="bi bi-check-lg"></i> Confirmar Cita</button>
-                </form>
-
-                <form sec:authorize="hasRole('ADMIN')"
-                      th:if="${#strings.toString(appointment.status) == 'SOLICITADO'}"
-                      th:action="@{/appointments/{id}/cancel(id=${appointment.id})}" method="post">
-                    <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-x-lg"></i> Rechazar Cita</button>
-                </form>
-
-                <a sec:authorize="hasRole('ADMIN')"
-                   th:if="${#strings.toString(appointment.status) == 'CONFIRMADO'}"
-                   th:href="@{/repairs/new(appointmentId=${appointment.id}, vehicleId=${appointment.vehicle.id})}"
-                   class="btn btn-primary btn-sm"><i class="bi bi-box-arrow-in-right"></i> Recepcionar Vehículo</a>
+                <div th:if="${#strings.toString(appointment.status) == 'EN_TALLER' and !appointment.hasBudget}" class="text-muted small fst-italic align-self-center ms-2">
+                    <i class="bi bi-tools"></i> El taller está elaborando tu presupuesto...
+                </div>
             </div>
+
+            <div sec:authorize="hasRole('ADMIN')" class="d-flex flex-wrap gap-2 align-items-center">
+
+                <th:block th:if="${#strings.toString(appointment.status) == 'SOLICITADO'}">
+                    <div class="d-flex gap-2">
+                        <form th:action="@{/appointments/{id}/cancel(id=${appointment.id})}" method="post" class="m-0">
+                            <button type="submit" class="btn-modern btn-danger-outline-modern"><i class="bi bi-x-lg"></i> Rechazar</button>
+                        </form>
+
+                        <form th:action="@{/appointments/{id}/confirm(id=${appointment.id})}" method="post" class="m-0">
+                            <button type="submit" class="btn-modern btn-success-modern"><i class="bi bi-check-lg"></i> Confirmar Cita</button>
+                        </form>
+                    </div>
+                </th:block>
+
+                <a th:if="${#strings.toString(appointment.status) == 'CONFIRMADO'}"
+                   th:href="@{/repairs/new(appointmentId=${appointment.id}, vehicleId=${appointment.vehicle.id})}"
+                   class="btn-modern btn-primary-modern"><i class="bi bi-box-arrow-in-right"></i> Recepcionar Vehículo</a>
+
+                <th:block th:if="${#strings.toString(appointment.status) == 'EN_TALLER'}">
+
+                    <a th:if="${!appointment.hasBudget}"
+                       th:href="@{/budgets/new(repairId=${appointment.repairId})}"
+                       class="btn-modern btn-warning-modern">
+                        <i class="bi bi-file-earmark-plus"></i> Generar Presupuesto
+                    </a>
+
+                    <a th:if="${appointment.hasBudget}"
+                       th:href="@{/budgets/repair/{id}(id=${appointment.repairId})}"
+                       class="btn-modern btn-info-modern">
+                        <i class="bi bi-receipt"></i> Ver Presupuesto
+                    </a>
+
+                    <form th:if="${appointment.isBudgetAccepted}" th:action="@{/repairs/{id}/start(id=${appointment.repairId})}" method="post" class="m-0">
+                        <button type="submit" class="btn-modern btn-primary-modern"><i class="bi bi-play-circle"></i> Iniciar Trabajo</button>
+                    </form>
+
+                    <div th:if="${appointment.hasBudget and !appointment.isBudgetAccepted}" class="text-muted small fst-italic ms-2">
+                        <i class="bi bi-clock-history"></i> Esperando aprobación del cliente...
+                    </div>
+                </th:block>
+
+                <form th:if="${#strings.toString(appointment.status) == 'EN_REPARACION'}"
+                      th:action="@{/repairs/{id}/finish(id=${appointment.repairId})}" method="post" class="m-0">
+                    <button type="submit" class="btn-modern btn-success-modern"><i class="bi bi-check2-all"></i> Finalizar Reparación</button>
+                </form>
+
+                <form th:if="${#strings.toString(appointment.status) == 'LISTO_RECOGIDA'}"
+                      th:action="@{/repairs/{id}/deliver(id=${appointment.repairId})}" method="post" class="m-0">
+                    <button type="submit" class="btn-modern btn-dark-modern"><i class="bi bi-key"></i> Entregar Vehículo</button>
+                </form>
+
+            </div>
+
         </div>
     </div>
 </main>

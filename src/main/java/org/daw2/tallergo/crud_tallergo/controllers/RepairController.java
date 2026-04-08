@@ -1,5 +1,6 @@
 package org.daw2.tallergo.crud_tallergo.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.daw2.tallergo.crud_tallergo.dtos.RepairCreateDTO;
@@ -26,7 +27,6 @@ public class RepairController {
     public String listRepairs(@RequestParam(defaultValue = "0") int page, Model model) {
         Pageable pageable = PageRequest.of(page, 10);
         Page<RepairDTO> repairs = repairService.getAllRepairs(pageable);
-
         model.addAttribute("repairsPage", repairs);
         return "views/repair/repair-list";
     }
@@ -45,7 +45,6 @@ public class RepairController {
         RepairCreateDTO dto = new RepairCreateDTO();
         dto.setAppointmentId(appointmentId);
         dto.setVehicleId(vehicleId);
-
         model.addAttribute("repair", dto);
         return "views/repair/repair-form";
     }
@@ -59,7 +58,8 @@ public class RepairController {
         try {
             repairService.createRepair(dto);
             redirectAttributes.addFlashAttribute("success", "Vehículo recepcionado. La reparación está en STANDBY.");
-            return "redirect:/repairs";
+            // CORRECCIÓN: Al recepcionar, volvemos a la cita automáticamente
+            return "redirect:/appointments/" + dto.getAppointmentId();
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/appointments";
@@ -67,35 +67,40 @@ public class RepairController {
     }
 
     @PostMapping("/{id}/start")
-    public String startRepair(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String startRepair(@PathVariable Long id, HttpServletRequest request, RedirectAttributes redirectAttributes) {
         try {
             repairService.updateStatus(id, org.daw2.tallergo.crud_tallergo.enums.RepairStatus.ACTIVO);
             redirectAttributes.addFlashAttribute("success", "¡Trabajo iniciado! El coche ya está en reparación.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error: " + e.getMessage());
         }
-        return "redirect:/repairs/" + id;
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/appointments");
     }
 
     @PostMapping("/{id}/finish")
-    public String finishRepair(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String finishRepair(@PathVariable Long id, HttpServletRequest request, RedirectAttributes redirectAttributes) {
         try {
             repairService.updateStatus(id, org.daw2.tallergo.crud_tallergo.enums.RepairStatus.FINALIZADO);
             redirectAttributes.addFlashAttribute("success", "¡Reparación finalizada! El vehículo está listo para recoger.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al finalizar: " + e.getMessage());
         }
-        return "redirect:/repairs/" + id;
+
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/appointments");
     }
 
     @PostMapping("/{id}/deliver")
-    public String deliverVehicle(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String deliverVehicle(@PathVariable Long id, HttpServletRequest request, RedirectAttributes redirectAttributes) {
         try {
             repairService.deliverVehicle(id);
             redirectAttributes.addFlashAttribute("success", "¡Vehículo entregado!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al entregar: " + e.getMessage());
         }
-        return "redirect:/repairs/" + id;
+
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/appointments");
     }
 }

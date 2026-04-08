@@ -20,10 +20,14 @@ public class AppointmentDetailDTO {
     private AppointmentStatus status;
     private String notes;
     private String mediaUrl;
+
     // Objetos DTO relacionados para mostrar información completa en la vista de detalle
     private VehicleDTO vehicle;
     private WorkshopDTO workshop;
     private String userEmail;
-    // Identificador de la reparación asociada
+
+    // Identificadores y banderas de la reparación asociada
     private Long repairId;
+    private Boolean hasBudget;
+    private Boolean isBudgetAccepted; // Controla si se puede iniciar la reparación
 }
