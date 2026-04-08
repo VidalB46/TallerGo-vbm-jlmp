@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head(#{msg.budget-detail.title})}"></head>
+
+<body class="d-flex flex-column h-100">
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="form-page">
+    <div class="form-card" style="max-width: 600px;">
+        <h1 class="text-center mb-4"><i class="bi bi-receipt"></i> <span th:text="#{msg.budget-detail.title}">Tu Presupuesto</span></h1>
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">ID Reparación:</span>
+                    <span class="fw-bold" th:text="${budget.repairId}"></span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Total Bruto:</span>
+                    <span th:text="${budget.totalGross + ' €'}"></span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between fs-5">
+                    <span class="fw-bold" th:text="#{msg.budget-detail.total}">Total a pagar (con IVA):</span>
+                    <span class="fw-bold text-primary" th:text="${budget.totalNet + ' €'}"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mb-4">
+            <div th:if="${budget.accepted}" class="alert alert-success d-inline-block px-4">
+                <i class="bi bi-check-circle-fill"></i> <span th:text="#{msg.budget-detail.accepted}">Estado: Aceptado</span>
+            </div>
+            <div th:unless="${budget.accepted}" class="alert alert-warning d-inline-block px-4">
+                <i class="bi bi-clock-history"></i> <span th:text="#{msg.budget-detail.pending}">Estado: Pendiente de aprobación</span>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center gap-3">
+            <a sec:authorize="hasRole('CLIENT')" th:href="@{/appointments}" class="btn btn-secondary">Volver a mis citas</a>
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/repairs/{id}(id=${budget.repairId})}" class="btn btn-secondary">Volver a la Reparación</a>
+
+            <form th:if="${!budget.accepted}" sec:authorize="hasRole('CLIENT')"
+                  th:action="@{/budgets/{id}/accept(id=${budget.id})}" method="post">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-check-lg"></i> <span th:text="#{msg.budget.action.accept}">Aceptar Presupuesto</span>
+                </button>
+            </form>
+
+            <form th:if="${!budget.accepted}" sec:authorize="hasRole('CLIENT')"
+                  th:action="@{/budgets/{id}/reject(id=${budget.id})}" method="post"
+                  onsubmit="return confirm('¿Seguro que quieres rechazar el presupuesto? El taller tendrá que hacer uno nuevo.');">
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-x-lg"></i> Rechazar
+                </button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

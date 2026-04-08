@@ -16,6 +16,10 @@ public class BudgetMapper {
         dto.setId(entity.getId());
         dto.setTotalGross(entity.getTotalGross());
         dto.setTotalNet(entity.getTotalNet());
+
+        // Para que pase el estado real
+        dto.setAccepted(entity.getAccepted());
+
         if (entity.getRepair() != null) {
             dto.setRepairId(entity.getRepair().getId());
         }
@@ -46,7 +50,7 @@ public class BudgetMapper {
         Budget entity = new Budget();
         entity.setTotalGross(dto.getTotalGross());
         entity.setTotalNet(dto.getTotalNet());
-        entity.setAccepted(false); // Por defecto un presupuesto nace sin aceptar
+        entity.setAccepted(false);
         entity.setRepair(repair);
 
         return entity;

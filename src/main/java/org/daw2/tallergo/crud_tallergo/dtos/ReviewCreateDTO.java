@@ -7,27 +7,20 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
- * DTO para que el cliente pueda valorar un taller tras una reparación.
+ * DTO para la creación de reseñas.
  */
 @Data
 public class ReviewCreateDTO {
 
-    /**
-     * Puntuación del 1 al 5.
-     */
-    @NotNull
+    @NotNull(message = "{validation.rating.notnull}")
     @Min(1) @Max(5)
     private Integer rating;
 
-    /**
-     * Comentario opcional sobre la experiencia.
-     */
-    @NotBlank
+    @NotBlank(message = "{validation.comment.notblank}")
     private String comment;
 
-    /**
-     * Taller al que se puntúa.
-     */
     @NotNull
     private Integer workshopId;
+
+    private Long userId;
 }
