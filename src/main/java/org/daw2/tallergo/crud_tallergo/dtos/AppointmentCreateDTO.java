@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.time.LocalDateTime;
 
 /**
@@ -41,4 +43,14 @@ public class AppointmentCreateDTO {
      */
     @NotNull(message = "{msg.appointment.workshop.notNull}")
     private Integer workshopId;
+
+    /**
+     * Fichero de imagen subido por el cliente (opcional).
+     */
+    private MultipartFile mediaFile;
+
+    /**
+     * Ruta web de la imagen generada tras guardarse en el disco duro.
+     */
+    private String mediaUrl;
 }

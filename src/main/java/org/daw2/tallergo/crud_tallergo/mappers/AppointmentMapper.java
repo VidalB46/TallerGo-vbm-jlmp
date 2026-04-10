@@ -96,6 +96,9 @@ public class AppointmentMapper {
         entity.setStartDate(dto.getStartDate());
         entity.setNotes(dto.getNotes());
 
+        // ¡MAGIA DE LAS IMÁGENES! Pasamos la ruta web a la entidad
+        entity.setMediaUrl(dto.getMediaUrl());
+
         // Toda cita recién creada inicia en estado SOLICITADO
         entity.setStatus(AppointmentStatus.SOLICITADO);
 

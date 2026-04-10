@@ -238,7 +238,7 @@
     /* Floating label inputs */
     .input-group-float {
         position: relative;
-        margin-bottom: 1.2rem;
+        margin-bottom: 1.5rem; /* Ajustado margen para el mensaje de error */
     }
     .input-group-float .float-label {
         position: absolute;
@@ -280,7 +280,6 @@
         color: #c0392b;
         font-weight: 600;
     }
-    /* Icono dentro del input */
     .input-group-float .input-icon {
         position: absolute;
         right: 0.9rem;
@@ -292,6 +291,22 @@
         cursor: pointer;
     }
     .input-group-float .float-input:focus ~ .input-icon { color: #c0392b; }
+
+    /* ESTILOS DE VALIDACIÓN JS */
+    .was-validated .float-input:invalid {
+        border-color: #dc3545;
+        background-color: #fff8f8;
+    }
+    .invalid-feedback-custom {
+        display: none;
+        color: #dc3545;
+        font-size: 0.78rem;
+        margin-top: 0.25rem;
+        text-align: left;
+    }
+    .was-validated .float-input:invalid ~ .invalid-feedback-custom {
+        display: block;
+    }
 
     /* Botón Entrar */
     .btn-login {
@@ -324,15 +339,8 @@
         transition: width 0.5s ease, height 0.5s ease, opacity 0.5s ease;
         opacity: 0;
     }
-    .btn-login:active::after {
-        width: 300px; height: 300px;
-        opacity: 1;
-        transition: 0s;
-    }
-    .btn-login:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 8px 24px rgba(192,57,43,0.45);
-    }
+    .btn-login:active::after { width: 300px; height: 300px; opacity: 1; transition: 0s; }
+    .btn-login:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(192,57,43,0.45); }
     .btn-login:active { transform: translateY(0); }
 
     /* Divisor */
@@ -347,79 +355,29 @@
         text-transform: uppercase;
     }
     .login-divider::before,
-    .login-divider::after {
-        content: '';
-        flex: 1;
-        height: 1px;
-        background: #ececec;
-    }
+    .login-divider::after { content: ''; flex: 1; height: 1px; background: #ececec; }
 
     /* Botón GitHub */
     .github-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        background: #0d0d0d;
-        color: #fff;
-        border: 1.5px solid #222;
-        border-radius: 10px;
-        padding: 0.65rem;
-        width: 100%;
-        font-size: 0.88rem;
-        font-weight: 600;
-        text-decoration: none;
-        font-family: inherit;
-        cursor: pointer;
+        display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+        background: #0d0d0d; color: #fff; border: 1.5px solid #222; border-radius: 10px;
+        padding: 0.65rem; width: 100%; font-size: 0.88rem; font-weight: 600;
+        text-decoration: none; font-family: inherit; cursor: pointer;
         transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    .github-btn:hover {
-        background: #222;
-        transform: translateY(-1px);
-        box-shadow: 0 6px 18px rgba(0,0,0,0.2);
-        color: #fff;
-    }
+    .github-btn:hover { background: #222; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,0.2); color: #fff; }
 
     /* Links extra */
-    .extra-links {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 1.1rem;
-        font-size: 0.82rem;
-    }
-    .extra-links a {
-        color: #888;
-        text-decoration: none;
-        transition: color 0.2s;
-        font-weight: 500;
-    }
+    .extra-links { display: flex; justify-content: space-between; margin-top: 1.1rem; font-size: 0.82rem; }
+    .extra-links a { color: #888; text-decoration: none; transition: color 0.2s; font-weight: 500; }
     .extra-links a:hover { color: #c0392b; }
 
     /* Alertas dentro de la card */
-    .login-alert {
-        border-radius: 10px;
-        font-size: 0.85rem;
-        padding: 0.65rem 0.9rem;
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    .login-alert.error {
-        background: rgba(192,57,43,0.08);
-        border: 1px solid rgba(192,57,43,0.25);
-        color: #a93226;
-    }
-    .login-alert.success {
-        background: rgba(39,174,96,0.08);
-        border: 1px solid rgba(39,174,96,0.25);
-        color: #1e8449;
-    }
+    .login-alert { border-radius: 10px; font-size: 0.85rem; padding: 0.65rem 0.9rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .login-alert.error { background: rgba(192,57,43,0.08); border: 1px solid rgba(192,57,43,0.25); color: #a93226; }
+    .login-alert.success { background: rgba(39,174,96,0.08); border: 1px solid rgba(39,174,96,0.25); color: #1e8449; }
 
-    /* ================================================================
-       RESPONSIVE
-    ================================================================ */
     @media (max-width: 640px) {
         .login-hero-content h1 { font-size: 1.7rem; }
         .login-topbar .topbar-nav { display: none; }
@@ -429,115 +387,71 @@
 
 <body class="login-page">
 
-    <!-- ── TOP BAR ── -->
-    <header class="login-topbar">
-        <a th:href="@{/}" class="brand-name">
-            TallerGO<span class="brand-dot"></span>
-        </a>
-        <ul class="topbar-nav">
-            <li><a th:href="@{/}">Inicio</a></li>
-            <li><a th:href="@{/workshops}">Para Talleres</a></li>
-            <li><a th:href="@{/register}">Registrarse</a></li>
-        </ul>
-    </header>
+<header class="login-topbar">
+    <a th:href="@{/}" class="brand-name">TallerGO<span class="brand-dot"></span></a>
+    <ul class="topbar-nav">
+        <li><a th:href="@{/}">Inicio</a></li>
+        <li><a th:href="@{/workshops}">Para Talleres</a></li>
+        <li><a th:href="@{/register}">Registrarse</a></li>
+    </ul>
+</header>
 
-    <!-- ── HERO ── -->
-    <section class="login-hero">
-        <div class="login-hero-content">
+<section class="login-hero">
+    <div class="login-hero-content">
 
-            <div class="login-badge">
-                <i class="bi bi-shield-check-fill"></i>
-                Acceso seguro
-            </div>
+        <div class="login-badge"><i class="bi bi-shield-check-fill"></i> Acceso seguro</div>
+        <h1>Bienvenido a <span>TallerGO</span></h1>
+        <p class="subtitle">Inicia sesión para gestionar tus citas y vehículos.</p>
 
-            <h1>Bienvenido a <span>TallerGO</span></h1>
-            <p class="subtitle">Inicia sesión para gestionar tus citas y vehículos.</p>
+        <div class="login-card">
 
-            <!-- ── LOGIN CARD ── -->
-            <div class="login-card">
+            <div th:if="${errorMessage}" class="login-alert error"><i class="bi bi-exclamation-circle-fill"></i><span th:text="${errorMessage}"></span></div>
+            <div th:if="${param.error}" class="login-alert error"><i class="bi bi-exclamation-circle-fill"></i><span th:text="#{spring.security.ui.login.error} ?: 'Usuario o contraseña incorrectos'"></span></div>
+            <div th:if="${param.logout}" class="login-alert success"><i class="bi bi-check-circle-fill"></i><span th:text="#{spring.security.ui.login.logout-success} ?: 'Has cerrado sesión correctamente'"></span></div>
 
-                <!-- Alerts -->
-                <div th:if="${errorMessage}" class="login-alert error">
-                    <i class="bi bi-exclamation-circle-fill"></i>
-                    <span th:text="${errorMessage}"></span>
-                </div>
-                <div th:if="${param.error}" class="login-alert error">
-                    <i class="bi bi-exclamation-circle-fill"></i>
-                    <span th:text="#{spring.security.ui.login.error} ?: 'Usuario o contraseña incorrectos'"></span>
-                </div>
-                <div th:if="${param.logout}" class="login-alert success">
-                    <i class="bi bi-check-circle-fill"></i>
-                    <span th:text="#{spring.security.ui.login.logout-success} ?: 'Has cerrado sesión correctamente'"></span>
+            <form th:action="@{/login}" method="post" autocomplete="on" class="needs-validation" novalidate>
+
+                <div class="input-group-float">
+                    <input type="email" id="username" name="username" class="float-input" placeholder=" " required autofocus>
+                    <label for="username" class="float-label">Email</label>
+                    <i class="bi bi-envelope input-icon"></i>
+                    <div class="invalid-feedback-custom">El correo electrónico es obligatorio.</div>
                 </div>
 
-                <form th:action="@{/login}" method="post" autocomplete="on">
+                <div class="input-group-float">
+                    <input type="password" id="password" name="password" class="float-input" placeholder=" " required>
+                    <label for="password" class="float-label">Contraseña</label>
+                    <i class="bi bi-eye input-icon" id="togglePassword"></i>
+                    <div class="invalid-feedback-custom">Debes introducir tu contraseña.</div>
+                </div>
 
-                    <!-- Email -->
-                    <div class="input-group-float">
-                        <input type="text"
-                               id="username"
-                               name="username"
-                               class="float-input"
-                               placeholder=" "
-                               required
-                               autofocus>
-                        <label for="username" class="float-label">Email</label>
-                        <i class="bi bi-envelope input-icon"></i>
-                    </div>
+                <button type="submit" class="btn-login">Entrar &nbsp;→</button>
 
-                    <!-- Contraseña -->
-                    <div class="input-group-float">
-                        <input type="password"
-                               id="password"
-                               name="password"
-                               class="float-input"
-                               placeholder=" "
-                               required>
-                        <label for="password" class="float-label">Contraseña</label>
-                        <i class="bi bi-eye input-icon" id="togglePassword"></i>
-                    </div>
+                <div class="login-divider">O continúa con</div>
+                <a th:href="@{/oauth2/authorization/github}" class="github-btn"><i class="bi bi-github"></i> GitHub</a>
 
-                    <button type="submit" class="btn-login">
-                        Entrar &nbsp;→
-                    </button>
-
-                    <div class="login-divider">O continúa con</div>
-
-                    <a th:href="@{/oauth2/authorization/github}" class="github-btn">
-                        <i class="bi bi-github"></i> GitHub
-                    </a>
-
-                    <div class="extra-links">
-                        <a th:href="@{/register}">Crear cuenta</a>
-                        <a th:href="@{/auth/forgot-password}">¿Olvidaste la contraseña?</a>
-                    </div>
-                </form>
-            </div>
-            <!-- /login-card -->
-
+                <div class="extra-links">
+                    <a th:href="@{/register}">Crear cuenta</a>
+                    <a th:href="@{/auth/forgot-password}">¿Olvidaste la contraseña?</a>
+                </div>
+            </form>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- ── FOOTER ── -->
-    <footer th:replace="~{fragments/footer :: footer}"></footer>
-
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 <div th:replace="~{fragments/scripts :: scripts}"></div>
 
 <script>
-    /* ── Toggle mostrar/ocultar contraseña ── */
     const toggleBtn = document.getElementById('togglePassword');
     const pwdInput  = document.getElementById('password');
     if (toggleBtn && pwdInput) {
         toggleBtn.addEventListener('click', () => {
             const isPass = pwdInput.type === 'password';
             pwdInput.type = isPass ? 'text' : 'password';
-            toggleBtn.className = isPass
-                ? 'bi bi-eye-slash input-icon'
-                : 'bi bi-eye input-icon';
+            toggleBtn.className = isPass ? 'bi bi-eye-slash input-icon' : 'bi bi-eye input-icon';
         });
     }
-
-    /* ── Parallax suave en el hero con el ratón ── */
     const hero = document.querySelector('.login-hero');
     if (hero) {
         document.addEventListener('mousemove', (e) => {
@@ -547,6 +461,5 @@
         });
     }
 </script>
-
 </body>
 </html>
