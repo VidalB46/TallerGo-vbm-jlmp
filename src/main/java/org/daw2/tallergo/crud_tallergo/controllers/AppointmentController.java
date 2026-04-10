@@ -35,8 +35,6 @@ public class AppointmentController {
     private final VehicleService vehicleService;
     private final WorkshopService workshopService;
     private final UserRepository userRepository;
-
-    // Inyectamos el servicio de archivos
     private final FileStorageService fileStorageService;
 
     @GetMapping
@@ -91,7 +89,6 @@ public class AppointmentController {
         }
 
         try {
-            // Lógica de subida de imagen o vídeo
             if (dto.getMediaFile() != null && !dto.getMediaFile().isEmpty()) {
                 String contentType = dto.getMediaFile().getContentType();
                 if (contentType == null || (!contentType.startsWith("image/") && !contentType.startsWith("video/"))) {
@@ -131,8 +128,6 @@ public class AppointmentController {
         return "views/appointment/appointment-detail";
     }
 
-    // --- ACCIONES RÁPIDAS DE ESTADO ---
-
     @PostMapping("/{id}/confirm")
     public String confirmAppointment(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
@@ -144,16 +139,29 @@ public class AppointmentController {
         return "redirect:/appointments/" + id;
     }
 
-    // NUEVO MÉTODO: Reprogramar fecha
     @PostMapping("/{id}/reschedule")
     public String rescheduleAppointment(@PathVariable Long id,
                                         @RequestParam("newDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime newDate,
                                         RedirectAttributes redirectAttributes) {
         try {
             appointmentService.updateDate(id, newDate);
-            redirectAttributes.addFlashAttribute("success", "La fecha de la cita se ha modificado correctamente.");
+            // Mensaje adaptado para dejar claro que falta que el cliente acepte
+            redirectAttributes.addFlashAttribute("success", "La fecha ha sido reprogramada y está pendiente de aceptación por el cliente.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al reprogramar la cita: " + e.getMessage());
+        }
+        return "redirect:/appointments/" + id;
+    }
+
+    // El cliente acepta la nueva fecha
+    @PostMapping("/{id}/accept-date")
+    public String acceptDate(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            appointmentService.acceptDate(id);
+            // Mensaje actualizado
+            redirectAttributes.addFlashAttribute("success", "¡Genial! Has aceptado la nueva fecha y tu cita ha quedado confirmada automáticamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al aceptar la fecha: " + e.getMessage());
         }
         return "redirect:/appointments/" + id;
     }

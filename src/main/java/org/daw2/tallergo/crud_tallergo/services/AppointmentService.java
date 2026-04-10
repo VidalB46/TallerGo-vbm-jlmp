@@ -20,4 +20,5 @@ public interface AppointmentService {
     void deleteAppointment(Long id);
     void updateStatus(Long id, AppointmentStatus newStatus);
     void updateDate(Long id, LocalDateTime newDate);
+    void acceptDate(Long id);
 }

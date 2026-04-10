@@ -100,8 +100,11 @@ CREATE TABLE IF NOT EXISTS appointments (
   end_date DATETIME,
   status VARCHAR(20) DEFAULT 'SOLICITADO',
   notes TEXT,
-
   media_url VARCHAR(255),
+
+  -- NUEVA COLUMNA: Controla si el cliente acepta los cambios de fecha
+  is_date_accepted_by_client BOOLEAN NOT NULL DEFAULT TRUE,
+
   CONSTRAINT fk_appt_user FOREIGN KEY (user_id) REFERENCES users(id),
   CONSTRAINT fk_appt_workshop FOREIGN KEY (workshop_id) REFERENCES workshops(id),
   CONSTRAINT fk_appt_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(id)
