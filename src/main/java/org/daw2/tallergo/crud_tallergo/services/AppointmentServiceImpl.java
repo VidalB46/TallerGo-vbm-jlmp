@@ -111,13 +111,26 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointmentRepository.save(appointment);
     }
 
-    //  Actualiza la fecha
     @Override
     @Transactional
     public void updateDate(Long id, LocalDateTime newDate) {
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Cita no encontrada con ID: " + id));
         appointment.setStartDate(newDate);
+        appointment.setIsDateAcceptedByClient(false);
+        appointmentRepository.save(appointment);
+    }
+
+    @Override
+    @Transactional
+    public void acceptDate(Long id) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Cita no encontrada con ID: " + id));
+        // El cliente acepta la fecha
+        appointment.setIsDateAcceptedByClient(true);
+        // Como el taller fue quien propuso la fecha, la damos por confirmada automáticamente
+        appointment.setStatus(AppointmentStatus.CONFIRMADO);
+
         appointmentRepository.save(appointment);
     }
 }
