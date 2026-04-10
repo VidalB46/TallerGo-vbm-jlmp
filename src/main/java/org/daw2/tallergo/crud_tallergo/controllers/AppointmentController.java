@@ -8,12 +8,14 @@ import org.daw2.tallergo.crud_tallergo.dtos.AppointmentDetailDTO;
 import org.daw2.tallergo.crud_tallergo.entities.User;
 import org.daw2.tallergo.crud_tallergo.repositories.UserRepository;
 import org.daw2.tallergo.crud_tallergo.services.AppointmentService;
+import org.daw2.tallergo.crud_tallergo.services.FileStorageService;
 import org.daw2.tallergo.crud_tallergo.services.VehicleService;
 import org.daw2.tallergo.crud_tallergo.services.WorkshopService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
@@ -21,6 +23,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.time.LocalDateTime;
 
 @Controller
 @RequestMapping("/appointments")
@@ -31,6 +35,9 @@ public class AppointmentController {
     private final VehicleService vehicleService;
     private final WorkshopService workshopService;
     private final UserRepository userRepository;
+
+    // Inyectamos el servicio de archivos
+    private final FileStorageService fileStorageService;
 
     @GetMapping
     public String listAppointments(@RequestParam(defaultValue = "0") int page,
@@ -84,6 +91,27 @@ public class AppointmentController {
         }
 
         try {
+            // Lógica de subida de imagen o vídeo
+            if (dto.getMediaFile() != null && !dto.getMediaFile().isEmpty()) {
+                String contentType = dto.getMediaFile().getContentType();
+                if (contentType == null || (!contentType.startsWith("image/") && !contentType.startsWith("video/"))) {
+                    model.addAttribute("error", "El archivo adjunto debe ser una imagen o un vídeo válido.");
+                    model.addAttribute("vehicles", vehicleService.getVehiclesByUserId(user.getId()));
+                    model.addAttribute("workshops", workshopService.listAll());
+                    return "views/appointment/appointment-form";
+                }
+
+                String imageWebPath = fileStorageService.saveFile(dto.getMediaFile());
+                if (imageWebPath != null) {
+                    dto.setMediaUrl(imageWebPath);
+                } else {
+                    model.addAttribute("error", "No se pudo guardar el archivo multimedia. Inténtalo de nuevo.");
+                    model.addAttribute("vehicles", vehicleService.getVehiclesByUserId(user.getId()));
+                    model.addAttribute("workshops", workshopService.listAll());
+                    return "views/appointment/appointment-form";
+                }
+            }
+
             appointmentService.createAppointment(dto, authentication.getName());
             redirectAttributes.addFlashAttribute("success", "¡Tu cita ha sido solicitada correctamente!");
             return "redirect:/appointments";
@@ -116,7 +144,20 @@ public class AppointmentController {
         return "redirect:/appointments/" + id;
     }
 
-    // Sirve tanto para cancelar (Cliente) como para rechazar (Admin)
+    // NUEVO MÉTODO: Reprogramar fecha
+    @PostMapping("/{id}/reschedule")
+    public String rescheduleAppointment(@PathVariable Long id,
+                                        @RequestParam("newDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime newDate,
+                                        RedirectAttributes redirectAttributes) {
+        try {
+            appointmentService.updateDate(id, newDate);
+            redirectAttributes.addFlashAttribute("success", "La fecha de la cita se ha modificado correctamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al reprogramar la cita: " + e.getMessage());
+        }
+        return "redirect:/appointments/" + id;
+    }
+
     @PostMapping("/{id}/cancel")
     public String cancelAppointment(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {

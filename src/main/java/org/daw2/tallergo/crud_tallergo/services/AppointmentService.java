@@ -8,6 +8,8 @@ import org.daw2.tallergo.crud_tallergo.enums.AppointmentStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
+
 public interface AppointmentService {
     Page<AppointmentDTO> getAllAppointments(Pageable pageable);
     AppointmentDetailDTO getAppointmentById(Long id);
@@ -17,4 +19,5 @@ public interface AppointmentService {
     AppointmentDTO updateAppointment(AppointmentUpdateDTO dto);
     void deleteAppointment(Long id);
     void updateStatus(Long id, AppointmentStatus newStatus);
+    void updateDate(Long id, LocalDateTime newDate);
 }

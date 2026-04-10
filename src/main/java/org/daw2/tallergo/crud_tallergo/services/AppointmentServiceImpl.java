@@ -21,6 +21,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class AppointmentServiceImpl implements AppointmentService {
@@ -106,6 +108,16 @@ public class AppointmentServiceImpl implements AppointmentService {
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Cita no encontrada con ID: " + id));
         appointment.setStatus(newStatus);
+        appointmentRepository.save(appointment);
+    }
+
+    //  Actualiza la fecha
+    @Override
+    @Transactional
+    public void updateDate(Long id, LocalDateTime newDate) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Cita no encontrada con ID: " + id));
+        appointment.setStartDate(newDate);
         appointmentRepository.save(appointment);
     }
 }

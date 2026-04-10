@@ -2,52 +2,54 @@
      xmlns:th="http://www.thymeleaf.org">
 
     <script>
-    /* ── Navbar scroll ── */
-    (function () {
-        var nav = document.getElementById('tgoNav');
-        if (!nav) return;
-        function upd() { nav.classList.toggle('scrolled', window.scrollY > 10); }
-        upd();
-        window.addEventListener('scroll', upd, { passive: true });
-    })();
+        /* ── Navbar scroll ── */
+        (function () {
+            var nav = document.getElementById('tgoNav');
+            if (!nav) return;
+            function upd() { nav.classList.toggle('scrolled', window.scrollY > 10); }
+            upd();
+            window.addEventListener('scroll', upd, { passive: true });
+        })();
 
-    /* ── Dropdowns ── */
-    (function() {
-        var allWraps = '.tgo-dd-wrap, .tgo-avatar-wrap';
+        /* ── Dropdowns ── */
+        (function() {
+            var allWraps = '.tgo-dd-wrap, .tgo-avatar-wrap';
 
-        function closeAll() {
-            document.querySelectorAll(allWraps).forEach(function(el) {
-                el.classList.remove('open');
-            });
-        }
-
-        /* Botones de apertura */
-        document.querySelectorAll('.tgo-dd-btn, .tgo-avatar-btn').forEach(function(btn) {
-            btn.addEventListener('click', function(e) {
-                e.stopImmediatePropagation();
-                var wrap = btn.parentElement;
-                var isOpen = wrap.classList.contains('open');
-                closeAll();
-                if (!isOpen) wrap.classList.add('open');
-            });
-        });
-
-        /* Click fuera → cerrar */
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.tgo-dd-wrap') && !e.target.closest('.tgo-avatar-wrap')) {
-                closeAll();
+            function closeAll() {
+                document.querySelectorAll(allWraps).forEach(function(el) {
+                    el.classList.remove('open');
+                });
             }
-        });
 
-        /* Escape → cerrar */
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeAll();
-        });
-    })();
+            /* Botones de apertura */
+            document.querySelectorAll('.tgo-dd-btn, .tgo-avatar-btn').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.stopImmediatePropagation();
+                    var wrap = btn.parentElement;
+                    var isOpen = wrap.classList.contains('open');
+                    closeAll();
+                    if (!isOpen) wrap.classList.add('open');
+                });
+            });
+
+            /* Click fuera → cerrar */
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.tgo-dd-wrap') && !e.target.closest('.tgo-avatar-wrap')) {
+                    closeAll();
+                }
+            });
+
+            /* Escape → cerrar */
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeAll();
+            });
+        })();
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
             crossorigin="anonymous"></script>
+
+    <script th:src="@{/js/scripts.js}"></script>
 
 </div>

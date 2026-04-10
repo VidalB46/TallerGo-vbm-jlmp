@@ -275,7 +275,7 @@
                 </div>
             </div>
 
-            <div class="detail-section mb-0">
+            <div class="detail-section">
                 <div class="detail-section-title"><i class="bi bi-chat-left-text"></i> Motivo / Notas</div>
                 <div class="notes-box">
                     <span th:if="${appointment.notes != null and !#strings.isEmpty(appointment.notes)}"
@@ -283,6 +283,36 @@
                     <span class="notes-empty" th:if="${appointment.notes == null or #strings.isEmpty(appointment.notes)}">
                         Sin notas adicionales.
                     </span>
+                </div>
+            </div>
+
+            <div class="detail-section mb-0" th:if="${appointment.mediaUrl != null and !#strings.isEmpty(appointment.mediaUrl)}">
+                <div class="detail-section-title"><i class="bi bi-paperclip"></i> Archivo Adjunto de la Avería</div>
+
+                <div class="mt-2 text-center p-3" style="background: #f8f8fa; border: 1.5px solid #ebebee; border-radius: 12px;">
+
+                    <th:block th:if="${#strings.endsWith(#strings.toLowerCase(appointment.mediaUrl), '.mp4') or #strings.endsWith(#strings.toLowerCase(appointment.mediaUrl), '.webm') or #strings.endsWith(#strings.toLowerCase(appointment.mediaUrl), '.mov') or #strings.endsWith(#strings.toLowerCase(appointment.mediaUrl), '.ogg')}">
+                        <video controls style="max-height: 400px; max-width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            <source th:src="@{${appointment.mediaUrl}}">
+                            Tu navegador no soporta la reproducción de este vídeo.
+                        </video>
+                        <div style="font-size: 0.75rem; color: #888; margin-top: 0.8rem;">
+                            <i class="bi bi-play-circle"></i> Dale al play para reproducir el vídeo del cliente
+                        </div>
+                    </th:block>
+
+                    <th:block th:unless="${#strings.endsWith(#strings.toLowerCase(appointment.mediaUrl), '.mp4') or #strings.endsWith(#strings.toLowerCase(appointment.mediaUrl), '.webm') or #strings.endsWith(#strings.toLowerCase(appointment.mediaUrl), '.mov') or #strings.endsWith(#strings.toLowerCase(appointment.mediaUrl), '.ogg')}">
+                        <a th:href="@{${appointment.mediaUrl}}" target="_blank" title="Haz clic para ver en grande">
+                            <img th:src="@{${appointment.mediaUrl}}" alt="Imagen de la avería aportada por el cliente"
+                                 style="max-height: 400px; max-width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); object-fit: contain; transition: transform 0.2s;"
+                                 onmouseover="this.style.transform='scale(1.02)'"
+                                 onmouseout="this.style.transform='scale(1)'"/>
+                        </a>
+                        <div style="font-size: 0.75rem; color: #888; margin-top: 0.8rem;">
+                            <i class="bi bi-zoom-in"></i> Haz clic en la imagen para ampliarla
+                        </div>
+                    </th:block>
+
                 </div>
             </div>
 
@@ -316,6 +346,12 @@
             </div>
 
             <div sec:authorize="hasRole('ADMIN')" class="d-flex flex-wrap gap-2 align-items-center">
+
+                <th:block th:if="${#strings.toString(appointment.status) == 'SOLICITADO' or #strings.toString(appointment.status) == 'CONFIRMADO'}">
+                    <button type="button" class="btn-modern btn-outline" data-bs-toggle="modal" data-bs-target="#rescheduleModal">
+                        <i class="bi bi-calendar-event"></i> Reprogramar
+                    </button>
+                </th:block>
 
                 <th:block th:if="${#strings.toString(appointment.status) == 'SOLICITADO'}">
                     <div class="d-flex gap-2">
@@ -372,7 +408,47 @@
     </div>
 </main>
 
+<div sec:authorize="hasRole('ADMIN')" class="modal fade" id="rescheduleModal" tabindex="-1" aria-labelledby="rescheduleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+            <div class="modal-header" style="border-bottom: 1px solid #eee; padding: 1.5rem;">
+                <h5 class="modal-title fw-bold" id="rescheduleModalLabel"><i class="bi bi-calendar-event text-danger"></i> Reprogramar Cita</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/appointments/{id}/reschedule(id=${appointment.id})}" method="post">
+                <div class="modal-body" style="padding: 1.5rem;">
+                    <label for="newDate" class="form-label fw-semibold text-muted text-uppercase" style="font-size: 0.8rem; letter-spacing: 1px;">Nueva Fecha y Hora</label>
+                    <input type="datetime-local" class="form-control" id="newDate" name="newDate" required
+                           style="padding: 0.7rem; border-radius: 8px; border: 1.5px solid #e0e0e0; font-family: 'Inter', sans-serif;">
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid #eee; padding: 1.2rem 1.5rem;">
+                    <button type="button" class="btn-modern btn-outline" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn-modern btn-primary-modern"><i class="bi bi-save"></i> Guardar Nueva Fecha</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const rescheduleModal = document.getElementById('rescheduleModal');
+        if(rescheduleModal) {
+            rescheduleModal.addEventListener('show.bs.modal', function () {
+                const dateInput = document.getElementById('newDate');
+                if(dateInput && !dateInput.value) {
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    tomorrow.setMinutes(tomorrow.getMinutes() - tomorrow.getTimezoneOffset());
+                    dateInput.min = tomorrow.toISOString().slice(0, 16);
+                }
+            });
+        }
+    });
+</script>
+
 </body>
 </html>
