@@ -1,31 +1,25 @@
 package org.daw2.tallergo.crud_tallergo.controllers;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.daw2.tallergo.crud_tallergo.dtos.AppointmentCreateDTO;
-import org.daw2.tallergo.crud_tallergo.dtos.AppointmentDTO;
-import org.daw2.tallergo.crud_tallergo.dtos.AppointmentDetailDTO;
+import org.daw2.tallergo.crud_tallergo.dtos.*;
 import org.daw2.tallergo.crud_tallergo.entities.User;
 import org.daw2.tallergo.crud_tallergo.repositories.UserRepository;
-import org.daw2.tallergo.crud_tallergo.services.AppointmentService;
-import org.daw2.tallergo.crud_tallergo.services.FileStorageService;
-import org.daw2.tallergo.crud_tallergo.services.VehicleService;
-import org.daw2.tallergo.crud_tallergo.services.WorkshopService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.daw2.tallergo.crud_tallergo.services.*;
+import org.springframework.data.domain.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import jakarta.validation.Valid;
 
 import java.time.LocalDateTime;
 
+/**
+ * Controlador para la gestión del ciclo de vida de las citas y la orquestación con reparaciones.
+ */
 @Controller
 @RequestMapping("/appointments")
 @RequiredArgsConstructor
@@ -36,30 +30,26 @@ public class AppointmentController {
     private final WorkshopService workshopService;
     private final UserRepository userRepository;
     private final FileStorageService fileStorageService;
+    private final RepairService repairService;
 
+    /**
+     * Lista las citas del usuario actual o todas si es administrador.
+     */
     @GetMapping
-    public String listAppointments(@RequestParam(defaultValue = "0") int page,
-                                   Model model,
-                                   Authentication authentication) {
-
-        User user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-
-        boolean isAdmin = authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
-
+    public String listAppointments(@RequestParam(defaultValue = "0") int page, Model model, Authentication auth) {
+        User user = userRepository.findByEmail(auth.getName()).orElseThrow();
         Pageable pageable = PageRequest.of(page, 10, Sort.by("startDate").descending());
-        Page<AppointmentDTO> appointments;
 
-        if (isAdmin) {
-            appointments = appointmentService.getAllAppointments(pageable);
-        } else {
-            appointments = appointmentService.getAppointmentsByUser(user.getId(), pageable);
-        }
+        boolean isAdmin = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        Page<AppointmentDTO> appointments = isAdmin ? appointmentService.getAllAppointments(pageable) : appointmentService.getAppointmentsByUser(user.getId(), pageable);
 
         model.addAttribute("appointmentsPage", appointments);
         return "views/appointment/appointment-list";
     }
 
+    /**
+     * Muestra el formulario para solicitar una nueva cita.
+     */
     @GetMapping("/new")
     public String showCreateForm(Model model, Authentication authentication) {
         User user = userRepository.findByEmail(authentication.getName())
@@ -72,6 +62,9 @@ public class AppointmentController {
         return "views/appointment/appointment-form";
     }
 
+    /**
+     * Procesa y valida el formulario de nueva cita.
+     */
     @PostMapping("/new")
     public String createAppointment(@Valid @ModelAttribute("appointment") AppointmentCreateDTO dto,
                                     BindingResult result,
@@ -121,51 +114,62 @@ public class AppointmentController {
         }
     }
 
+    /**
+     * Visualiza los detalles completos de una cita.
+     */
     @GetMapping("/{id}")
     public String viewAppointment(@PathVariable Long id, Model model) {
-        AppointmentDetailDTO detail = appointmentService.getAppointmentById(id);
-        model.addAttribute("appointment", detail);
+        model.addAttribute("appointment", appointmentService.getAppointmentById(id));
         return "views/appointment/appointment-detail";
     }
 
+    /**
+     * Procesa la confirmación manual de una cita por parte del administrador.
+     */
     @PostMapping("/{id}/confirm")
-    public String confirmAppointment(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String confirmAppointment(@PathVariable Long id, RedirectAttributes ra) {
         try {
             appointmentService.updateStatus(id, org.daw2.tallergo.crud_tallergo.enums.AppointmentStatus.CONFIRMADO);
-            redirectAttributes.addFlashAttribute("success", "Cita confirmada. El cliente será notificado.");
+            repairService.createAutomaticRepair(id);
+            ra.addFlashAttribute("success", "Cita confirmada. Se ha abierto el expediente de reparación.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error al confirmar la cita: " + e.getMessage());
+            ra.addFlashAttribute("error", "Error al confirmar: " + e.getMessage());
         }
         return "redirect:/appointments/" + id;
     }
 
-    @PostMapping("/{id}/reschedule")
-    public String rescheduleAppointment(@PathVariable Long id,
-                                        @RequestParam("newDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime newDate,
-                                        RedirectAttributes redirectAttributes) {
-        try {
-            appointmentService.updateDate(id, newDate);
-            // Mensaje adaptado para dejar claro que falta que el cliente acepte
-            redirectAttributes.addFlashAttribute("success", "La fecha ha sido reprogramada y está pendiente de aceptación por el cliente.");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error al reprogramar la cita: " + e.getMessage());
-        }
-        return "redirect:/appointments/" + id;
-    }
-
-    // El cliente acepta la nueva fecha
+    /**
+     * Gestiona la aceptación de una propuesta de fecha por parte del cliente.
+     */
     @PostMapping("/{id}/accept-date")
-    public String acceptDate(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String acceptDate(@PathVariable Long id, RedirectAttributes ra) {
         try {
             appointmentService.acceptDate(id);
-            // Mensaje actualizado
-            redirectAttributes.addFlashAttribute("success", "¡Genial! Has aceptado la nueva fecha y tu cita ha quedado confirmada automáticamente.");
+            repairService.createAutomaticRepair(id);
+            ra.addFlashAttribute("success", "Nueva fecha aceptada. La cita ha sido confirmada.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error al aceptar la fecha: " + e.getMessage());
+            ra.addFlashAttribute("error", "Error al procesar aceptación: " + e.getMessage());
         }
         return "redirect:/appointments/" + id;
     }
 
+    /**
+     * Registra una nueva propuesta de fecha y hora para la cita.
+     */
+    @PostMapping("/{id}/reschedule")
+    public String reschedule(@PathVariable Long id, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime newDate, RedirectAttributes ra) {
+        try {
+            appointmentService.updateDate(id, newDate);
+            ra.addFlashAttribute("success", "Propuesta de cambio de fecha enviada al cliente.");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Error al reprogramar: " + e.getMessage());
+        }
+        return "redirect:/appointments/" + id;
+    }
+
+    /**
+     * Cancela la cita de forma definitiva (Taller o Cliente).
+     */
     @PostMapping("/{id}/cancel")
     public String cancelAppointment(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {

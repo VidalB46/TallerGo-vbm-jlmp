@@ -16,9 +16,10 @@ import java.util.Optional;
 public interface BudgetRepository extends JpaRepository<Budget, Long> {
 
     /**
-     * Recupera el presupuesto asociado a una reparación concreta.
+     * Recupera el presupuesto asociado a una reparación.
      */
-    Optional<Budget> findByRepairId(Long repairId);
+    @Query("SELECT DISTINCT b FROM Budget b LEFT JOIN FETCH b.lines WHERE b.repair.id = :repairId")
+    Optional<Budget> findByRepairId(@Param("repairId") Long repairId);
 
     /**
      * Recupera un presupuesto cargando de forma ansiosa la reparación y la cita vinculada.

@@ -52,9 +52,7 @@ public class SecurityConfig {
 
                             // 3. RUTAS COMPARTIDAS Y TÉCNICAS (Reparaciones y Presupuestos)
                             .requestMatchers("/repairs/**").hasAnyRole("MECHANIC", "ADMIN")
-                            // NUEVO: El cliente necesita ver el presupuesto y aceptarlo
-                            .requestMatchers("/budgets/repair/**", "/budgets/*/accept").hasAnyRole("CLIENT", "ADMIN", "MECHANIC")
-                            // El resto de cosas de presupuestos (como crearlos), solo mecánicos
+                            .requestMatchers("/budgets/repair/**", "/budgets/*/accept", "/budgets/*/reject").hasAnyRole("CLIENT", "ADMIN", "MECHANIC")
                             .requestMatchers("/budgets/**").hasAnyRole("MECHANIC", "ADMIN")
 
                             // 4. CLIENTES Y STAFF: Gestión de vehículos y citas

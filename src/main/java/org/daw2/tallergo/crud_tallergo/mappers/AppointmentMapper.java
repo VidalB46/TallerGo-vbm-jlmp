@@ -15,7 +15,7 @@ public class AppointmentMapper {
     public static AppointmentDTO toDTO(Appointment entity) {
         if (entity == null) return null;
 
-        return AppointmentDTO.builder()
+        AppointmentDTO dto = AppointmentDTO.builder()
                 .id(entity.getId())
                 .startDate(entity.getStartDate())
                 .status(entity.getStatus())
@@ -23,6 +23,17 @@ public class AppointmentMapper {
                 .workshopName(entity.getWorkshop() != null ? entity.getWorkshop().getName() : "Desconocido")
                 .userEmail(entity.getUser() != null ? entity.getUser().getEmail() : "Desconocido")
                 .build();
+
+
+        if (entity.getRepair() != null && entity.getRepair().getBudget() != null) {
+            dto.setHasBudget(true);
+            dto.setIsBudgetAccepted(Boolean.TRUE.equals(entity.getRepair().getBudget().getAccepted()));
+        } else {
+            dto.setHasBudget(false);
+            dto.setIsBudgetAccepted(false);
+        }
+
+        return dto;
     }
 
     public static AppointmentDetailDTO toDetailDTO(Appointment entity) {
@@ -41,6 +52,7 @@ public class AppointmentMapper {
         dto.setUserEmail(entity.getUser() != null ? entity.getUser().getEmail() : "Desconocido");
         dto.setVehicle(VehicleMapper.toDTO(entity.getVehicle()));
         dto.setWorkshop(WorkshopMapper.toDTO(entity.getWorkshop()));
+
 
         if (entity.getRepair() != null) {
             dto.setRepairId(entity.getRepair().getId());
