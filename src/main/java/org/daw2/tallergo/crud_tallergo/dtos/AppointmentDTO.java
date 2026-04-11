@@ -23,4 +23,6 @@ public class AppointmentDTO {
     private String vehicleModel;     // Para mostrar el nombre del coche sin cargar toda la entidad
     private String workshopName;     // Para mostrar el nombre del taller
     private String userEmail;        // Identificador del cliente
+    private Boolean hasBudget;
+    private Boolean isBudgetAccepted;
 }

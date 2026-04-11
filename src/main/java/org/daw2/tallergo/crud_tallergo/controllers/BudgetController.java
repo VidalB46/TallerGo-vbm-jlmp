@@ -36,13 +36,26 @@ public class BudgetController {
     }
 
     /**
-     * Formulario para que el mecánico cree un presupuesto para una reparación.
+     * Muestra el formulario de presupuesto.
+     * Si ya existe uno, precarga sus datos para permitir la edición.
      */
     @GetMapping("/new")
     public String showCreateForm(@RequestParam Long repairId, Model model) {
-        BudgetCreateDTO dto = new BudgetCreateDTO();
-        dto.setRepairId(repairId);
-        model.addAttribute("budget", dto);
+        try {
+            // Intentamos buscar si ya hay un presupuesto previo para editarlo
+            BudgetDetailDTO existing = budgetService.getBudgetByRepairId(repairId);
+
+            BudgetCreateDTO dto = new BudgetCreateDTO();
+            dto.setRepairId(repairId);
+            dto.setLines(existing.getLines()); // Precargamos las líneas actuales
+
+            model.addAttribute("budget", dto);
+        } catch (Exception e) {
+            // Si no existe, enviamos un DTO vacío con el repairId
+            BudgetCreateDTO dto = new BudgetCreateDTO();
+            dto.setRepairId(repairId);
+            model.addAttribute("budget", dto);
+        }
         return "views/budget/budget-form";
     }
 
@@ -73,14 +86,16 @@ public class BudgetController {
         redirectAttributes.addFlashAttribute("success", "¡Has aceptado el presupuesto! El mecánico comenzará pronto.");
         return "redirect:/appointments";
     }
+
     /**
-     * Acción para que el cliente RECHACE el presupuesto.
+     * Acción para que el cliente RECHACE el presupuesto y cancele la cita.
      */
     @PostMapping("/{id}/reject")
     public String rejectBudget(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            budgetService.deleteBudget(id);
-            redirectAttributes.addFlashAttribute("success", "Presupuesto rechazado. El mecánico tendrá que generar una nueva propuesta.");
+            // Llamamos a nuestro nuevo método unificado
+            budgetService.rejectBudget(id);
+            redirectAttributes.addFlashAttribute("success", "Presupuesto rechazado y cita cancelada correctamente.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al rechazar: " + e.getMessage());
         }

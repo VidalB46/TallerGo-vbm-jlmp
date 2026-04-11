@@ -1,182 +1,363 @@
 <!DOCTYPE html>
+
 <html xmlns:th="http://www.thymeleaf.org"
+
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
+
     <meta charset="UTF-8"/>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
     <title th:text="#{msg.repair-detail.title}">Detalle de Reparación</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+
     <th:block th:replace="~{fragments/navbar :: navbarCss}"></th:block>
+
     <style>
+
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
         body.repair-page { font-family: 'Inter', sans-serif; background: #f4f4f6; color: #1a1a1a; min-height: 100vh; }
+
         .tgo-nav { background: rgba(10,10,10,0.93) !important; backdrop-filter: blur(18px); box-shadow: 0 2px 24px rgba(0,0,0,0.4); }
+
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
+
+
         /* HERO */
+
         .page-hero { padding: calc(4rem + 64px) 2.5rem 5rem; background: linear-gradient(135deg, #111 0%, #1a1a1a 100%); position: relative; overflow: hidden; }
+
         .page-hero::before { content: ''; position: absolute; top: -60px; right: -60px; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(192,57,43,0.15) 0%, transparent 70%); }
+
         .page-hero-inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+
         .page-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #c0392b; margin-bottom: 0.4rem; }
+
         .page-hero h1 { font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
 
+
+
         /* CARD */
+
         .detail-main { max-width: 900px; margin: -2.5rem auto 5rem; padding: 0 2rem; animation: fadeUp 0.5s ease both; position: relative; z-index: 10; }
+
         .detail-card { background: #fff; border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); overflow: hidden; }
 
+
+
         .detail-stripe { height: 6px; width: 100%; }
+
         .stripe-standby { background: linear-gradient(90deg, #95a5a6, #7f8c8d); }
+
         .stripe-activo { background: linear-gradient(90deg, #3498db, #2980b9); }
+
         .stripe-finalizado { background: linear-gradient(90deg, #2ecc71, #27ae60); }
 
+
+
         .detail-card-body { padding: 2.5rem; }
+
         .detail-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1.5px solid #f0f0f0; }
+
         .detail-id { font-size: 0.85rem; color: #888; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
 
+
+
         .status-badge { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 0.4rem 1rem; border-radius: 20px; }
+
         .status-standby { background: rgba(149,165,166,0.12); color: #7f8c8d; border: 1px solid rgba(149,165,166,0.3); }
+
         .status-activo { background: rgba(52,152,219,0.12); color: #2980b9; border: 1px solid rgba(52,152,219,0.3); }
+
         .status-finalizado { background: rgba(46,204,113,0.12); color: #27ae60; border: 1px solid rgba(46,204,113,0.3); }
 
+
+
         /* GRID INFO */
+
         .detail-section-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #c0392b; margin-bottom: 1rem; margin-top: 1.5rem;}
+
         .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
         .detail-field label { font-size: 0.72rem; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 0.3rem; }
+
         .detail-field span { font-size: 1rem; font-weight: 600; color: #111; display: flex; align-items: center; gap: 0.5rem; }
+
+
 
         .notes-box { background: #f8f8fa; border: 1.5px solid #ebebee; border-radius: 12px; padding: 1.2rem; font-size: 0.95rem; color: #555; }
 
+
+
         .detail-card-footer { padding: 1.5rem 2.5rem; border-top: 1.5px solid #f0f0f0; background: #fafafa; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
 
+
+
         /* MODERN BUTTONS */
+
         .btn-modern { border-radius: 8px; padding: 0.6rem 1.2rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: transform 0.15s, box-shadow 0.15s; border: none; cursor: pointer; text-decoration: none;}
+
         .btn-modern:hover { transform: translateY(-1px); }
+
         .btn-outline { background: #fff; border: 1.5px solid #e0e0e0; color: #555; }
+
         .btn-outline:hover { background: #f4f4f4; color: #111; }
+
         .btn-warning-modern { background: #ffc107; color: #000; box-shadow: 0 2px 8px rgba(255,193,7,0.3); }
+
         .btn-info-modern { background: #0dcaf0; color: #fff; box-shadow: 0 2px 8px rgba(13,202,240,0.3); }
+
         .btn-primary-modern { background: #0d6efd; color: #fff; box-shadow: 0 2px 8px rgba(13,110,253,0.3); }
+
         .btn-success-modern { background: #198754; color: #fff; box-shadow: 0 2px 8px rgba(25,135,84,0.3); }
+
         .btn-dark-modern { background: #212529; color: #fff; box-shadow: 0 2px 8px rgba(33,37,41,0.3); }
 
+
+
         /* Custom Alerts */
+
         .alert-custom { border-radius: 12px; border: none; padding: 1rem 1.2rem; display: flex; align-items: center; gap: 0.8rem; font-weight: 500; font-size: 0.95rem;}
+
         .alert-custom i { font-size: 1.2rem; }
+
     </style>
+
 </head>
 
+
+
 <body class="repair-page">
+
 <nav th:replace="~{fragments/navbar :: navbar('')}"></nav>
 
+
+
 <div class="page-hero">
+
     <div class="page-hero-inner">
+
         <div class="page-label">Taller</div>
+
         <h1>Detalle de Reparación <span style="color:#c0392b;">#<span th:text="${repair.id}"></span></span></h1>
+
     </div>
+
 </div>
 
+
+
 <main class="detail-main">
+
     <div th:if="${success}" class="alert alert-success alert-custom mb-4 shadow-sm"><i class="bi bi-check-circle-fill"></i> <span th:text="${success}"></span></div>
+
     <div th:if="${error}" class="alert alert-danger alert-custom mb-4 shadow-sm"><i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span></div>
 
+
+
     <div sec:authorize="hasRole('CLIENT')" class="mb-4">
+
         <div th:if="${#strings.toString(repair.status) == 'STANDBY' and repair.budget != null and repair.budget.accepted}" class="alert alert-warning alert-custom shadow-sm">
+
             <i class="bi bi-hourglass-split"></i> <div><strong>Presupuesto aceptado.</strong> Estamos organizando el taller para empezar.</div>
+
         </div>
+
         <div th:if="${#strings.toString(repair.status) == 'ACTIVO'}" class="alert alert-info alert-custom shadow-sm text-dark">
+
             <i class="bi bi-tools text-primary"></i> <div><strong>¡Manos a la obra!</strong> Nuestros mecánicos ya están trabajando en tu vehículo.</div>
+
         </div>
+
         <div th:if="${#strings.toString(repair.status) == 'FINALIZADO'}" class="alert alert-success alert-custom shadow-sm">
+
             <i class="bi bi-check-circle-fill"></i> <div><strong>¡Vehículo listo!</strong> La reparación ha concluido. Ya puedes pasar a recogerlo.</div>
+
         </div>
+
     </div>
+
+
 
     <div class="detail-card">
+
         <div class="detail-stripe"
+
              th:classappend="${#strings.toString(repair.status) == 'STANDBY'} ? 'stripe-standby' : (${#strings.toString(repair.status) == 'ACTIVO'} ? 'stripe-activo' : 'stripe-finalizado')">
+
         </div>
+
+
 
         <div class="detail-card-body">
+
             <div class="detail-header">
+
                 <div class="detail-id">Reparación #<span th:text="${repair.id}"></span></div>
 
+
+
                 <span class="status-badge"
+
                       th:classappend="${#strings.toString(repair.status) == 'STANDBY'} ? 'status-standby' : (${#strings.toString(repair.status) == 'ACTIVO'} ? 'status-activo' : 'status-finalizado')">
-                    <i th:class="${#strings.toString(repair.status) == 'STANDBY'} ? 'bi bi-pause-circle' : (${#strings.toString(repair.status) == 'ACTIVO'} ? 'bi bi-gear-fill' : 'bi bi-check-circle-fill')"></i>
-                    <span th:text="${repair.status.displayName}"></span>
-                </span>
+
+<i th:class="${#strings.toString(repair.status) == 'STANDBY'} ? 'bi bi-pause-circle' : (${#strings.toString(repair.status) == 'ACTIVO'} ? 'bi bi-gear-fill' : 'bi bi-check-circle-fill')"></i>
+
+<span th:text="${repair.status.displayName}"></span>
+
+</span>
+
             </div>
+
+
 
             <div class="detail-section-title"><i class="bi bi-info-square-fill"></i> Datos Generales</div>
+
             <div class="detail-grid">
+
                 <div class="detail-field">
+
                     <label>Fecha de Entrada</label>
+
                     <span><i class="bi bi-calendar-event text-danger"></i> <span th:text="${#temporals.format(repair.entryDate, 'dd MMM yyyy')}"></span></span>
+
                 </div>
+
                 <div class="detail-field">
+
                     <label>Vehículo</label>
+
                     <span><i class="bi bi-car-front-fill text-danger"></i> <span th:text="${repair.vehicle.model + ' (' + repair.vehicle.matricula + ')'}"></span></span>
+
                 </div>
+
             </div>
+
+
 
             <div class="detail-section-title"><i class="bi bi-clipboard-data-fill"></i> Notas del Mecánico</div>
+
             <div class="notes-box">
+
                 <span th:text="${repair.notes != null and !#strings.isEmpty(repair.notes) ? repair.notes : 'Sin notas adicionales.'}"></span>
+
             </div>
+
         </div>
+
+
 
         <div class="detail-card-footer">
+
             <a th:href="@{/appointments}" class="btn-modern btn-outline">
+
                 <i class="bi bi-arrow-left"></i> Volver al listado
+
             </a>
 
+
+
             <div class="d-flex flex-wrap gap-2 align-items-center">
+
                 <a th:if="${repair.budget == null}" sec:authorize="hasRole('ADMIN')"
+
                    th:href="@{/budgets/new(repairId=${repair.id})}" class="btn-modern btn-warning-modern">
+
                     <i class="bi bi-file-earmark-plus"></i> Generar Presupuesto
+
                 </a>
+
+
 
                 <a th:if="${repair.budget != null}"
+
                    th:href="@{/budgets/repair/{id}(id=${repair.id})}" class="btn-modern btn-info-modern">
+
                     <i class="bi bi-receipt"></i> Ver Presupuesto
+
                 </a>
 
+
+
                 <form sec:authorize="hasRole('ADMIN')"
+
                       th:if="${#strings.toString(repair.status) == 'STANDBY' and repair.budget != null and repair.budget.accepted}"
+
                       th:action="@{/repairs/{id}/start(id=${repair.id})}" method="post" class="m-0">
+
                     <button type="submit" class="btn-modern btn-primary-modern">
+
                         <i class="bi bi-play-circle"></i> Comenzar Trabajo
+
                     </button>
+
                 </form>
+
+
 
                 <div sec:authorize="hasRole('ADMIN')"
+
                      th:if="${#strings.toString(repair.status) == 'STANDBY' and repair.budget != null and !repair.budget.accepted}"
+
                      class="text-muted small fst-italic">
+
                     <i class="bi bi-clock-history"></i> Esperando aprobación del cliente...
+
                 </div>
 
-                <form sec:authorize="hasRole('ADMIN')"
-                      th:if="${#strings.toString(repair.status) == 'ACTIVO'}"
-                      th:action="@{/repairs/{id}/finish(id=${repair.id})}" method="post" class="m-0">
-                    <button type="submit" class="btn-modern btn-success-modern">
-                        <i class="bi bi-check2-all"></i> Finalizar Reparación
-                    </button>
-                </form>
+
 
                 <form sec:authorize="hasRole('ADMIN')"
-                      th:if="${#strings.toString(repair.status) == 'FINALIZADO' and repair.appointment != null and #strings.toString(repair.appointment.status) != 'RECOGIDO'}"
-                      th:action="@{/repairs/{id}/deliver(id=${repair.id})}" method="post" class="m-0">
-                    <button type="submit" class="btn-modern btn-dark-modern">
-                        <i class="bi bi-key"></i> Entregar Vehículo
+
+                      th:if="${#strings.toString(repair.status) == 'ACTIVO'}"
+
+                      th:action="@{/repairs/{id}/finish(id=${repair.id})}" method="post" class="m-0">
+
+                    <button type="submit" class="btn-modern btn-success-modern">
+
+                        <i class="bi bi-check2-all"></i> Finalizar Reparación
+
                     </button>
+
                 </form>
+
+
+
+                <form sec:authorize="hasRole('ADMIN')"
+
+                      th:if="${#strings.toString(repair.status) == 'FINALIZADO' and repair.appointment != null and #strings.toString(repair.appointment.status) != 'RECOGIDO'}"
+
+                      th:action="@{/repairs/{id}/deliver(id=${repair.id})}" method="post" class="m-0">
+
+                    <button type="submit" class="btn-modern btn-dark-modern">
+
+                        <i class="bi bi-key"></i> Entregar Vehículo
+
+                    </button>
+
+                </form>
+
             </div>
+
         </div>
+
     </div>
+
 </main>
 
+
+
 <div th:replace="~{fragments/scripts :: scripts}"></div>
+
 </body>
+
 </html>

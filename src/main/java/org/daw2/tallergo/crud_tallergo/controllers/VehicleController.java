@@ -1,12 +1,10 @@
 package org.daw2.tallergo.crud_tallergo.controllers;
 
 import jakarta.validation.Valid;
-import org.daw2.tallergo.crud_tallergo.dtos.BrandDTO;
-import org.daw2.tallergo.crud_tallergo.dtos.VehicleCreateDTO;
-import org.daw2.tallergo.crud_tallergo.dtos.VehicleDTO;
-import org.daw2.tallergo.crud_tallergo.dtos.VehicleDetailDTO;
-import org.daw2.tallergo.crud_tallergo.dtos.VehicleUpdateDTO;
+import org.daw2.tallergo.crud_tallergo.dtos.*;
+import org.daw2.tallergo.crud_tallergo.entities.User;
 import org.daw2.tallergo.crud_tallergo.exceptions.DuplicateResourceException;
+import org.daw2.tallergo.crud_tallergo.repositories.UserRepository;
 import org.daw2.tallergo.crud_tallergo.services.BrandService;
 import org.daw2.tallergo.crud_tallergo.services.VehicleService;
 import org.slf4j.Logger;
@@ -17,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication; // Importado
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -45,24 +44,39 @@ public class VehicleController {
     @Autowired
     private BrandService brandService;
 
+    @Autowired
+    private UserRepository userRepository; // Movido arriba con el resto de dependencias
+
     /**
-     * Lista los vehículos con paginación y ordenamiento por modelo.
-     *
-     * @param pageable Configuración de paginación y ordenamiento.
-     * @param model    Modelo para pasar atributos a la vista.
-     * @param locale   Configuración regional para mensajes.
-     * @return Vista del listado de vehículos ("views/vehicle/vehicle-list").
+     * Lista los vehículos filtrando por rol: el Administrador ve todos,
+     * mientras que el Cliente solo visualiza los de su propiedad.
      */
     @GetMapping
     public String listVehicles(
             @PageableDefault(size = 10, sort = "model", direction = Sort.Direction.ASC) Pageable pageable,
             Model model,
-            Locale locale) {
+            Locale locale,
+            Authentication authentication) { // Limpiado el parámetro
 
         try {
-            Page<VehicleDTO> page = vehicleService.list(pageable);
+            // Obtener el usuario actual
+            User user = userRepository.findByEmail(authentication.getName())
+                    .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+            // Comprobar si es ADMIN
+            boolean isAdmin = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+            Page<VehicleDTO> page;
+            if (isAdmin) {
+                page = vehicleService.list(pageable);
+            } else {
+                page = vehicleService.listByUser(user.getId(), pageable);
+            }
+
             model.addAttribute("page", page);
 
+            // Lógica de ordenamiento
             String sortParam = "model,asc";
             if (page.getSort().isSorted()) {
                 Sort.Order order = page.getSort().iterator().next();
@@ -71,161 +85,93 @@ public class VehicleController {
             model.addAttribute("sortParam", sortParam);
 
         } catch (Exception e) {
-            String errorMessage = messageSource.getMessage("msg.vehicle-controller.list.error", null, locale);
-            model.addAttribute("errorMessage", errorMessage);
+            logger.error("Error al listar vehículos: ", e);
+            model.addAttribute("errorMessage", messageSource.getMessage("msg.vehicle-controller.list.error", null, locale));
         }
 
         return "views/vehicle/vehicle-list";
     }
 
-    /**
-     * Muestra el formulario para crear un nuevo vehículo.
-     * Incluye la lista de marcas disponibles.
-     *
-     * @param model  Modelo para pasar atributos a la vista.
-     * @param locale Configuración regional para mensajes.
-     * @return Vista del formulario de vehículo ("views/vehicle/vehicle-form").
-     */
+    // --- EL RESTO DE MÉTODOS SE MANTIENEN IGUAL ---
+
     @GetMapping("/new")
     public String showNewForm(Model model, Locale locale) {
         try {
-            List<BrandDTO> listBrandsDTOs = brandService.listAll();
             model.addAttribute("vehicle", new VehicleCreateDTO());
-            model.addAttribute("listBrands", listBrandsDTOs);
+            model.addAttribute("listBrands", brandService.listAll());
         } catch (Exception e) {
-            String errorMessage = messageSource.getMessage("msg.vehicle-controller.edit.error", null, locale);
-            model.addAttribute("errorMessage", errorMessage);
+            model.addAttribute("errorMessage", messageSource.getMessage("msg.vehicle-controller.edit.error", null, locale));
         }
         return "views/vehicle/vehicle-form";
     }
 
-    /**
-     * Inserta un nuevo vehículo en la base de datos.
-     * Maneja errores de validación y duplicidad de código.
-     *
-     * @param vehicleDTO         DTO con los datos del vehículo a crear.
-     * @param result             Resultado de la validación del formulario.
-     * @param redirectAttributes Atributos flash para mensajes de éxito o error.
-     * @param model              Modelo para recargar atributos en caso de error.
-     * @param locale             Configuración regional para mensajes.
-     * @return Redirección al listado de vehículos o recarga del formulario si hay errores.
-     */
     @PostMapping("/insert")
     public String insertVehicle(@Valid @ModelAttribute("vehicle") VehicleCreateDTO vehicleDTO,
                                 BindingResult result,
                                 RedirectAttributes redirectAttributes,
                                 Model model,
                                 Locale locale) {
-
         if (result.hasErrors()) {
             model.addAttribute("listBrands", brandService.listAll());
             return "views/vehicle/vehicle-form";
         }
-
         try {
             vehicleService.create(vehicleDTO);
             return "redirect:/vehicles";
-
         } catch (DuplicateResourceException ex) {
-            String errorMessage = messageSource.getMessage("msg.vehicle-controller.insert.codeExist", null, locale);
-            redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+            redirectAttributes.addFlashAttribute("errorMessage", messageSource.getMessage("msg.vehicle-controller.insert.codeExist", null, locale));
             return "redirect:/vehicles/new";
         }
     }
 
-    /**
-     * Muestra el formulario de edición de un vehículo existente.
-     *
-     * @param id     ID del vehículo a editar.
-     * @param model  Modelo para pasar atributos a la vista.
-     * @param locale Configuración regional para mensajes.
-     * @return Vista del formulario de edición o redirección al listado si ocurre un error.
-     */
     @GetMapping("/edit")
     public String showEditForm(@RequestParam("id") Long id, Model model, Locale locale) {
         try {
-            VehicleUpdateDTO vehicleDTO = vehicleService.getForEdit(id);
-            model.addAttribute("vehicle", vehicleDTO);
+            model.addAttribute("vehicle", vehicleService.getForEdit(id));
             model.addAttribute("listBrands", brandService.listAll());
         } catch (Exception e) {
-            String errorMessage = messageSource.getMessage("msg.vehicle-controller.edit.error", null, locale);
-            model.addAttribute("errorMessage", errorMessage);
+            model.addAttribute("errorMessage", messageSource.getMessage("msg.vehicle-controller.edit.error", null, locale));
             return "redirect:/vehicles";
         }
         return "views/vehicle/vehicle-form";
     }
 
-    /**
-     * Actualiza un vehículo existente.
-     * Maneja errores de validación y duplicidad de código.
-     *
-     * @param vehicleDTO         DTO con los datos actualizados.
-     * @param result             Resultado de la validación.
-     * @param redirectAttributes Atributos flash para mensajes.
-     * @param model              Modelo para recargar datos en caso de error.
-     * @param locale             Configuración regional para mensajes.
-     * @return Redirección al listado de vehículos o recarga del formulario si hay errores.
-     */
     @PostMapping("/update")
     public String updateVehicle(@Valid @ModelAttribute("vehicle") VehicleUpdateDTO vehicleDTO,
                                 BindingResult result,
                                 RedirectAttributes redirectAttributes,
                                 Model model,
                                 Locale locale) {
-
         if (result.hasErrors()) {
             model.addAttribute("listBrands", brandService.listAll());
             return "views/vehicle/vehicle-form";
         }
-
         try {
             vehicleService.update(vehicleDTO);
             return "redirect:/vehicles";
-
         } catch (DuplicateResourceException ex) {
-            String errorMessage = messageSource.getMessage("msg.vehicle-controller.update.codeExist", null, locale);
-            redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+            redirectAttributes.addFlashAttribute("errorMessage", messageSource.getMessage("msg.vehicle-controller.update.codeExist", null, locale));
             return "redirect:/vehicles/edit?id=" + vehicleDTO.getId();
         }
     }
 
-    /**
-     * Elimina un vehículo por su ID.
-     *
-     * @param id                 ID del vehículo a eliminar.
-     * @param redirectAttributes Atributos flash para mensajes.
-     * @param locale             Configuración regional para mensajes.
-     * @return Redirección al listado de vehículos.
-     */
     @PostMapping("/delete")
     public String deleteVehicle(@RequestParam("id") Long id, RedirectAttributes redirectAttributes, Locale locale) {
         try {
             vehicleService.delete(id);
         } catch (Exception e) {
-            String errorMessage = messageSource.getMessage("msg.vehicle-controller.delete.error", null, locale);
-            redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+            redirectAttributes.addFlashAttribute("errorMessage", messageSource.getMessage("msg.vehicle-controller.delete.error", null, locale));
         }
         return "redirect:/vehicles";
     }
 
-    /**
-     * Muestra los detalles de un vehículo.
-     *
-     * @param id                 ID del vehículo.
-     * @param model              Modelo para pasar atributos a la vista.
-     * @param redirectAttributes Atributos flash para mensajes.
-     * @param locale             Configuración regional para mensajes.
-     * @return Vista de detalle del vehículo o redirección al listado si hay error.
-     */
     @GetMapping("/detail")
     public String showDetail(@RequestParam("id") Long id, Model model, RedirectAttributes redirectAttributes, Locale locale) {
         try {
-            VehicleDetailDTO vehicleDTO = vehicleService.getDetail(id);
-            model.addAttribute("vehicle", vehicleDTO);
+            model.addAttribute("vehicle", vehicleService.getDetail(id));
             return "views/vehicle/vehicle-detail";
         } catch (Exception e) {
-            String msg = messageSource.getMessage("msg.vehicle-controller.detail.error", null, locale);
-            redirectAttributes.addFlashAttribute("errorMessage", msg);
+            redirectAttributes.addFlashAttribute("errorMessage", messageSource.getMessage("msg.vehicle-controller.detail.error", null, locale));
             return "redirect:/vehicles";
         }
     }
