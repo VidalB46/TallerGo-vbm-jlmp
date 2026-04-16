@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,12 @@ public class BudgetCreateDTO {
      */
     @NotNull(message = "{msg.budget.repair.notNull}")
     private Long repairId;
+
+    @NotNull(message = "{msg.budget.totalGross.notNull}")
+    private BigDecimal totalGross;
+
+    @NotNull(message = "{msg.budget.totalNet.notNull}")
+    private BigDecimal totalNet;
 
     /**
      * Lista de conceptos a presupuestar.
