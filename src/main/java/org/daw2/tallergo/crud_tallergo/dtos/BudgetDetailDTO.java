@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * DTO para visualizar la información económica detallada de una reparación.
@@ -20,4 +22,5 @@ public class BudgetDetailDTO {
     private Long repairId;
     private Long appointmentId;
     private String vehicleMatricula;
+    private List<BudgetLineDTO> lines = new ArrayList<>();
 }
