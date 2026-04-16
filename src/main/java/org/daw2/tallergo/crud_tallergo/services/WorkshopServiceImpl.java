@@ -62,4 +62,29 @@ public class WorkshopServiceImpl implements WorkshopService {
         }
         workshopRepository.deleteById(id);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public WorkshopUpdateDTO getForEdit(Integer id) {
+        Workshop workshop = workshopRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("workshop", "id", id));
+        WorkshopUpdateDTO dto = new WorkshopUpdateDTO();
+        dto.setId(workshop.getId());
+        dto.setNif(workshop.getNif());
+        dto.setName(workshop.getName());
+        dto.setPhone(workshop.getPhone());
+        dto.setLocation(workshop.getLocation());
+        dto.setEmail(workshop.getEmail());
+        dto.setSchedule(workshop.getSchedule());
+        return dto;
+    }
+
+    @Override
+    @Transactional
+    public void update(WorkshopUpdateDTO dto) {
+        Workshop workshop = workshopRepository.findById(dto.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("workshop", "id", dto.getId()));
+        WorkshopMapper.copyToExistingEntity(dto, workshop);
+        workshopRepository.save(workshop);
+    }
 }

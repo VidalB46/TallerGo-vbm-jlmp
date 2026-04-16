@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>TallerGO — Nuevo Taller</title>
+    <title>TallerGO — Editar Taller</title>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
@@ -14,16 +14,14 @@
 
 <body class="ws-form-page">
 
-<!-- ── NAVBAR ── -->
-<!-- Navbar compartido -->
 <nav th:replace="~{fragments/navbar :: navbar('workshops')}"></nav>
 
 <!-- ── PAGE HERO ── -->
 <div class="page-hero">
     <div class="page-hero-inner">
         <div class="page-label">Administración</div>
-        <h1 th:text="${workshop.nif == null} ? 'Nuevo Taller' : 'Editar Taller'">Formulario Taller</h1>
-        <p>Completa los datos del taller para registrarlo en el sistema.</p>
+        <h1>Editar Taller</h1>
+        <p th:text="${workshop.name}">Nombre del taller</p>
     </div>
 </div>
 
@@ -36,7 +34,10 @@
             <span th:text="${errorMessage}"></span>
         </div>
 
-        <form th:action="@{/workshops/insert}" th:object="${workshop}" method="post">
+        <form th:action="@{/workshops/update}" th:object="${workshop}" method="post">
+
+            <!-- ID oculto obligatorio para el update -->
+            <input type="hidden" th:field="*{id}" />
 
             <div class="form-section-title">
                 <i class="bi bi-building"></i> Información del Taller
@@ -85,9 +86,9 @@
 
             <div class="form-actions">
                 <button type="submit" class="btn-submit">
-                    <i class="bi bi-floppy2-fill"></i> Guardar Taller
+                    <i class="bi bi-floppy2-fill"></i> Guardar Cambios
                 </button>
-                <a th:href="@{/workshops}" class="btn-cancel">
+                <a th:href="@{/workshops/detail(id=${workshop.id})}" class="btn-cancel">
                     <i class="bi bi-x-lg"></i> Cancelar
                 </a>
             </div>
@@ -96,9 +97,7 @@
     </div>
 </main>
 
-<!-- ── FOOTER ── -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
-
 <div th:replace="~{fragments/scripts :: scripts}"></div>
 </body>
 </html>

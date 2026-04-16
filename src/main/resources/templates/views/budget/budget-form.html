@@ -8,47 +8,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
     <th:block th:replace="~{fragments/navbar :: navbarCss}"></th:block>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body.budget-form-page { font-family: 'Inter', sans-serif; background: #f4f4f6; color: #1a1a1a; min-height: 100vh; }
-        .tgo-nav { background: rgba(10,10,10,0.93) !important; backdrop-filter: blur(18px); box-shadow: 0 2px 24px rgba(0,0,0,0.4); }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .page-hero { padding: calc(4rem + 64px) 2.5rem 5rem; background: linear-gradient(135deg, #111 0%, #1a1a1a 100%); text-align: center; }
-        .page-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #ffc107; margin-bottom: 0.5rem; }
-        .page-hero h1 { font-size: 2.2rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
-
-        .form-main { max-width: 800px; margin: -2.5rem auto 5rem; padding: 0 1.5rem; animation: fadeUp 0.5s ease both; position: relative; z-index: 10; }
-        .custom-card { background: #fff; border-radius: 16px; box-shadow: 0 12px 40px rgba(0,0,0,0.08); overflow: hidden; padding: 2.5rem; }
-
-        .form-label { font-size: 0.85rem; font-weight: 700; color: #444; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; display: block; }
-        .form-control-custom { width: 100%; border-radius: 8px; border: 1.5px solid #e0e0e0; padding: 0.7rem 1rem; font-size: 0.95rem; color: #111; font-weight: 500; transition: border-color 0.2s, box-shadow 0.2s; background: #fafafa; }
-        .form-control-custom:focus { border-color: #ffc107; box-shadow: 0 0 0 4px rgba(255,193,7,0.15); outline: none; background: #fff; }
-
-        .line-item { display: grid; grid-template-columns: 3fr 1fr 1.5fr auto; gap: 1rem; align-items: start; background: #fdfdfd; padding: 1rem; border: 1px solid #eee; border-radius: 10px; margin-bottom: 1rem; transition: all 0.2s; }
-        .line-item:hover { border-color: #ffc107; }
-        .btn-remove-line { background: #fee; color: #dc3545; border: none; padding: 0.7rem 1rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; height: 42px; margin-top: 28px; }
-        .btn-remove-line:hover { background: #dc3545; color: #fff; }
-
-        .btn-modern { border-radius: 8px; padding: 0.8rem 1.5rem; font-weight: 600; font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; transition: transform 0.15s, box-shadow 0.15s; border: none; cursor: pointer; text-decoration: none;}
-        .btn-modern:hover { transform: translateY(-2px); }
-        .btn-outline { background: #fff; border: 1.5px dashed #ccc; color: #555; width: 100%; margin-bottom: 2rem;}
-        .btn-outline:hover { background: #f9f9f9; color: #111; border-style: solid; }
-        .btn-outline-cancel { background: #fff; border: 1.5px solid #ccc; color: #555; }
-        .btn-warning-modern { background: #ffc107; color: #000; box-shadow: 0 4px 12px rgba(255,193,7,0.3); }
-
-        @media (max-width: 768px) {
-            .line-item { grid-template-columns: 1fr; }
-            .btn-remove-line { margin-top: 0; width: 100%; }
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/views.css}"/>
 </head>
 
 <body class="budget-form-page">
 <nav th:replace="~{fragments/navbar :: navbar('')}"></nav>
 
 <div class="page-hero">
-    <div class="page-label">Valoración Técnica</div>
+    <div class="page-label">Valoración</div>
     <h1><i class="bi bi-calculator"></i> <span th:text="#{msg.budget-form.title}">Generar Presupuesto</span></h1>
 </div>
 
@@ -59,44 +26,32 @@
         <form th:action="@{/budgets/new}" th:object="${budget}" method="post" id="budgetForm" class="needs-validation" novalidate>
             <input type="hidden" th:field="*{repairId}" />
 
-            <div class="form-label mb-3 border-bottom pb-2">Conceptos Facturables</div>
-
-            <div id="linesContainer">
-                <div class="line-item" th:each="line, stat : *{lines}">
-                    <div>
-                        <label class="form-label text-muted" style="font-size: 0.75rem;">Concepto / Descripción</label>
-                        <input type="text" th:field="*{lines[__${stat.index}__].concept}" list="commonParts" class="form-control-custom concept-input" required placeholder="Ej: Cambio de aceite" />
-                    </div>
-                    <div>
-                        <label class="form-label text-muted" style="font-size: 0.75rem;">Cantidad</label>
-                        <input type="number" min="1" th:field="*{lines[__${stat.index}__].quantity}" class="form-control-custom qty-input" required />
-                    </div>
-                    <div>
-                        <label class="form-label text-muted" style="font-size: 0.75rem;">Precio Un. (€)</label>
-                        <input type="number" step="0.01" min="0" th:field="*{lines[__${stat.index}__].unitPrice}" class="form-control-custom price-input" required />
-                    </div>
-                    <button type="button" class="btn-remove-line" onclick="removeLine(this)"><i class="bi bi-trash3"></i></button>
+            <div class="mb-4">
+                <label for="totalGross" class="form-label">Total Bruto</label>
+                <div class="input-group-custom">
+                    <i class="bi bi-currency-euro"></i>
+                    <input type="number" step="0.01" min="0" th:field="*{totalGross}" id="totalGross" class="form-control-custom" required
+                           th:classappend="${#fields.hasErrors('totalGross')} ? 'is-invalid'" placeholder="Ej: 100.00"/>
                 </div>
+                <div class="invalid-feedback" style="display:none;">Introduce un importe bruto válido.</div>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('totalGross')}" th:errors="*{totalGross}" style="display:block;"></div>
             </div>
 
-            <datalist id="commonParts">
-                <option value="Cambio de Aceite 5W30">
-                <option value="Filtro de Aceite">
-                <option value="Filtro de Aire">
-                <option value="Pastillas de Freno">
-                <option value="Mano de Obra (Horas)">
-                <option value="Diagnosis Electrónica">
-                <option value="Carga de Aire Acondicionado">
-            </datalist>
-
-            <button type="button" class="btn-modern btn-outline" onclick="addLine()">
-                <i class="bi bi-plus-circle"></i> Añadir Concepto
-            </button>
+            <div class="mb-5">
+                <label for="totalNet" class="form-label text-primary" th:text="#{msg.budget-detail.total}">Total a pagar (con IVA)</label>
+                <div class="input-group-custom">
+                    <i class="bi bi-currency-euro text-primary"></i>
+                    <input type="number" step="0.01" min="0" th:field="*{totalNet}" id="totalNet" class="form-control-custom" required
+                           th:classappend="${#fields.hasErrors('totalNet')} ? 'is-invalid'" placeholder="Ej: 121.00"/>
+                </div>
+                <div class="invalid-feedback" style="display:none;">Introduce el total neto final.</div>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('totalNet')}" th:errors="*{totalNet}" style="display:block;"></div>
+            </div>
 
             <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-                <a th:href="@{/appointments/{id}(id=*{repairId})}" class="btn-modern btn-outline-cancel">Cancelar</a>
+                <a th:href="@{/repairs/{id}(id=*{repairId})}" class="btn-modern btn-outline">Cancelar</a>
                 <button type="submit" class="btn-modern btn-warning-modern">
-                    <i class="bi bi-send-check"></i> Guardar y Enviar
+                    <i class="bi bi-save"></i> Guardar Presupuesto
                 </button>
             </div>
         </form>
@@ -104,86 +59,5 @@
 </main>
 
 <div th:replace="~{fragments/scripts :: scripts}"></div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const container = document.getElementById('linesContainer');
-        // Solo añade línea si el contenedor está totalmente vacío
-        if (container.children.length === 0) {
-            addLine();
-        }
-    });
-
-    function addLine() {
-        const container = document.getElementById('linesContainer');
-        const index = container.querySelectorAll('.line-item').length;
-
-        const lineHtml = `
-            <div class="line-item">
-                <div>
-                    <label class="form-label text-muted" style="font-size: 0.75rem;">Concepto / Descripción</label>
-                    <input type="text" name="lines[${index}].concept" list="commonParts" class="form-control-custom concept-input" required placeholder="Ej: Filtro de aceite" />
-                </div>
-                <div>
-                    <label class="form-label text-muted" style="font-size: 0.75rem;">Cantidad</label>
-                    <input type="number" name="lines[${index}].quantity" min="1" value="1" class="form-control-custom qty-input" required />
-                </div>
-                <div>
-                    <label class="form-label text-muted" style="font-size: 0.75rem;">Precio Un. (€)</label>
-                    <input type="number" name="lines[${index}].unitPrice" step="0.01" min="0" class="form-control-custom price-input" required placeholder="0.00" />
-                </div>
-                <button type="button" class="btn-remove-line" onclick="removeLine(this)"><i class="bi bi-trash3"></i></button>
-            </div>
-        `;
-        container.insertAdjacentHTML('beforeend', lineHtml);
-        reindexLines(); // Aseguramos índices correctos al añadir
-    }
-
-    function removeLine(buttonElement) {
-        const container = document.getElementById('linesContainer');
-        if(container.querySelectorAll('.line-item').length > 1) {
-            buttonElement.closest('.line-item').remove();
-            reindexLines();
-        } else {
-            alert("El presupuesto debe contener al menos un concepto.");
-        }
-    }
-
-    function reindexLines() {
-        const lines = document.querySelectorAll('.line-item');
-        lines.forEach((line, index) => {
-            line.querySelector('.concept-input').name = `lines[${index}].concept`;
-            line.querySelector('.qty-input').name = `lines[${index}].quantity`;
-            line.querySelector('.price-input').name = `lines[${index}].unitPrice`;
-        });
-    }
-
-    /**
-     * VALIDACIÓN FINAL ANTES DE ENVIAR
-     */
-    document.getElementById('budgetForm').addEventListener('submit', function(event) {
-        const lines = document.querySelectorAll('.line-item');
-        let isValid = true;
-
-        lines.forEach(line => {
-            const concept = line.querySelector('.concept-input').value.trim();
-            const qty = line.querySelector('.qty-input').value;
-            const price = line.querySelector('.price-input').value;
-
-            // Validación: No vacío, cantidad > 0, precio >= 0
-            if (!concept || !qty || qty < 1 || !price || price < 0) {
-                isValid = false;
-                line.style.border = "1px solid #dc3545";
-            } else {
-                line.style.border = "1px solid #eee";
-            }
-        });
-
-        if (!isValid) {
-            event.preventDefault();
-            alert("Por favor, rellena todos los campos correctamente.\n\n- El concepto no puede estar vacío.\n- La cantidad debe ser al menos 1.\n- El precio no puede ser negativo.");
-        }
-    });
-</script>
 </body>
 </html>

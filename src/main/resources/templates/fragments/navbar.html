@@ -7,31 +7,30 @@
      xmlns:th="http://www.thymeleaf.org"
      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
 
+    <!-- Logo -->
     <a th:href="@{/}" class="tgo-brand">
         TallerGO<span class="tgo-brand-dot"></span>
     </a>
 
+    <!-- Links centrales -->
     <ul class="tgo-links">
         <li>
             <a th:href="@{/}" th:classappend="${activeLink == 'home'} ? ' tgo-active'">Inicio</a>
         </li>
-
-        <li>
+        <li sec:authorize="isAuthenticated()">
             <a th:href="@{/workshops}" th:classappend="${activeLink == 'workshops'} ? ' tgo-active'">Talleres</a>
         </li>
-
         <li sec:authorize="isAuthenticated()">
             <a th:href="@{/appointments}" th:classappend="${activeLink == 'appointments'} ? ' tgo-active'">Mis Citas</a>
         </li>
         <li sec:authorize="isAuthenticated()">
             <a th:href="@{/vehicles}" th:classappend="${activeLink == 'vehicles'} ? ' tgo-active'">Mis Vehículos</a>
         </li>
-
         <li sec:authorize="hasRole('ADMIN')">
             <a th:href="@{/brands}" th:classappend="${activeLink == 'brands'} ? ' tgo-active'">Marcas</a>
         </li>
-
-        <li class="tgo-dd-wrap" id="ddPersonal" sec:authorize="hasRole('ADMIN')">
+        <!-- Dropdown Personal (solo autenticados) -->
+        <li class="tgo-dd-wrap" id="ddPersonal" sec:authorize="isAuthenticated()">
             <button class="tgo-dd-btn"
                     th:classappend="${activeLink == 'mechanics' or activeLink == 'users'} ? ' tgo-active'">
                 Personal <i class="bi bi-chevron-down tgo-chev"></i>
@@ -42,19 +41,20 @@
                         <i class="bi bi-tools"></i> Mecánicos
                     </a>
                 </li>
-                <li>
+                <li sec:authorize="hasRole('ADMIN')">
                     <a th:href="@{/users}" th:classappend="${activeLink == 'users'} ? ' tgo-dd-active'">
                         <i class="bi bi-people"></i> Usuarios
                     </a>
                 </li>
             </ul>
         </li>
-
+        <!-- CTA no autenticado -->
         <li sec:authorize="!isAuthenticated()">
             <a th:href="@{/login}" class="tgo-cta">Iniciar sesión</a>
         </li>
     </ul>
 
+    <!-- Avatar usuario autenticado -->
     <div class="tgo-avatar-wrap" id="ddUser" sec:authorize="isAuthenticated()">
         <button class="tgo-avatar-btn">
             <i class="bi bi-person-circle"></i>
@@ -80,145 +80,256 @@
         </ul>
     </div>
 
+    <!-- Botón hamburguesa (solo móvil) -->
+    <button class="tgo-hamburger" id="tgoHamburger" aria-label="Menú">
+        <span></span><span></span><span></span>
+    </button>
+
+    <!-- ── Menú móvil desplegable (dentro del nav para que Thymeleaf lo incluya) ── -->
+    <div class="tgo-mobile-menu" id="tgoMobileMenu">
+        <!-- No autenticado -->
+        <div th:if="${#authorization.expression('!isAuthenticated()')}">
+            <a th:href="@{/login}"><i class="bi bi-box-arrow-in-right"></i> Iniciar sesión</a>
+        </div>
+        <!-- Autenticado -->
+        <div th:if="${#authorization.expression('isAuthenticated()')}">
+            <span class="tgo-mobile-label" sec:authentication="name"></span>
+            <a th:href="@{/}" th:classappend="${activeLink == 'home'} ? ' tgo-active'">
+                <i class="bi bi-house"></i> Inicio
+            </a>
+            <a th:href="@{/workshops}" th:classappend="${activeLink == 'workshops'} ? ' tgo-active'">
+                <i class="bi bi-building"></i> Talleres
+            </a>
+            <a th:href="@{/appointments}" th:classappend="${activeLink == 'appointments'} ? ' tgo-active'">
+                <i class="bi bi-calendar-check"></i> Mis Citas
+            </a>
+            <a th:href="@{/vehicles}" th:classappend="${activeLink == 'vehicles'} ? ' tgo-active'">
+                <i class="bi bi-car-front"></i> Mis Vehículos
+            </a>
+            <div class="tgo-mobile-sep"></div>
+            <a th:href="@{/mechanics}" th:classappend="${activeLink == 'mechanics'} ? ' tgo-active'">
+                <i class="bi bi-tools"></i> Mecánicos
+            </a>
+            <a th:href="@{/brands}" sec:authorize="hasRole('ADMIN')"
+               th:classappend="${activeLink == 'brands'} ? ' tgo-active'">
+                <i class="bi bi-shield-check"></i> Marcas
+            </a>
+            <a th:href="@{/users}" sec:authorize="hasRole('ADMIN')"
+               th:classappend="${activeLink == 'users'} ? ' tgo-active'">
+                <i class="bi bi-people"></i> Usuarios
+            </a>
+            <div class="tgo-mobile-sep"></div>
+            <a th:href="@{/profile/edit}">
+                <i class="bi bi-person-gear"></i> Mi Perfil
+            </a>
+            <form th:action="@{/logout}" method="post" style="margin:0;padding:0;">
+                <button type="submit" class="tgo-mobile-logout">
+                    <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                </button>
+            </form>
+        </div>
+    </div>
+
 </nav>
 
+<!-- ─── navbarScripts (ya no se usa directamente, el JS va en scripts.html) ─── -->
 <th:block th:fragment="navbarScripts"></th:block>
 
+<!-- ─── navbarCss ─── -->
 <th:block th:fragment="navbarCss">
-    <style>
-        /* ════ NAVBAR ════ */
-        .tgo-nav {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 500;
-            padding: 0.75rem 2.5rem;
-            display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-            transition: background 0.35s, box-shadow 0.35s, padding 0.25s;
-        }
-        .tgo-nav.scrolled {
-            background: rgba(10,10,10,0.93);
-            backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-            box-shadow: 0 2px 24px rgba(0,0,0,0.45);
-            padding: 0.5rem 2.5rem;
-        }
+<style>
+/* ════ NAVBAR ════ */
+.tgo-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+    padding: 0.75rem 2.5rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    transition: background 0.35s, box-shadow 0.35s, padding 0.25s;
+}
+.tgo-nav.scrolled {
+    background: rgba(10,10,10,0.93);
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 2px 24px rgba(0,0,0,0.45);
+    padding: 0.5rem 2.5rem;
+}
 
-        /* Logo */
-        .tgo-brand {
-            font-size: 1.4rem; font-weight: 900; color: #fff;
-            text-decoration: none; letter-spacing: 1.5px;
-            display: flex; align-items: center; gap: 0.25rem; flex-shrink: 0;
-        }
-        .tgo-brand-dot {
-            display: inline-block; width: 9px; height: 9px; border-radius: 50%;
-            background: #c0392b; margin-bottom: 2px;
-            animation: pulse-red 2.2s infinite;
-        }
-        @keyframes pulse-red {
-            0%,100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.55); }
-            50%      { box-shadow: 0 0 0 6px rgba(192,57,43,0); }
-        }
+/* Logo */
+.tgo-brand {
+    font-size: 1.4rem; font-weight: 900; color: #fff;
+    text-decoration: none; letter-spacing: 1.5px;
+    display: flex; align-items: center; gap: 0.25rem; flex-shrink: 0;
+}
+.tgo-brand-dot {
+    display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+    background: #c0392b; margin-bottom: 2px;
+    animation: pulse-red 2.2s infinite;
+}
+@keyframes pulse-red {
+    0%,100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.55); }
+    50%      { box-shadow: 0 0 0 6px rgba(192,57,43,0); }
+}
 
-        /* Links */
-        .tgo-links {
-            display: flex; align-items: center; gap: 0.15rem;
-            list-style: none; margin: 0; padding: 0; flex: 1; justify-content: center;
-        }
-        .tgo-links a {
-            color: rgba(255,255,255,0.72); text-decoration: none;
-            font-size: 0.84rem; font-weight: 500;
-            padding: 0.42rem 0.85rem; border-radius: 8px;
-            transition: color 0.2s, background 0.2s; white-space: nowrap;
-            display: block;
-        }
-        .tgo-links a:hover { color: #fff; background: rgba(255,255,255,0.09); }
-        .tgo-links a.tgo-active { color: #fff; font-weight: 700; background: rgba(255,255,255,0.07); }
-        .tgo-links .tgo-cta {
-            background: #c0392b; color: #fff !important; font-weight: 600;
-            padding: 0.42rem 1.1rem; border-radius: 8px;
-            box-shadow: 0 3px 12px rgba(192,57,43,0.35);
-            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-        }
-        .tgo-links .tgo-cta:hover {
-            background: #a93226; transform: translateY(-1px);
-            box-shadow: 0 6px 18px rgba(192,57,43,0.45);
-        }
+/* Links */
+.tgo-links {
+    display: flex; align-items: center; gap: 0.6rem;
+    list-style: none; margin: 0; padding: 0; flex: 1; justify-content: center;
+}
+.tgo-links a {
+    color: rgba(255,255,255,0.72); text-decoration: none;
+    font-size: 0.84rem; font-weight: 500;
+    padding: 0.42rem 0.85rem; border-radius: 8px;
+    transition: color 0.2s, background 0.2s; white-space: nowrap;
+    display: block;
+}
+.tgo-links a:hover { color: #fff; background: rgba(255,255,255,0.09); }
+.tgo-links a.tgo-active { color: #fff; font-weight: 700; background: rgba(255,255,255,0.07); }
+.tgo-links .tgo-cta {
+    background: #c0392b; color: #fff !important; font-weight: 600;
+    padding: 0.42rem 1.1rem; border-radius: 8px;
+    box-shadow: 0 3px 12px rgba(192,57,43,0.35);
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+.tgo-links .tgo-cta:hover {
+    background: #a93226; transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(192,57,43,0.45);
+}
 
-        /* ── Dropdown genérico ── */
-        .tgo-dd-wrap, .tgo-avatar-wrap {
-            position: relative; list-style: none;
-        }
-        .tgo-dd-btn, .tgo-avatar-btn {
-            display: flex; align-items: center; gap: 0.35rem;
-            color: rgba(255,255,255,0.72); font-size: 0.84rem; font-weight: 500;
-            padding: 0.42rem 0.85rem; border-radius: 8px;
-            border: none; background: transparent; cursor: pointer;
-            font-family: inherit; white-space: nowrap;
-            transition: color 0.2s, background 0.2s;
-        }
-        .tgo-dd-btn:hover, .tgo-avatar-btn:hover,
-        .tgo-dd-wrap.open .tgo-dd-btn,
-        .tgo-avatar-wrap.open .tgo-avatar-btn {
-            color: #fff; background: rgba(255,255,255,0.09);
-        }
-        .tgo-dd-btn.tgo-active { color: #fff; font-weight: 700; background: rgba(255,255,255,0.07); }
-        .tgo-chev { font-size: 0.6rem; transition: transform 0.22s; }
-        .tgo-dd-wrap.open .tgo-chev,
-        .tgo-avatar-wrap.open .tgo-chev { transform: rotate(180deg); }
+/* ── Dropdown genérico ── */
+.tgo-dd-wrap, .tgo-avatar-wrap {
+    position: relative; list-style: none;
+}
+.tgo-dd-btn, .tgo-avatar-btn {
+    display: flex; align-items: center; gap: 0.35rem;
+    color: rgba(255,255,255,0.72); font-size: 0.84rem; font-weight: 500;
+    padding: 0.42rem 0.85rem; border-radius: 8px;
+    border: none; background: transparent; cursor: pointer;
+    font-family: inherit; white-space: nowrap;
+    transition: color 0.2s, background 0.2s;
+}
+.tgo-dd-btn:hover, .tgo-avatar-btn:hover,
+.tgo-dd-wrap.open .tgo-dd-btn,
+.tgo-avatar-wrap.open .tgo-avatar-btn {
+    color: #fff; background: rgba(255,255,255,0.09);
+}
+.tgo-dd-btn.tgo-active { color: #fff; font-weight: 700; background: rgba(255,255,255,0.07); }
+.tgo-chev { font-size: 0.6rem; transition: transform 0.22s; }
+.tgo-dd-wrap.open .tgo-chev,
+.tgo-avatar-wrap.open .tgo-chev { transform: rotate(180deg); }
 
-        /* Menú desplegable */
-        .tgo-dd-menu {
-            display: none; position: absolute;
-            top: calc(100% + 6px); left: 50%; transform: translateX(-50%);
-            background: rgba(14,14,14,0.98);
-            backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
-            border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-            list-style: none; padding: 0.4rem; min-width: 180px; z-index: 700;
-        }
-        .tgo-dd-right { left: auto; right: 0; transform: none; }
-        .tgo-dd-wrap.open .tgo-dd-menu,
-        .tgo-avatar-wrap.open .tgo-dd-menu { display: block; }
+/* Menú desplegable */
+.tgo-dd-menu {
+    display: none; position: absolute;
+    top: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+    background: rgba(14,14,14,0.98);
+    backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+    list-style: none; padding: 0.4rem; min-width: 180px; z-index: 700;
+}
+.tgo-dd-right { left: auto; right: 0; transform: none; }
+.tgo-dd-wrap.open .tgo-dd-menu,
+.tgo-avatar-wrap.open .tgo-dd-menu { display: block; }
 
-        .tgo-dd-menu li a,
-        .tgo-dd-menu li .tgo-dd-logout {
-            display: flex; align-items: center; gap: 0.55rem;
-            padding: 0.58rem 1rem; border-radius: 9px;
-            font-size: 0.83rem; font-weight: 500;
-            color: rgba(255,255,255,0.72); text-decoration: none;
-            transition: background 0.15s, color 0.15s; white-space: nowrap;
-            background: transparent; width: 100%; border: none; cursor: pointer; font-family: inherit;
-        }
-        .tgo-dd-menu li a:hover,
-        .tgo-dd-menu li .tgo-dd-logout:hover { background: rgba(255,255,255,0.07); color: #fff; }
-        .tgo-dd-menu li a.tgo-dd-active { color: #fff; font-weight: 700; background: rgba(192,57,43,0.16); }
-        .tgo-dd-menu li a i, .tgo-dd-menu li .tgo-dd-logout i { color: #c0392b; font-size: 0.88rem; flex-shrink: 0; }
-        .tgo-dd-logout { color: #e88080 !important; }
-        .tgo-dd-logout i { color: #e88080 !important; }
-        .tgo-dd-logout:hover { background: rgba(192,57,43,0.15) !important; color: #fff !important; }
+.tgo-dd-menu li a,
+.tgo-dd-menu li .tgo-dd-logout {
+    display: flex; align-items: center; gap: 0.55rem;
+    padding: 0.58rem 1rem; border-radius: 9px;
+    font-size: 0.83rem; font-weight: 500;
+    color: rgba(255,255,255,0.72); text-decoration: none;
+    transition: background 0.15s, color 0.15s; white-space: nowrap;
+    background: transparent; width: 100%; border: none; cursor: pointer; font-family: inherit;
+}
+.tgo-dd-menu li a:hover,
+.tgo-dd-menu li .tgo-dd-logout:hover { background: rgba(255,255,255,0.07); color: #fff; }
+.tgo-dd-menu li a.tgo-dd-active { color: #fff; font-weight: 700; background: rgba(192,57,43,0.16); }
+.tgo-dd-menu li a i, .tgo-dd-menu li .tgo-dd-logout i { color: #c0392b; font-size: 0.88rem; flex-shrink: 0; }
+.tgo-dd-logout { color: #e88080 !important; }
+.tgo-dd-logout i { color: #e88080 !important; }
+.tgo-dd-logout:hover { background: rgba(192,57,43,0.15) !important; color: #fff !important; }
 
-        .tgo-dd-label {
-            padding: 0.5rem 1rem 0.25rem;
-            font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.35);
-            text-transform: uppercase; letter-spacing: 0.8px; pointer-events: none;
-        }
-        .tgo-dd-sep {
-            height: 1px; background: rgba(255,255,255,0.07);
-            margin: 0.3rem 0.5rem; pointer-events: none;
-        }
+.tgo-dd-label {
+    padding: 0.5rem 1rem 0.25rem;
+    font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.35);
+    text-transform: uppercase; letter-spacing: 0.8px; pointer-events: none;
+}
+.tgo-dd-sep {
+    height: 1px; background: rgba(255,255,255,0.07);
+    margin: 0.3rem 0.5rem; pointer-events: none;
+}
 
-        /* Avatar */
-        .tgo-avatar-btn .bi-person-circle { font-size: 1.2rem; color: rgba(255,255,255,0.8); }
-        .tgo-uname { color: #fff; font-weight: 600; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+/* Avatar */
+.tgo-avatar-btn .bi-person-circle { font-size: 1.2rem; color: rgba(255,255,255,0.8); }
+.tgo-uname { color: #fff; font-weight: 600; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
 
-        /* Responsive */
-        @media (max-width: 960px) {
-            .tgo-nav { padding: 0.65rem 1.2rem; }
-            .tgo-nav.scrolled { padding: 0.45rem 1.2rem; }
-            .tgo-links a, .tgo-dd-btn { font-size: 0.76rem; padding: 0.35rem 0.55rem; }
-            .tgo-uname { display: none; }
-        }
-        @media (max-width: 640px) {
-            .tgo-links > li:not(:has(.tgo-cta)):not(.tgo-dd-wrap) { display: none; }
-        }
-    </style>
+/* ── Hamburger button ── */
+.tgo-hamburger {
+    display: none;
+    flex-direction: column; justify-content: center; align-items: center;
+    gap: 5px; width: 36px; height: 36px;
+    background: transparent; border: none; cursor: pointer; padding: 4px;
+    border-radius: 8px; transition: background 0.2s;
+}
+.tgo-hamburger:hover { background: rgba(255,255,255,0.1); }
+.tgo-hamburger span {
+    display: block; width: 22px; height: 2px;
+    background: #fff; border-radius: 2px;
+    transition: transform 0.3s, opacity 0.3s;
+}
+.tgo-nav.menu-open .tgo-hamburger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.tgo-nav.menu-open .tgo-hamburger span:nth-child(2) { opacity: 0; }
+.tgo-nav.menu-open .tgo-hamburger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Mobile menu panel */
+.tgo-mobile-menu {
+    display: none;
+    position: fixed; top: 56px; left: 0; right: 0;
+    background: rgba(10,10,10,0.98);
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    padding: 1rem 1.2rem 1.4rem;
+    z-index: 499;
+    flex-direction: column; gap: 0.25rem;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+}
+.tgo-mobile-menu.open { display: flex; }
+
+.tgo-mobile-menu a,
+.tgo-mobile-menu button.tgo-mobile-logout {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.7rem 1rem; border-radius: 10px;
+    color: rgba(255,255,255,0.8); text-decoration: none;
+    font-size: 0.92rem; font-weight: 500;
+    transition: background 0.15s, color 0.15s;
+    background: transparent; border: none; cursor: pointer;
+    font-family: inherit; width: 100%; text-align: left;
+}
+.tgo-mobile-menu a:hover,
+.tgo-mobile-menu button.tgo-mobile-logout:hover { background: rgba(255,255,255,0.07); color: #fff; }
+.tgo-mobile-menu a.tgo-active { color: #fff; font-weight: 700; background: rgba(192,57,43,0.15); }
+.tgo-mobile-menu a i,
+.tgo-mobile-menu button.tgo-mobile-logout i { color: #c0392b; font-size: 0.9rem; }
+.tgo-mobile-menu .tgo-mobile-sep {
+    height: 1px; background: rgba(255,255,255,0.07); margin: 0.4rem 0;
+}
+.tgo-mobile-menu .tgo-mobile-label {
+    font-size: 0.68rem; font-weight: 700; color: rgba(255,255,255,0.3);
+    text-transform: uppercase; letter-spacing: 1px;
+    padding: 0.5rem 1rem 0.2rem;
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+    .tgo-nav { padding: 0.65rem 1.2rem; }
+    .tgo-nav.scrolled { padding: 0.45rem 1.2rem; }
+    .tgo-links a, .tgo-dd-btn { font-size: 0.76rem; padding: 0.35rem 0.55rem; }
+    .tgo-uname { display: none; }
+}
+@media (max-width: 640px) {
+    .tgo-links { display: none; }
+    .tgo-avatar-wrap { display: none; }
+    .tgo-hamburger { display: flex; }
+}
+</style>
 </th:block>
 
 </html>
