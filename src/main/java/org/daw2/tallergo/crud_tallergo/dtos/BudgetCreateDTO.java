@@ -2,7 +2,6 @@ package org.daw2.tallergo.crud_tallergo.dtos;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,6 +36,5 @@ public class BudgetCreateDTO {
      * Se exige al menos una línea para que el presupuesto sea válido.
      */
     @Valid
-    @Size(min = 1, message = "El presupuesto debe tener al menos una línea de concepto")
     private List<BudgetLineDTO> lines = new ArrayList<>();
 }

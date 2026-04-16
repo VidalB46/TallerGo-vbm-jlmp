@@ -61,26 +61,30 @@ public class BudgetServiceImpl implements BudgetService {
         // 2. ELIMINACIÓN DE LAS LÍNEAS ANTERIORES
         budgetLineRepository.deleteAllByBudgetId(budget.getId());
 
-        // 3. CREACIÓN EXPLÍCITA DE LAS NUEVAS LÍNEAS
-        BigDecimal totalGross = BigDecimal.ZERO;
-        if (dto.getLines() != null) {
-            for (var lineDto : dto.getLines()) {
-                BudgetLine line = new BudgetLine();
-                line.setConcept(lineDto.getConcept());
-                line.setQuantity(lineDto.getQuantity());
-                line.setUnitPrice(lineDto.getUnitPrice());
-                line.setBudget(budget); // Le decimos quién es el padre
+        // 3. Si el DTO trae totalGross directamente (formulario simple), lo usamos.
+        //    Si trae líneas, calculamos desde ellas.
+        BigDecimal totalGross;
+        BigDecimal totalNet;
 
-                // GUARDAMOS LA LÍNEA MANUALMENTE
-                budgetLineRepository.save(line);
-
-                totalGross = totalGross.add(line.getLineTotal());
+        if (dto.getTotalGross() != null && dto.getTotalNet() != null) {
+            totalGross = dto.getTotalGross();
+            totalNet = dto.getTotalNet();
+        } else {
+            totalGross = BigDecimal.ZERO;
+            if (dto.getLines() != null) {
+                for (var lineDto : dto.getLines()) {
+                    BudgetLine line = new BudgetLine();
+                    line.setConcept(lineDto.getConcept());
+                    line.setQuantity(lineDto.getQuantity());
+                    line.setUnitPrice(lineDto.getUnitPrice());
+                    line.setBudget(budget);
+                    budgetLineRepository.save(line);
+                    totalGross = totalGross.add(line.getLineTotal());
+                }
             }
+            BigDecimal taxAmount = totalGross.multiply(TAX_RATE);
+            totalNet = totalGross.add(taxAmount).setScale(2, RoundingMode.HALF_UP);
         }
-
-        // 4. Actualizamos el total general del padre
-        BigDecimal taxAmount = totalGross.multiply(TAX_RATE);
-        BigDecimal totalNet = totalGross.add(taxAmount).setScale(2, RoundingMode.HALF_UP);
 
         budget.setTotalGross(totalGross);
         budget.setTotalNet(totalNet);
