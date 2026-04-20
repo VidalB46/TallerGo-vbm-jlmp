@@ -8,31 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
     <th:block th:replace="~{fragments/navbar :: navbarCss}"></th:block>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body.repair-form-page { font-family: 'Inter', sans-serif; background: #f4f4f6; color: #1a1a1a; min-height: 100vh; }
-        .tgo-nav { background: rgba(10,10,10,0.93) !important; backdrop-filter: blur(18px); box-shadow: 0 2px 24px rgba(0,0,0,0.4); }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .page-hero { padding: calc(4rem + 64px) 2.5rem 5rem; background: linear-gradient(135deg, #111 0%, #1a1a1a 100%); text-align: center; }
-        .page-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #0d6efd; margin-bottom: 0.5rem; }
-        .page-hero h1 { font-size: 2.2rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
-
-        .form-main { max-width: 600px; margin: -2.5rem auto 5rem; padding: 0 1.5rem; animation: fadeUp 0.5s ease both; position: relative; z-index: 10; }
-        .custom-card { background: #fff; border-radius: 16px; box-shadow: 0 12px 40px rgba(0,0,0,0.08); overflow: hidden; padding: 2.5rem; }
-
-        .form-label { font-size: 0.85rem; font-weight: 700; color: #444; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; display: block; }
-        .form-control-custom { width: 100%; border-radius: 10px; border: 1.5px solid #e0e0e0; padding: 0.8rem 1rem; font-size: 1rem; color: #111; transition: border-color 0.2s, box-shadow 0.2s; background: #fafafa; }
-        .form-control-custom:focus { border-color: #0d6efd; box-shadow: 0 0 0 4px rgba(13,110,253,0.15); outline: none; background: #fff; }
-        .is-invalid { border-color: #dc3545; background-color: #fff8f8; }
-        .invalid-feedback { font-size: 0.8rem; color: #dc3545; margin-top: 0.4rem; font-weight: 500; }
-
-        .btn-modern { border-radius: 8px; padding: 0.8rem 1.5rem; font-weight: 600; font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; transition: transform 0.15s, box-shadow 0.15s; border: none; cursor: pointer; text-decoration: none;}
-        .btn-modern:hover { transform: translateY(-2px); }
-        .btn-outline { background: #fff; border: 1.5px solid #ccc; color: #555; }
-        .btn-outline:hover { background: #f4f4f4; color: #111; }
-        .btn-primary-modern { background: #0d6efd; color: #fff; box-shadow: 0 4px 12px rgba(13,110,253,0.3); }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/views.css}"/>
 </head>
 
 <body class="repair-form-page">

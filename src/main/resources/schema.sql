@@ -132,6 +132,15 @@ CREATE TABLE IF NOT EXISTS budgets (
   CONSTRAINT fk_budget_repair FOREIGN KEY (repair_id) REFERENCES repairs(id)
 );
 
+CREATE TABLE IF NOT EXISTS budget_lines (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  budget_id BIGINT NOT NULL,
+  concept VARCHAR(255) NOT NULL,
+  quantity DECIMAL(10, 2) NOT NULL,
+  unit_price DECIMAL(10, 2) NOT NULL,
+  CONSTRAINT fk_budgetline_budget FOREIGN KEY (budget_id) REFERENCES budgets(id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS reviews (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   workshop_id INT NOT NULL,

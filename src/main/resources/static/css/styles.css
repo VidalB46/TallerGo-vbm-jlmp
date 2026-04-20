@@ -15,8 +15,6 @@
 html, body {
  height: 100%;
  margin: 0;
- display: flex;
- flex-direction: column;
 }
 
 body {
@@ -24,14 +22,20 @@ body {
  background-color: #ffffff;
 }
 
-.content-wrapper {
+/* Solo las páginas legacy (login, register, reset-password) usan flex centrado */
+body.legacy-page {
+ display: flex;
+ flex-direction: column;
+}
+
+body.legacy-page .content-wrapper {
  flex: 1;
  display: flex;
  flex-direction: column;
 }
 
-/* Centra verticalmente el contenido si la página es corta */
-main {
+/* Centra verticalmente el contenido en páginas legacy */
+body.legacy-page main {
  flex: 1;
  display: flex;
  flex-direction: column;
@@ -39,6 +43,12 @@ main {
  align-items: center;
  text-align: center;
  padding: 2rem;
+}
+
+.content-wrapper {
+ flex: 1;
+ display: flex;
+ flex-direction: column;
 }
 
 /* =========================================================

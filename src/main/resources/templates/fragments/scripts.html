@@ -44,6 +44,36 @@
                 if (e.key === 'Escape') closeAll();
             });
         })();
+
+        /* ── Hamburguesa móvil ── */
+        (function() {
+            var btn  = document.getElementById('tgoHamburger');
+            var menu = document.getElementById('tgoMobileMenu');
+            var nav  = document.getElementById('tgoNav');
+            if (!btn || !menu) return;
+
+            btn.addEventListener('click', function(e) {
+                e.stopImmediatePropagation();
+                var open = menu.classList.toggle('open');
+                nav.classList.toggle('menu-open', open);
+            });
+
+            /* Click fuera del nav → cerrar */
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('#tgoNav')) {
+                    menu.classList.remove('open');
+                    nav.classList.remove('menu-open');
+                }
+            });
+
+            /* Escape → cerrar */
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    menu.classList.remove('open');
+                    nav.classList.remove('menu-open');
+                }
+            });
+        })();
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"

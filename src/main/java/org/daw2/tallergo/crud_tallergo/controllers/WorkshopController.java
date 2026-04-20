@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.daw2.tallergo.crud_tallergo.dtos.WorkshopCreateDTO;
 import org.daw2.tallergo.crud_tallergo.dtos.WorkshopDTO;
 import org.daw2.tallergo.crud_tallergo.dtos.WorkshopDetailDTO;
+import org.daw2.tallergo.crud_tallergo.dtos.WorkshopUpdateDTO;
 import org.daw2.tallergo.crud_tallergo.services.WorkshopService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -94,15 +95,45 @@ public class WorkshopController {
 
     /**
      * Elimina un taller por su ID.
-     *
-     * @param id    ID del taller a eliminar.
-     * @param flash Atributos flash para mensajes de éxito.
-     * @return Redirección al listado de talleres.
      */
     @PostMapping("/delete/{id}")
     public String delete(@PathVariable Integer id, RedirectAttributes flash) {
         workshopService.delete(id);
         flash.addFlashAttribute("success", "Taller eliminado correctamente");
         return "redirect:/workshops";
+    }
+
+    /**
+     * Muestra el formulario de edición de un taller existente.
+     */
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable Integer id, Model model) {
+        WorkshopUpdateDTO dto = workshopService.getForEdit(id);
+        model.addAttribute("workshop", dto);
+        model.addAttribute("editMode", true);
+        return "views/workshop/workshop-edit";
+    }
+
+    /**
+     * Guarda los cambios de edición de un taller.
+     */
+    @PostMapping("/update")
+    public String update(@Valid @ModelAttribute("workshop") WorkshopUpdateDTO dto,
+                         BindingResult result,
+                         Model model,
+                         RedirectAttributes flash) {
+        if (result.hasErrors()) {
+            model.addAttribute("editMode", true);
+            return "views/workshop/workshop-edit";
+        }
+        try {
+            workshopService.update(dto);
+            flash.addFlashAttribute("successMessage", "Taller actualizado correctamente");
+            return "redirect:/workshops/detail?id=" + dto.getId();
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("editMode", true);
+            return "views/workshop/workshop-edit";
+        }
     }
 }

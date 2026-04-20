@@ -47,7 +47,8 @@ public class BudgetController {
 
             BudgetCreateDTO dto = new BudgetCreateDTO();
             dto.setRepairId(repairId);
-            dto.setLines(existing.getLines()); // Precargamos las líneas actuales
+            dto.setTotalGross(existing.getTotalGross());
+            dto.setTotalNet(existing.getTotalNet());
 
             model.addAttribute("budget", dto);
         } catch (Exception e) {

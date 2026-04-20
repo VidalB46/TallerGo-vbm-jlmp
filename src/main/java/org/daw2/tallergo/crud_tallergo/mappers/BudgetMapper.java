@@ -41,6 +41,9 @@ public class BudgetMapper {
 
         if (entity.getRepair() != null) {
             dto.setRepairId(entity.getRepair().getId());
+            if (entity.getRepair().getAppointment() != null) {
+                dto.setAppointmentId(entity.getRepair().getAppointment().getId());
+            }
             if (entity.getRepair().getVehicle() != null) {
                 dto.setVehicleMatricula(entity.getRepair().getVehicle().getMatricula());
             }

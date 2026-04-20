@@ -48,7 +48,7 @@ public class BudgetServiceImpl implements BudgetService {
         Repair repair = repairRepository.findById(repairId)
                 .orElseThrow(() -> new IllegalArgumentException("Reparación no encontrada"));
 
-        Budget budget = repair.getBudget(); // Usa el truco de la versión más reciente
+        Budget budget = repair.getBudget(); // versión más reciente
         if (budget == null) {
             throw new IllegalArgumentException("No existe presupuesto activo para esta reparación");
         }
@@ -63,8 +63,7 @@ public class BudgetServiceImpl implements BudgetService {
 
         Budget currentBudget = repair.getBudget();
         Budget budget;
-
-        // LÓGICA DE VERSIONADO
+      
         if (currentBudget != null && !Boolean.TRUE.equals(currentBudget.getAccepted())) {
             // El mecánico está editando un presupuesto que el cliente AÚN NO HA VISTO ni aceptado.
             // Actualizamos el mismo.
@@ -89,7 +88,7 @@ public class BudgetServiceImpl implements BudgetService {
             budgetRepository.flush();
         }
 
-        // Cargar las nuevas líneas
+        // Cargar las nuevas líneas 
         BigDecimal totalGross = BigDecimal.ZERO;
         if (dto.getLines() != null) {
             for (var lineDto : dto.getLines()) {
