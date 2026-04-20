@@ -7,12 +7,10 @@
      xmlns:th="http://www.thymeleaf.org"
      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
 
-    <!-- Logo -->
     <a th:href="@{/}" class="tgo-brand">
         TallerGO<span class="tgo-brand-dot"></span>
     </a>
 
-    <!-- Links centrales -->
     <ul class="tgo-links">
         <li>
             <a th:href="@{/}" th:classappend="${activeLink == 'home'} ? ' tgo-active'">Inicio</a>
@@ -29,8 +27,8 @@
         <li sec:authorize="hasRole('ADMIN')">
             <a th:href="@{/brands}" th:classappend="${activeLink == 'brands'} ? ' tgo-active'">Marcas</a>
         </li>
-        <!-- Dropdown Personal (solo autenticados) -->
-        <li class="tgo-dd-wrap" id="ddPersonal" sec:authorize="isAuthenticated()">
+
+        <li class="tgo-dd-wrap" id="ddPersonal" sec:authorize="hasAnyRole('ADMIN','JEFE_TALLER')">
             <button class="tgo-dd-btn"
                     th:classappend="${activeLink == 'mechanics' or activeLink == 'users'} ? ' tgo-active'">
                 Personal <i class="bi bi-chevron-down tgo-chev"></i>
@@ -48,13 +46,11 @@
                 </li>
             </ul>
         </li>
-        <!-- CTA no autenticado -->
         <li sec:authorize="!isAuthenticated()">
             <a th:href="@{/login}" class="tgo-cta">Iniciar sesión</a>
         </li>
     </ul>
 
-    <!-- Avatar usuario autenticado -->
     <div class="tgo-avatar-wrap" id="ddUser" sec:authorize="isAuthenticated()">
         <button class="tgo-avatar-btn">
             <i class="bi bi-person-circle"></i>
@@ -80,18 +76,14 @@
         </ul>
     </div>
 
-    <!-- Botón hamburguesa (solo móvil) -->
     <button class="tgo-hamburger" id="tgoHamburger" aria-label="Menú">
         <span></span><span></span><span></span>
     </button>
 
-    <!-- ── Menú móvil desplegable (dentro del nav para que Thymeleaf lo incluya) ── -->
     <div class="tgo-mobile-menu" id="tgoMobileMenu">
-        <!-- No autenticado -->
         <div th:if="${#authorization.expression('!isAuthenticated()')}">
             <a th:href="@{/login}"><i class="bi bi-box-arrow-in-right"></i> Iniciar sesión</a>
         </div>
-        <!-- Autenticado -->
         <div th:if="${#authorization.expression('isAuthenticated()')}">
             <span class="tgo-mobile-label" sec:authentication="name"></span>
             <a th:href="@{/}" th:classappend="${activeLink == 'home'} ? ' tgo-active'">
@@ -107,7 +99,7 @@
                 <i class="bi bi-car-front"></i> Mis Vehículos
             </a>
             <div class="tgo-mobile-sep"></div>
-            <a th:href="@{/mechanics}" th:classappend="${activeLink == 'mechanics'} ? ' tgo-active'">
+            <a th:href="@{/mechanics}" sec:authorize="hasAnyRole('ADMIN','JEFE_TALLER')" th:classappend="${activeLink == 'mechanics'} ? ' tgo-active'">
                 <i class="bi bi-tools"></i> Mecánicos
             </a>
             <a th:href="@{/brands}" sec:authorize="hasRole('ADMIN')"
@@ -132,10 +124,8 @@
 
 </nav>
 
-<!-- ─── navbarScripts (ya no se usa directamente, el JS va en scripts.html) ─── -->
 <th:block th:fragment="navbarScripts"></th:block>
 
-<!-- ─── navbarCss ─── -->
 <th:block th:fragment="navbarCss">
 <style>
 /* ════ NAVBAR ════ */

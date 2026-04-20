@@ -36,6 +36,9 @@ public class BudgetMapper {
         dto.setTotalNet(entity.getTotalNet());
         dto.setAccepted(entity.getAccepted());
 
+        // PASAMOS LAS NOTAS AL CLIENTE
+        dto.setNotes(entity.getNotes());
+
         if (entity.getRepair() != null) {
             dto.setRepairId(entity.getRepair().getId());
             if (entity.getRepair().getAppointment() != null) {
@@ -66,6 +69,9 @@ public class BudgetMapper {
         Budget entity = new Budget();
         entity.setAccepted(false);
         entity.setRepair(repair);
+
+        // RECOGEMOS LAS NOTAS DEL FORMULARIO
+        entity.setNotes(dto.getNotes());
 
         // Transformar la lista de DTOs de líneas a Entidades
         if (dto.getLines() != null) {

@@ -1,5 +1,6 @@
 <footer th:fragment="footer"
         xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
         style="
             background: #0a0a0a;
             color: #555;
@@ -32,7 +33,6 @@
 
     <div class="tgo-footer-grid">
 
-        <!-- Marca -->
         <div>
             <div style="font-size:1.2rem; font-weight:800; color:#fff; letter-spacing:1.5px; margin-bottom:0.5rem; display:flex; align-items:center; gap:0.2rem;">
                 TallerGO<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#c0392b;margin-bottom:2px;margin-left:1px;"></span>
@@ -42,22 +42,20 @@
             </p>
         </div>
 
-        <!-- Navegación -->
         <div>
             <h4 style="color:#fff; font-size:0.75rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:1rem;">Navegación</h4>
             <a th:href="@{/}"         style="color:#555; font-size:0.82rem; text-decoration:none; display:block; line-height:2.1; transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#555'">Inicio</a>
             <a th:href="@{/workshops}" style="color:#555; font-size:0.82rem; text-decoration:none; display:block; line-height:2.1; transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#555'">Talleres</a>
-            <a th:href="@{/mechanics}" style="color:#555; font-size:0.82rem; text-decoration:none; display:block; line-height:2.1; transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#555'">Mecánicos</a>
+
+            <a sec:authorize="hasAnyRole('ADMIN', 'JEFE_TALLER')" th:href="@{/mechanics}" style="color:#555; font-size:0.82rem; text-decoration:none; display:block; line-height:2.1; transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#555'">Mecánicos</a>
         </div>
 
-        <!-- Legal -->
         <div>
             <h4 style="color:#fff; font-size:0.75rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:1rem;">Legal</h4>
             <a href="#" style="color:#555; font-size:0.82rem; text-decoration:none; display:block; line-height:2.1;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#555'">Política de Privacidad</a>
             <a href="#" style="color:#555; font-size:0.82rem; text-decoration:none; display:block; line-height:2.1;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#555'">Términos de uso</a>
         </div>
 
-        <!-- Contacto -->
         <div>
             <h4 style="color:#fff; font-size:0.75rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:1rem;">Contacto</h4>
             <a href="mailto:tallerGO@gmail.com" style="color:#555; font-size:0.82rem; text-decoration:none; display:block; line-height:2.1;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#555'">tallerGO@gmail.com</a>
@@ -65,7 +63,6 @@
 
     </div>
 
-    <!-- Copyright -->
     <div style="
             max-width: 1100px;
             margin: 0 auto;
