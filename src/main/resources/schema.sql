@@ -123,12 +123,10 @@ CREATE TABLE IF NOT EXISTS repairs (
 
 CREATE TABLE IF NOT EXISTS budgets (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  repair_id BIGINT NOT NULL,
+  repair_id BIGINT UNIQUE NOT NULL,
   total_gross DECIMAL(10, 2),
   total_net DECIMAL(10, 2),
   accepted BOOLEAN DEFAULT FALSE,
-  rejected BOOLEAN NOT NULL DEFAULT FALSE,
-  notes TEXT,
   CONSTRAINT fk_budget_repair FOREIGN KEY (repair_id) REFERENCES repairs(id)
 );
 

@@ -5,7 +5,6 @@ SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE TABLE reviews;
 TRUNCATE TABLE user_roles;
 TRUNCATE TABLE user_profiles;
-TRUNCATE TABLE budget_lines;
 TRUNCATE TABLE budgets;
 TRUNCATE TABLE repairs;
 TRUNCATE TABLE appointments;

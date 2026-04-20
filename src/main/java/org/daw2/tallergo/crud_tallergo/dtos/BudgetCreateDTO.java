@@ -6,27 +6,35 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * DTO para la solicitud de creación de un presupuesto.
- * Solo recibe lo que introduce el usuario (Conceptos, cantidades, precio unitario y notas).
- * Los totales (Bruto y Neto) los calcula el backend automáticamente.
+ * DTO para la creación de un nuevo presupuesto asociado a una reparación.
+ * El mecánico enviará una lista de conceptos y el servidor calculará los totales automáticamente.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class BudgetCreateDTO {
 
+    /**
+     * ID de la reparación a la que pertenece este presupuesto.
+     */
     @NotNull(message = "{msg.budget.repair.notNull}")
     private Long repairId;
 
-    /**
-     * Comentarios del taller justificando los trabajos o piezas presupuestadas.
-     */
-    private String notes;
+    @NotNull(message = "{msg.budget.totalGross.notNull}")
+    private BigDecimal totalGross;
 
+    @NotNull(message = "{msg.budget.totalNet.notNull}")
+    private BigDecimal totalNet;
+
+    /**
+     * Lista de conceptos a presupuestar.
+     * Se exige al menos una línea para que el presupuesto sea válido.
+     */
     @Valid
     private List<BudgetLineDTO> lines = new ArrayList<>();
 }

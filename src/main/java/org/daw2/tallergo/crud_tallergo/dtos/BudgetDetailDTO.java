@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * DTO para la visualización detallada del presupuesto por parte del cliente o el administrador.
+ * DTO para visualizar la información económica detallada de una reparación.
  * Se utiliza en la vista de cliente para que este tome la decisión de aceptar el trabajo.
  */
 @Data
@@ -19,7 +19,6 @@ public class BudgetDetailDTO {
     private BigDecimal totalGross; // Bruto
     private BigDecimal totalNet;   // Neto (con IVA/descuentos)
     private Boolean accepted;      // Estado de la aprobación
-    private String notes;          // Observaciones del taller para el cliente
     private Long repairId;
     private Long appointmentId;
     private String vehicleMatricula;

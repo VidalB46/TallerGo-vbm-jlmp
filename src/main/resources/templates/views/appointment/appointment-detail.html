@@ -10,78 +10,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
     <th:block th:replace="~{fragments/navbar :: navbarCss}"></th:block>
     <link rel="stylesheet" th:href="@{/css/views.css}"/>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body.appt-detail-page { font-family: 'Inter', sans-serif; background: #f4f4f6; color: #1a1a1a; min-height: 100vh; }
-        .tgo-nav { background: rgba(10,10,10,0.93) !important; backdrop-filter: blur(18px); box-shadow: 0 2px 24px rgba(0,0,0,0.4); }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .page-hero { padding: calc(4rem + 64px) 2.5rem 5rem; background: linear-gradient(135deg, #111 0%, #1a1a1a 100%); position: relative; overflow: hidden; }
-        .page-hero-inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
-        .page-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #c0392b; margin-bottom: 0.4rem; }
-        .page-hero h1 { font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
-
-        .detail-main { max-width: 900px; margin: -2.5rem auto 5rem; padding: 0 2rem; animation: fadeUp 0.5s ease both; position: relative; z-index: 10; }
-        .detail-card { background: #fff; border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); overflow: hidden; }
-
-        .detail-stripe { height: 6px; width: 100%; }
-        .stripe-solicitado { background: linear-gradient(90deg, #f39c12, #f1c40f); }
-        .stripe-confirmado { background: linear-gradient(90deg, #27ae60, #2ecc71); }
-        .stripe-cancelado  { background: linear-gradient(90deg, #c0392b, #e74c3c); }
-        .stripe-taller     { background: linear-gradient(90deg, #34495e, #7f8c8d); }
-        .stripe-reparacion { background: linear-gradient(90deg, #2980b9, #3498db); }
-
-        .detail-card-body { padding: 2.5rem; }
-        .detail-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1.5px solid #f0f0f0; }
-        .detail-id { font-size: 0.85rem; color: #888; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
-        .detail-date-big { font-size: 1.6rem; font-weight: 800; color: #111; }
-        .detail-time-big { font-size: 0.95rem; color: #888; margin-top: 0.2rem; display: flex; align-items: center; gap: 0.4rem; font-weight: 500;}
-
-        .status-badge { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 0.5rem 1.2rem; border-radius: 30px; }
-        .status-solicitado { background: rgba(243,156,18,0.12); color: #d68910; border: 1px solid rgba(243,156,18,0.3); }
-        .status-confirmado { background: rgba(39,174,96,0.12); color: #1e8449; border: 1px solid rgba(39,174,96,0.3); }
-        .status-cancelado  { background: rgba(192,57,43,0.10); color: #c0392b; border: 1px solid rgba(192,57,43,0.25); }
-        .status-taller     { background: rgba(108,117,125,0.12); color: #495057; border: 1px solid rgba(108,117,125,0.3); }
-        .status-reparacion { background: rgba(52,152,219,0.12); color: #2980b9; border: 1px solid rgba(52,152,219,0.3); }
-
-        .detail-section { margin-bottom: 2rem; }
-        .detail-section-title { font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #c0392b; margin-bottom: 1rem; }
-        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-        .detail-field label { font-size: 0.75rem; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 0.3rem; }
-        .detail-field span { font-size: 1rem; font-weight: 600; color: #111; display: flex; align-items: center; gap: 0.5rem; }
-        .detail-field span i { color: #c0392b; }
-
-        .notes-box { background: #f8f8fa; border: 1.5px solid #ebebee; border-radius: 12px; padding: 1.2rem 1.4rem; font-size: 0.95rem; color: #555; }
-        .detail-card-footer { padding: 1.5rem 2.5rem; border-top: 1.5px solid #f0f0f0; background: #fafafa; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
-
-        .btn-modern { border-radius: 8px; padding: 0.6rem 1.2rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: transform 0.15s, box-shadow 0.15s; border: none; cursor: pointer; text-decoration: none; font-size: 0.9rem;}
-        .btn-modern:hover { transform: translateY(-1px); }
-        .btn-outline { background: #fff; border: 1.5px solid #ccc; color: #555; }
-        .btn-outline:hover { background: #f4f4f4; color: #111; }
-        .btn-warning-modern { background: #ffc107; color: #000; box-shadow: 0 2px 8px rgba(255,193,7,0.3); }
-        .btn-info-modern { background: #0dcaf0; color: #fff; box-shadow: 0 2px 8px rgba(13,202,240,0.3); }
-        .btn-primary-modern { background: #0d6efd; color: #fff; box-shadow: 0 2px 8px rgba(13,110,253,0.3); }
-        .btn-success-modern { background: #198754; color: #fff; box-shadow: 0 2px 8px rgba(25,135,84,0.3); }
-        .btn-danger-modern { background: #dc3545; color: #fff; box-shadow: 0 2px 8px rgba(220,53,69,0.3); }
-        .btn-danger-outline-modern { background: transparent; border: 1.5px solid #dc3545; color: #dc3545; }
-        .btn-danger-outline-modern:hover { background: #dc3545; color: #fff; }
-        .btn-dark-modern { background: #212529; color: #fff; box-shadow: 0 2px 8px rgba(33,37,41,0.3); }
-
-        .alert-custom { border-radius: 12px; border: none; padding: 1rem 1.2rem; display: flex; align-items: center; gap: 0.8rem; font-weight: 500; font-size: 0.95rem;}
-
-        .custom-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 9999; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
-        .custom-modal-overlay.show { display: flex; opacity: 1; }
-        .custom-modal-box { background: #fff; width: 100%; max-width: 450px; margin: 1.5rem; border-radius: 20px; box-shadow: 0 24px 48px rgba(0,0,0,0.2); transform: scale(0.95); transition: transform 0.3s ease; overflow: hidden; }
-        .custom-modal-overlay.show .custom-modal-box { transform: scale(1); }
-        .c-modal-header { padding: 1.5rem; border-bottom: 1.5px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;}
-        .c-modal-title { font-weight: 800; font-size: 1.1rem; color: #111; margin: 0; display: flex; align-items: center; gap: 0.5rem;}
-        .c-modal-close { background: none; border: none; font-size: 1.5rem; color: #888; cursor: pointer; }
-        .c-modal-body { padding: 1.5rem; }
-        .c-modal-footer { padding: 1.5rem; border-top: 1.5px solid #f0f0f0; background: #fafafa; display: flex; justify-content: flex-end; gap: 0.8rem;}
-    </style>
 </head>
 
 <body class="appt-detail-page">
+
 <nav th:replace="~{fragments/navbar :: navbar('')}"></nav>
 
 <div class="page-hero">
@@ -93,66 +25,58 @@
 </div>
 
 <main class="detail-main">
+
     <div th:if="${success}" class="alert alert-success alert-custom mb-4 shadow-sm"><i class="bi bi-check-circle-fill"></i> <span th:text="${success}"></span></div>
     <div th:if="${error}" class="alert alert-danger alert-custom mb-4 shadow-sm"><i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span></div>
 
     <div class="detail-card">
-        <div class="detail-stripe" th:classappend="${#strings.toString(appointment.status) == 'SOLICITADO'} ? 'stripe-solicitado' :
-                                                  (${#strings.toString(appointment.status) == 'CONFIRMADO'} ? 'stripe-confirmado' :
-                                                  (${#strings.toString(appointment.status) == 'EN_TALLER'} ? 'stripe-taller' : 'stripe-reparacion'))"></div>
+
+        <div class="detail-stripe"
+             th:classappend="${#strings.toString(appointment.status) == 'SOLICITADO'} ? 'stripe-solicitado' :
+                           (${#strings.toString(appointment.status) == 'CONFIRMADO' or #strings.toString(appointment.status) == 'LISTO_RECOGIDA'} ? 'stripe-confirmado' :
+                           (${#strings.toString(appointment.status) == 'CANCELADO' or #strings.toString(appointment.status) == 'RECHAZADA'} ? 'stripe-cancelado' :
+                           (${#strings.toString(appointment.status) == 'EN_TALLER' or #strings.toString(appointment.status) == 'RECOGIDO'} ? 'stripe-taller' : 'stripe-reparacion')))">
+        </div>
 
         <div class="detail-card-body">
+
             <div class="detail-header">
                 <div>
                     <div class="detail-id">Gestión #<span th:text="${appointment.id}"></span></div>
-                    <div class="detail-date-big" th:text="${#temporals.format(appointment.startDate, 'dd MMM yyyy')}"></div>
-                    <div class="detail-time-big"><i class="bi bi-clock"></i> <span th:text="${#temporals.format(appointment.startDate, 'HH:mm')} + ' h'"></span></div>
-                    <span th:if="${!appointment.isDateAcceptedByClient and #strings.toString(appointment.status) == 'SOLICITADO'}" class="badge bg-warning text-dark mt-2"><i class="bi bi-hourglass"></i> Validación pendiente</span>
+                    <div class="detail-date-big"
+                         th:text="${#temporals.format(appointment.startDate, 'dd MMM yyyy')}"></div>
+                    <div class="detail-time-big">
+                        <i class="bi bi-clock"></i>
+                        <span th:text="${#temporals.format(appointment.startDate, 'HH:mm')} + ' h'"></span>
+                    </div>
                 </div>
 
-                <span class="status-badge" th:classappend="${#strings.toString(appointment.status) == 'SOLICITADO'} ? 'status-solicitado' :
-                                                        (${#strings.toString(appointment.status) == 'CONFIRMADO' and !appointment.hasBudget} ? 'status-solicitado' :
-                                                        (${#strings.toString(appointment.status) == 'CONFIRMADO' and appointment.hasBudget and !appointment.isBudgetAccepted} ? 'status-reparacion' : 'status-confirmado'))">
-                    <i class="bi" th:classappend="${#strings.toString(appointment.status) == 'CONFIRMADO' and !appointment.hasBudget} ? 'bi-calculator' : 'bi-check-circle-fill'"></i>
-
-                    <span th:if="${#strings.toString(appointment.status) == 'CONFIRMADO' and !appointment.hasBudget}">PRESUPUESTANDO</span>
-                    <span th:if="${#strings.toString(appointment.status) == 'CONFIRMADO' and appointment.hasBudget and !appointment.isBudgetAccepted}">ESPERANDO ACEPTACIÓN</span>
-
-                    <span th:if="${#strings.toString(appointment.status) == 'EN_REPARACION' and appointment.hasBudget and !appointment.isBudgetAccepted}">PRESUPUESTO MODIFICADO</span>
-
-                    <span th:if="${#strings.toString(appointment.status) == 'CONFIRMADO' and appointment.isBudgetAccepted}">CITA CONFIRMADA</span>
-                    <span th:if="${#strings.toString(appointment.status) != 'CONFIRMADO' and !(#strings.toString(appointment.status) == 'EN_REPARACION' and !appointment.isBudgetAccepted)}" th:text="${appointment.status.displayName}"></span>
+                <span class="status-badge"
+                      th:classappend="${#strings.toString(appointment.status) == 'SOLICITADO'} ? 'status-solicitado' :
+                                    (${#strings.toString(appointment.status) == 'CONFIRMADO' or #strings.toString(appointment.status) == 'LISTO_RECOGIDA'} ? 'status-confirmado' :
+                                    (${#strings.toString(appointment.status) == 'CANCELADO' or #strings.toString(appointment.status) == 'RECHAZADA'} ? 'status-cancelado' :
+                                    (${#strings.toString(appointment.status) == 'EN_TALLER' or #strings.toString(appointment.status) == 'RECOGIDO'} ? 'status-taller' : 'status-reparacion')))">
+                    <i th:class="${#strings.toString(appointment.status) == 'SOLICITADO'} ? 'bi bi-hourglass-split' :
+                               (${#strings.toString(appointment.status) == 'CONFIRMADO' or #strings.toString(appointment.status) == 'LISTO_RECOGIDA'} ? 'bi bi-check-circle-fill' :
+                               (${#strings.toString(appointment.status) == 'CANCELADO' or #strings.toString(appointment.status) == 'RECHAZADA'} ? 'bi bi-x-circle-fill' : 'bi bi-gear-fill'))"></i>
+                    <span th:text="${appointment.status.displayName}"></span>
                 </span>
             </div>
 
-            <div sec:authorize="hasRole('CLIENT')" th:if="${!appointment.isDateAcceptedByClient and #strings.toString(appointment.status) == 'SOLICITADO'}"
-                 style="background: #fffdf2; border-left: 5px solid #f59e0b; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid #fcf2ce;">
-                <div style="display: flex; gap: 1.2rem; align-items: flex-start;">
-                    <i class="bi bi-calendar-event" style="font-size: 1.8rem; color: #f59e0b;"></i>
-                    <div>
-                        <h5 style="margin: 0 0 0.4rem 0; font-weight: 800; color: #78350f;">Propuesta de nueva fecha</h5>
-                        <p style="margin: 0 0 1rem 0; color: #92400e;">El taller sugiere el horario indicado arriba.</p>
-                        <div style="display: flex; gap: 0.8rem;">
-                            <form th:action="@{/appointments/{id}/accept-date(id=${appointment.id})}" method="post"><button type="submit" class="btn-modern btn-success-modern"><i class="bi bi-check-circle"></i> Aceptar</button></form>
-                            <form th:action="@{/appointments/{id}/cancel(id=${appointment.id})}" method="post"><button type="submit" class="btn-modern btn-outline">Rechazar</button></form>
-                        </div>
+            <div class="detail-section" th:if="${appointment.vehicle != null}">
+                <div class="detail-section-title"><i class="bi bi-car-front-fill"></i> Vehículo</div>
+                <div class="detail-grid">
+                    <div class="detail-field">
+                        <label>Marca / Modelo</label>
+                        <span><i class="bi bi-car-front"></i>
+                            <span th:text="${appointment.vehicle.brandName + ' ' + appointment.vehicle.model}"></span>
+                        </span>
                     </div>
-                </div>
-            </div>
-
-            <div sec:authorize="hasRole('CLIENT')" 
-                 th:if="${#strings.toString(appointment.status) == 'EN_REPARACION' and appointment.hasBudget and !appointment.isBudgetAccepted}"
-                 style="background: #f0f9ff; border-left: 5px solid #0284c7; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid #e0f2fe;">
-                <div style="display: flex; gap: 1.2rem; align-items: flex-start;">
-                    <i class="bi bi-info-circle-fill" style="font-size: 1.8rem; color: #0284c7;"></i>
-                    <div>
-                        <h5 style="margin: 0 0 0.4rem 0; font-weight: 800; color: #0369a1;">Nueva modificación en el presupuesto</h5>
-                        <p style="margin: 0 0 1rem 0; color: #0c4a6e;">El mecánico ha detectado una nueva necesidad durante la reparación y ha generado un anexo. Por favor, revisa la modificación para que el taller pueda continuar.</p>
-                        <div style="display: flex; gap: 0.8rem;">
-                            <a th:href="@{/budgets/repair/{id}(id=${appointment.repairId})}" class="btn-modern btn-info-modern" style="background: #0284c7; color: white;">
-                                <i class="bi bi-receipt"></i> Revisar Modificación
-                            </a>
-                        </div>
+                    <div class="detail-field">
+                        <label>Matrícula</label>
+                        <span><i class="bi bi-card-text"></i>
+                            <span th:text="${appointment.vehicle.matricula}"></span>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -162,53 +86,79 @@
                 <div class="detail-grid">
                     <div class="detail-field">
                         <label>Nombre</label>
-                        <span><i class="bi bi-tools"></i> <span th:text="${appointment.workshop.name}"></span></span>
+                        <span><i class="bi bi-tools"></i>
+                            <span th:text="${appointment.workshop.name}"></span>
+                        </span>
                     </div>
                     <div class="detail-field">
                         <label>Ubicación</label>
-                        <span><i class="bi bi-geo-alt"></i> <span th:text="${appointment.workshop.location ?: '-'}"></span></span>
+                        <span><i class="bi bi-geo-alt"></i>
+                            <span th:text="${appointment.workshop.location ?: '-'}"></span>
+                        </span>
                     </div>
-                </div>
-            </div>
-
-            <div class="detail-section" th:if="${appointment.vehicle != null}">
-                <div class="detail-section-title"><i class="bi bi-car-front-fill"></i> Vehículo</div>
-                <div class="detail-grid">
-                    <div class="detail-field"><label>Marca / Modelo</label><span><span th:text="${appointment.vehicle.brandName + ' ' + appointment.vehicle.model}"></span></span></div>
-                    <div class="detail-field"><label>Matrícula</label><span><span th:text="${appointment.vehicle.matricula}"></span></span></div>
-                </div>
-            </div>
-
-            <div class="detail-section" sec:authorize="hasRole('ADMIN')">
-                <div class="detail-section-title"><i class="bi bi-person"></i> Cliente</div>
-                <div class="detail-field">
-                    <label>Email de Contacto</label>
-                    <span><i class="bi bi-envelope"></i> <span th:text="${appointment.userEmail}"></span></span>
                 </div>
             </div>
 
             <div class="detail-section">
-                <div class="detail-section-title"><i class="bi bi-chat-left-text"></i> Motivo</div>
-                <div class="notes-box" th:text="${appointment.notes ?: 'Sin notas adicionales.'}"></div>
+                <div class="detail-section-title"><i class="bi bi-person"></i> Cliente</div>
+                <div class="detail-field">
+                    <label>Email</label>
+                    <span><i class="bi bi-envelope"></i>
+                        <span th:text="${appointment.userEmail}"></span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <div class="detail-section-title"><i class="bi bi-chat-left-text"></i> Motivo / Notas</div>
+                <div class="notes-box">
+                    <span th:if="${appointment.notes != null and !#strings.isEmpty(appointment.notes)}"
+                          th:text="${appointment.notes}"></span>
+                    <span class="notes-empty" th:if="${appointment.notes == null or #strings.isEmpty(appointment.notes)}">
+                        Sin notas adicionales.
+                    </span>
+                </div>
             </div>
 
             <div class="detail-section mb-0" th:if="${appointment.mediaUrl != null and !#strings.isEmpty(appointment.mediaUrl)}">
-                <div class="detail-section-title"><i class="bi bi-paperclip"></i> Archivo Adjunto</div>
-                <div class="mt-2 text-center p-3" style="background: #f8f8fa; border-radius: 12px;">
-                    <th:block th:if="${#strings.endsWith(#strings.toLowerCase(appointment.mediaUrl), '.mp4')}">
-                        <video controls style="max-height: 300px; max-width: 100%; border-radius: 8px;"><source th:src="@{${appointment.mediaUrl}}"></video>
+                <div class="detail-section-title"><i class="bi bi-paperclip"></i> Archivo Adjunto de la Avería</div>
+
+                <div class="mt-2 text-center p-3" style="background: #f8f8fa; border: 1.5px solid #ebebee; border-radius: 12px;">
+
+                    <th:block th:if="${#strings.endsWith(#strings.toLowerCase(appointment.mediaUrl), '.mp4') or #strings.endsWith(#strings.toLowerCase(appointment.mediaUrl), '.webm') or #strings.endsWith(#strings.toLowerCase(appointment.mediaUrl), '.mov') or #strings.endsWith(#strings.toLowerCase(appointment.mediaUrl), '.ogg')}">
+                        <video controls style="max-height: 400px; max-width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            <source th:src="@{${appointment.mediaUrl}}">
+                            Tu navegador no soporta la reproducción de este vídeo.
+                        </video>
+                        <div style="font-size: 0.75rem; color: #888; margin-top: 0.8rem;">
+                            <i class="bi bi-play-circle"></i> Dale al play para reproducir el vídeo del cliente
+                        </div>
                     </th:block>
-                    <th:block th:unless="${#strings.endsWith(#strings.toLowerCase(appointment.mediaUrl), '.mp4')}">
-                        <img th:src="@{${appointment.mediaUrl}}" style="max-height: 300px; max-width: 100%; border-radius: 8px;"/>
+
+                    <th:block th:unless="${#strings.endsWith(#strings.toLowerCase(appointment.mediaUrl), '.mp4') or #strings.endsWith(#strings.toLowerCase(appointment.mediaUrl), '.webm') or #strings.endsWith(#strings.toLowerCase(appointment.mediaUrl), '.mov') or #strings.endsWith(#strings.toLowerCase(appointment.mediaUrl), '.ogg')}">
+                        <a th:href="@{${appointment.mediaUrl}}" target="_blank" title="Haz clic para ver en grande">
+                            <img th:src="@{${appointment.mediaUrl}}" alt="Imagen de la avería aportada por el cliente"
+                                 style="max-height: 400px; max-width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); object-fit: contain; transition: transform 0.2s;"
+                                 onmouseover="this.style.transform='scale(1.02)'"
+                                 onmouseout="this.style.transform='scale(1)'"/>
+                        </a>
+                        <div style="font-size: 0.75rem; color: #888; margin-top: 0.8rem;">
+                            <i class="bi bi-zoom-in"></i> Haz clic en la imagen para ampliarla
+                        </div>
                     </th:block>
+
                 </div>
             </div>
+
         </div>
 
         <div class="detail-card-footer">
-            <a th:href="@{/appointments}" class="btn-modern btn-outline"><i class="bi bi-arrow-left"></i> Volver</a>
+            <a th:href="@{/appointments}" class="btn-modern btn-outline">
+                <i class="bi bi-arrow-left"></i> Volver al listado
+            </a>
 
             <div sec:authorize="hasRole('CLIENT')" class="d-flex flex-wrap gap-2">
+
                 <form th:if="${#strings.toString(appointment.status) == 'SOLICITADO' or #strings.toString(appointment.status) == 'CONFIRMADO'}"
                       th:action="@{/appointments/{id}/cancel(id=${appointment.id})}" method="post"
                       onsubmit="return confirm('¿Estás seguro de que deseas cancelar esta cita?');"
@@ -218,11 +168,12 @@
                     </button>
                 </form>
 
-                <a th:if="${appointment.hasBudget}" th:href="@{/budgets/repair/{id}(id=${appointment.repairId})}"
-                   class="btn-modern" th:classappend="${appointment.isBudgetAccepted} ? 'btn-info-modern' : 'btn-warning-modern'">
-                    <i class="bi bi-receipt"></i> <span th:text="${appointment.isBudgetAccepted} ? 'Ver Presupuesto' : 'Revisar Presupuesto'"></span>
+                <a th:if="${(#strings.toString(appointment.status) == 'EN_TALLER' or #strings.toString(appointment.status) == 'EN_REPARACION' or #strings.toString(appointment.status) == 'LISTO_RECOGIDA' or #strings.toString(appointment.status) == 'RECOGIDO') and appointment.hasBudget}"
+                   th:href="@{/budgets/repair/{id}(id=${appointment.repairId})}"
+                   class="btn-modern btn-info-modern">
+                    <i class="bi bi-receipt"></i> Ver Presupuesto
                 </a>
-                
+
                 <div th:if="${#strings.toString(appointment.status) == 'EN_TALLER' and !appointment.hasBudget}" class="text-muted small fst-italic align-self-center ms-2">
                     <i class="bi bi-tools"></i> El taller está elaborando tu presupuesto...
                 </div>
@@ -230,78 +181,89 @@
 
             <div sec:authorize="hasRole('ADMIN')" class="d-flex flex-wrap gap-2 align-items-center">
 
-                <th:block th:if="${#strings.toString(appointment.status) == 'SOLICITADO'}">
-                    <button type="button" class="btn-modern btn-outline" onclick="openRescheduleModal()">Reprogramar</button>
-                    <form th:if="${appointment.isDateAcceptedByClient}" th:action="@{/appointments/{id}/confirm(id=${appointment.id})}" method="post" class="m-0">
-                        <button type="submit" class="btn-modern btn-success-modern">Confirmar Cita</button>
-                    </form>
+                <th:block th:if="${#strings.toString(appointment.status) == 'SOLICITADO' or #strings.toString(appointment.status) == 'CONFIRMADO'}">
                 </th:block>
 
-                <th:block th:if="${#strings.toString(appointment.status) == 'CONFIRMADO'}">
-                    <form th:if="${appointment.isBudgetAccepted}" th:action="@{/repairs/{id}/receive(id=${appointment.repairId})}" method="post" class="m-0">
-                        <button type="submit" class="btn-modern btn-primary-modern"><i class="bi bi-box-arrow-in-right"></i> Recepcionar Vehículo</button>
-                    </form>
-                    <div th:unless="${appointment.isBudgetAccepted}" class="text-muted small fw-bold ms-2 d-flex align-items-center gap-1">
-                        <i class="bi bi-lock-fill"></i> Recepción bloqueada hasta aprobación
+                <th:block th:if="${#strings.toString(appointment.status) == 'SOLICITADO'}">
+                    <div class="d-flex gap-2">
+                        <form th:action="@{/appointments/{id}/cancel(id=${appointment.id})}" method="post" class="m-0">
+                            <button type="submit" class="btn-modern btn-danger-outline-modern"><i class="bi bi-x-lg"></i> Rechazar</button>
+                        </form>
+
+                        <form th:action="@{/appointments/{id}/confirm(id=${appointment.id})}" method="post" class="m-0">
+                            <button type="submit" class="btn-modern btn-success-modern"><i class="bi bi-check-lg"></i> Confirmar Cita</button>
+                        </form>
                     </div>
                 </th:block>
 
-                <a th:if="${appointment.hasBudget}" th:href="@{/budgets/repair/{id}(id=${appointment.repairId})}" class="btn-modern btn-info-modern">
-                    <i class="bi bi-receipt"></i> Ver Presupuesto
-                </a>
+                <a th:if="${#strings.toString(appointment.status) == 'CONFIRMADO'}"
+                   th:href="@{/repairs/new(appointmentId=${appointment.id}, vehicleId=${appointment.vehicle.id})}"
+                   class="btn-modern btn-primary-modern"><i class="bi bi-box-arrow-in-right"></i> Recepcionar Vehículo</a>
 
-                <th:block th:if="${#strings.toString(appointment.status) == 'CONFIRMADO' or #strings.toString(appointment.status) == 'EN_TALLER'}">
-                    <a th:if="${!appointment.hasBudget}" th:href="@{/budgets/new(repairId=${appointment.repairId})}" class="btn-modern btn-warning-modern">Generar Presupuesto</a>
-                </th:block>
+                <th:block th:if="${#strings.toString(appointment.status) == 'EN_TALLER'}">
 
-                <th:block th:if="${#strings.toString(appointment.status) == 'EN_TALLER' and appointment.isBudgetAccepted}">
-                    <form th:action="@{/repairs/{id}/start(id=${appointment.repairId})}" method="post" class="m-0">
+                    <a th:if="${!appointment.hasBudget}"
+                       th:href="@{/budgets/new(repairId=${appointment.repairId})}"
+                       class="btn-modern btn-warning-modern">
+                        <i class="bi bi-file-earmark-plus"></i> Generar Presupuesto
+                    </a>
+
+                    <a th:if="${appointment.hasBudget}"
+                       th:href="@{/budgets/repair/{id}(id=${appointment.repairId})}"
+                       class="btn-modern btn-info-modern">
+                        <i class="bi bi-receipt"></i> Ver Presupuesto
+                    </a>
+
+                    <form th:if="${appointment.isBudgetAccepted}" th:action="@{/repairs/{id}/start(id=${appointment.repairId})}" method="post" class="m-0">
                         <button type="submit" class="btn-modern btn-primary-modern"><i class="bi bi-play-circle"></i> Iniciar Trabajo</button>
                     </form>
-                </th:block>
 
-                <th:block th:if="${#strings.toString(appointment.status) == 'EN_REPARACION'}">
-                    <a th:if="${appointment.isBudgetAccepted}" th:href="@{/budgets/new(repairId=${appointment.repairId})}" class="btn-modern btn-warning-modern">
-                        <i class="bi bi-pencil-square"></i> Modificar
-                    </a>
-                    <form th:if="${appointment.isBudgetAccepted}" th:action="@{/repairs/{id}/finish(id=${appointment.repairId})}" method="post" class="m-0">
-                        <button type="submit" class="btn-modern btn-success-modern">Finalizar</button>
-                    </form>
-                    <div th:unless="${appointment.isBudgetAccepted}" class="text-muted small fw-bold ms-2 d-flex align-items-center gap-1">
-                        <i class="bi bi-clock-history text-warning"></i> Esperando al cliente...
+                    <div th:if="${appointment.hasBudget and !appointment.isBudgetAccepted}" class="text-muted small fst-italic ms-2">
+                        <i class="bi bi-clock-history"></i> Esperando aprobación del cliente...
                     </div>
                 </th:block>
 
-                <form th:if="${#strings.toString(appointment.status) == 'LISTO_RECOGIDA'}" th:action="@{/repairs/{id}/deliver(id=${appointment.repairId})}" method="post" class="m-0">
+                <form th:if="${#strings.toString(appointment.status) == 'EN_REPARACION'}"
+                      th:action="@{/repairs/{id}/finish(id=${appointment.repairId})}" method="post" class="m-0">
+                    <button type="submit" class="btn-modern btn-success-modern"><i class="bi bi-check2-all"></i> Finalizar Reparación</button>
+                </form>
+
+                <form th:if="${#strings.toString(appointment.status) == 'LISTO_RECOGIDA'}"
+                      th:action="@{/repairs/{id}/deliver(id=${appointment.repairId})}" method="post" class="m-0">
                     <button type="submit" class="btn-modern btn-dark-modern"><i class="bi bi-key"></i> Entregar Vehículo</button>
                 </form>
 
             </div>
+
         </div>
     </div>
-</main>
 
-<div id="customRescheduleModal" class="custom-modal-overlay">
-    <div class="custom-modal-box">
-        <div class="c-modal-header"><h5 class="c-modal-title">Reprogramar Cita</h5><button type="button" class="c-modal-close" onclick="closeRescheduleModal()">&times;</button></div>
-        <form th:action="@{/appointments/{id}/reschedule(id=${appointment.id})}" method="post" class="needs-validation" novalidate>
-            <div class="c-modal-body">
-                <label class="form-label fw-bold">Nueva Fecha y Hora</label>
-                <input type="datetime-local" name="newDate" required class="form-control" style="width: 100%; padding: 0.8rem; border-radius: 10px; border: 1.5px solid #ccc;">
+    <!-- Sección reprogramar (solo ADMIN) -->
+    <div sec:authorize="hasRole('ADMIN')"
+         class="reschedule-section">
+        <div class="reschedule-card">
+            <div class="reschedule-card-header">
+                <i class="bi bi-calendar-event"></i>
+                <span>Reprogramar Cita</span>
             </div>
-            <div class="c-modal-footer">
-                <button type="button" class="btn-modern btn-outline" onclick="closeRescheduleModal()">Cancelar</button>
-                <button type="submit" class="btn-modern btn-primary-modern">Enviar Propuesta</button>
-            </div>
-        </form>
+            <form th:action="@{/appointments/{id}/reschedule(id=${appointment.id})}" method="post" class="reschedule-form">
+                <div class="reschedule-field">
+                    <label for="newDate" class="reschedule-label">Nueva Fecha y Hora</label>
+                    <input type="datetime-local" class="reschedule-input" id="newDate" name="newDate" required />
+                </div>
+                <div class="reschedule-actions">
+                    <button type="submit" class="btn-submit">
+                        <i class="bi bi-floppy2-fill"></i> Guardar Nueva Fecha
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
+
+</main>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 <div th:replace="~{fragments/scripts :: scripts}"></div>
-<script>
-    function openRescheduleModal() { document.getElementById('customRescheduleModal').classList.add('show'); }
-    function closeRescheduleModal() { document.getElementById('customRescheduleModal').classList.remove('show'); }
-</script>
+
 </body>
 </html>

@@ -5,9 +5,6 @@ import lombok.*;
 import org.daw2.tallergo.crud_tallergo.enums.RepairStatus;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator; // IMPORTANTE
-import java.util.List;
 
 /**
  * Entidad JPA que representa un expediente u orden de reparación en el taller.
@@ -17,8 +14,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"appointment", "budgets", "vehicle"})
-@ToString(exclude = {"appointment", "budgets", "vehicle"})
+@EqualsAndHashCode(exclude = {"appointment", "budget", "vehicle"})
+@ToString(exclude = {"appointment", "budget", "vehicle"})
 @Entity
 @Table(name = "repairs")
 public class Repair {
@@ -68,25 +65,8 @@ public class Repair {
     private Vehicle vehicle;
 
     /**
-     * Historial de presupuestos asociados a esta reparación.
+     * Presupuesto asociado a esta reparación concreta (puede crearse antes o después de la recepción).
      */
-    @OneToMany(mappedBy = "repair", cascade = CascadeType.ALL)
-    @OrderBy("id DESC")
-    private List<Budget> budgets = new ArrayList<>();
-
-    /**
-     * Filtra el historial y busca EXPLICITAMENTE el que tenga el ID más alto
-     * para asegurar que siempre cogemos la última versión (v2, v3...).
-     *
-     * @return El presupuesto activo de la reparación, o null si no hay ninguno.
-     */
-    public Budget getBudget() {
-        if (budgets == null || budgets.isEmpty()) {
-            return null;
-        }
-        return budgets.stream()
-                .filter(b -> b.getRejected() == null || !b.getRejected()) // Que no esté rechazado
-                .max(Comparator.comparing(Budget::getId)) // que busque el ID más alto
-                .orElse(null);
-    }
+    @OneToOne(mappedBy = "repair", fetch = FetchType.LAZY)
+    private Budget budget;
 }

@@ -48,14 +48,6 @@
                 <div class="invalid-feedback" th:if="${#fields.hasErrors('totalNet')}" th:errors="*{totalNet}" style="display:block;"></div>
             </div>
 
-            <div class="mb-4">
-                <label for="notes" class="form-label">Observaciones para el cliente</label>
-                <textarea th:field="*{notes}" id="notes" class="form-control-custom" rows="3" placeholder="Ej: Se ha detectado un desgaste inusual en las correas, se recomienda revisión futura..."></textarea>
-                <div class="form-text text-muted" style="font-size: 0.8rem; margin-top: 0.25rem;">
-                    Usa este campo para explicar o justificar los conceptos añadidos.
-                </div>
-            </div>
-
             <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
                 <a th:href="@{/repairs/{id}(id=*{repairId})}" class="btn-modern btn-outline">Cancelar</a>
                 <button type="submit" class="btn-modern btn-warning-modern">
