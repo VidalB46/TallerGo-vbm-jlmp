@@ -51,6 +51,22 @@
         .btn-danger-modern { background: #dc3545; color: #fff; box-shadow: 0 4px 12px rgba(220,53,69,0.3); }
 
         .alert-custom { border-radius: 12px; margin-bottom: 1.5rem; font-weight: 500;}
+
+        /* Estilo para las notas del taller */
+        .budget-notes-box { background-color: #e9f7fe; border-left: 4px solid #0dcaf0; padding: 1.2rem; border-radius: 4px 8px 8px 4px; margin-bottom: 2rem; }
+        .budget-notes-box h6 { color: #087990; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem;}
+        .budget-notes-box p { color: #333; margin: 0; font-size: 0.95rem; line-height: 1.5; white-space: pre-wrap;}
+
+        /* CSS PARA EL NUEVO MODAL DE RECHAZO */
+        .custom-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 9999; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
+        .custom-modal-overlay.show { display: flex; opacity: 1; }
+        .custom-modal-box { background: #fff; width: 100%; max-width: 450px; margin: 1.5rem; border-radius: 20px; box-shadow: 0 24px 48px rgba(0,0,0,0.2); transform: scale(0.95); transition: transform 0.3s ease; overflow: hidden; }
+        .custom-modal-overlay.show .custom-modal-box { transform: scale(1); }
+        .c-modal-header { padding: 1.5rem; border-bottom: 1.5px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;}
+        .c-modal-title { font-weight: 800; font-size: 1.1rem; margin: 0; display: flex; align-items: center; gap: 0.5rem;}
+        .c-modal-close { background: none; border: none; font-size: 1.5rem; color: #888; cursor: pointer; }
+        .c-modal-body { padding: 1.5rem; font-size: 0.95rem; color: #444; line-height: 1.5;}
+        .c-modal-footer { padding: 1.5rem; border-top: 1.5px solid #f0f0f0; background: #fafafa; display: flex; justify-content: flex-end; gap: 0.8rem;}
     </style>
 </head>
 
@@ -67,7 +83,6 @@
     <div th:if="${error}" class="alert alert-danger alert-custom shadow-sm"><i class="bi bi-exclamation-circle"></i> <span th:text="${error}"></span></div>
 
     <div class="receipt-card">
-
         <div class="receipt-top">
             <div th:if="${budget.accepted}" class="status-badge-lg status-accepted">
                 <i class="bi bi-check-circle-fill"></i> <span>Aprobado por el cliente</span>
@@ -82,6 +97,10 @@
         </div>
 
         <div class="receipt-body">
+            <div th:if="${budget.notes != null and !budget.notes.isEmpty()}" class="budget-notes-box">
+                <h6><i class="bi bi-info-square-fill"></i> Observaciones del Taller</h6>
+                <p th:text="${budget.notes}"></p>
+            </div>
 
             <div style="overflow-x: auto;">
                 <table class="table-custom">
@@ -121,7 +140,6 @@
                     <span class="total-price" th:text="${budget.totalNet + ' €'}"></span>
                 </div>
             </div>
-
         </div>
 
         <div class="receipt-footer">
@@ -138,8 +156,8 @@
                 </button>
             </form>
 
-            <form th:if="${!budget.accepted}" sec:authorize="hasRole('CLIENT')" th:action="@{/budgets/{id}/reject(id=${budget.id})}" method="post" class="m-0" onsubmit="return confirm('¿Seguro que quieres rechazar el presupuesto? El taller recibirá la notificación.');">
-                <button type="submit" class="btn-modern btn-danger-modern">
+            <form id="rejectBudgetForm" th:if="${!budget.accepted}" sec:authorize="hasRole('CLIENT')" th:action="@{/budgets/{id}/reject(id=${budget.id})}" method="post" class="m-0">
+                <button type="button" class="btn-modern btn-danger-modern" onclick="openRejectModal()">
                     <i class="bi bi-x-lg"></i> Rechazar
                 </button>
             </form>
@@ -148,6 +166,37 @@
     </div>
 </main>
 
+<div id="customRejectModal" class="custom-modal-overlay">
+    <div class="custom-modal-box">
+        <div class="c-modal-header">
+            <h5 class="c-modal-title text-danger"><i class="bi bi-exclamation-triangle-fill"></i> Rechazar Presupuesto</h5>
+            <button type="button" class="c-modal-close" onclick="closeRejectModal()">&times;</button>
+        </div>
+        <div class="c-modal-body">
+            <p>¿Estás seguro de que deseas rechazar esta propuesta económica?</p>
+            <p class="mb-0 text-muted" style="font-size: 0.85rem;">
+                <strong>Nota:</strong> El taller recibirá una notificación instantánea. Si este era un presupuesto inicial, la cita será cancelada. Si era una modificación, el trabajo extra quedará anulado.
+            </p>
+        </div>
+        <div class="c-modal-footer">
+            <button type="button" class="btn-modern btn-outline" onclick="closeRejectModal()">Cancelar</button>
+            <button type="button" class="btn-modern btn-danger-modern" onclick="document.getElementById('rejectBudgetForm').submit();">
+                Sí, rechazar
+            </button>
+        </div>
+    </div>
+</div>
+
 <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    function openRejectModal() {
+        document.getElementById('customRejectModal').classList.add('show');
+    }
+    function closeRejectModal() {
+        document.getElementById('customRejectModal').classList.remove('show');
+    }
+</script>
+
 </body>
 </html>

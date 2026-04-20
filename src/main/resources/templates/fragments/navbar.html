@@ -31,7 +31,8 @@
             <a th:href="@{/brands}" th:classappend="${activeLink == 'brands'} ? ' tgo-active'">Marcas</a>
         </li>
 
-        <li class="tgo-dd-wrap" id="ddPersonal" sec:authorize="hasRole('ADMIN')">
+        <!-- MENÚ PERSONAL -->
+        <li class="tgo-dd-wrap" id="ddPersonal" sec:authorize="hasAnyRole('ADMIN','JEFE_TALLER')">
             <button class="tgo-dd-btn"
                     th:classappend="${activeLink == 'mechanics' or activeLink == 'users'} ? ' tgo-active'">
                 Personal <i class="bi bi-chevron-down tgo-chev"></i>
@@ -100,7 +101,6 @@
             padding: 0.5rem 2.5rem;
         }
 
-        /* Logo */
         .tgo-brand {
             font-size: 1.4rem; font-weight: 900; color: #fff;
             text-decoration: none; letter-spacing: 1.5px;
@@ -113,10 +113,9 @@
         }
         @keyframes pulse-red {
             0%,100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.55); }
-            50%      { box-shadow: 0 0 0 6px rgba(192,57,43,0); }
+            50% { box-shadow: 0 0 0 6px rgba(192,57,43,0); }
         }
 
-        /* Links */
         .tgo-links {
             display: flex; align-items: center; gap: 0.15rem;
             list-style: none; margin: 0; padding: 0; flex: 1; justify-content: center;
@@ -130,94 +129,34 @@
         }
         .tgo-links a:hover { color: #fff; background: rgba(255,255,255,0.09); }
         .tgo-links a.tgo-active { color: #fff; font-weight: 700; background: rgba(255,255,255,0.07); }
+
         .tgo-links .tgo-cta {
             background: #c0392b; color: #fff !important; font-weight: 600;
             padding: 0.42rem 1.1rem; border-radius: 8px;
             box-shadow: 0 3px 12px rgba(192,57,43,0.35);
-            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-        }
-        .tgo-links .tgo-cta:hover {
-            background: #a93226; transform: translateY(-1px);
-            box-shadow: 0 6px 18px rgba(192,57,43,0.45);
         }
 
-        /* ── Dropdown genérico ── */
-        .tgo-dd-wrap, .tgo-avatar-wrap {
-            position: relative; list-style: none;
-        }
+        .tgo-dd-wrap, .tgo-avatar-wrap { position: relative; list-style: none; }
+
         .tgo-dd-btn, .tgo-avatar-btn {
             display: flex; align-items: center; gap: 0.35rem;
-            color: rgba(255,255,255,0.72); font-size: 0.84rem; font-weight: 500;
-            padding: 0.42rem 0.85rem; border-radius: 8px;
+            color: rgba(255,255,255,0.72);
+            padding: 0.42rem 0.85rem;
+            border-radius: 8px;
             border: none; background: transparent; cursor: pointer;
-            font-family: inherit; white-space: nowrap;
-            transition: color 0.2s, background 0.2s;
         }
-        .tgo-dd-btn:hover, .tgo-avatar-btn:hover,
-        .tgo-dd-wrap.open .tgo-dd-btn,
-        .tgo-avatar-wrap.open .tgo-avatar-btn {
-            color: #fff; background: rgba(255,255,255,0.09);
-        }
-        .tgo-dd-btn.tgo-active { color: #fff; font-weight: 700; background: rgba(255,255,255,0.07); }
-        .tgo-chev { font-size: 0.6rem; transition: transform 0.22s; }
-        .tgo-dd-wrap.open .tgo-chev,
-        .tgo-avatar-wrap.open .tgo-chev { transform: rotate(180deg); }
 
-        /* Menú desplegable */
         .tgo-dd-menu {
             display: none; position: absolute;
             top: calc(100% + 6px); left: 50%; transform: translateX(-50%);
             background: rgba(14,14,14,0.98);
-            backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
-            border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-            list-style: none; padding: 0.4rem; min-width: 180px; z-index: 700;
+            border-radius: 14px;
+            list-style: none; padding: 0.4rem; min-width: 180px;
         }
-        .tgo-dd-right { left: auto; right: 0; transform: none; }
+
         .tgo-dd-wrap.open .tgo-dd-menu,
         .tgo-avatar-wrap.open .tgo-dd-menu { display: block; }
 
-        .tgo-dd-menu li a,
-        .tgo-dd-menu li .tgo-dd-logout {
-            display: flex; align-items: center; gap: 0.55rem;
-            padding: 0.58rem 1rem; border-radius: 9px;
-            font-size: 0.83rem; font-weight: 500;
-            color: rgba(255,255,255,0.72); text-decoration: none;
-            transition: background 0.15s, color 0.15s; white-space: nowrap;
-            background: transparent; width: 100%; border: none; cursor: pointer; font-family: inherit;
-        }
-        .tgo-dd-menu li a:hover,
-        .tgo-dd-menu li .tgo-dd-logout:hover { background: rgba(255,255,255,0.07); color: #fff; }
-        .tgo-dd-menu li a.tgo-dd-active { color: #fff; font-weight: 700; background: rgba(192,57,43,0.16); }
-        .tgo-dd-menu li a i, .tgo-dd-menu li .tgo-dd-logout i { color: #c0392b; font-size: 0.88rem; flex-shrink: 0; }
-        .tgo-dd-logout { color: #e88080 !important; }
-        .tgo-dd-logout i { color: #e88080 !important; }
-        .tgo-dd-logout:hover { background: rgba(192,57,43,0.15) !important; color: #fff !important; }
-
-        .tgo-dd-label {
-            padding: 0.5rem 1rem 0.25rem;
-            font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.35);
-            text-transform: uppercase; letter-spacing: 0.8px; pointer-events: none;
-        }
-        .tgo-dd-sep {
-            height: 1px; background: rgba(255,255,255,0.07);
-            margin: 0.3rem 0.5rem; pointer-events: none;
-        }
-
-        /* Avatar */
-        .tgo-avatar-btn .bi-person-circle { font-size: 1.2rem; color: rgba(255,255,255,0.8); }
-        .tgo-uname { color: #fff; font-weight: 600; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
-
-        /* Responsive */
-        @media (max-width: 960px) {
-            .tgo-nav { padding: 0.65rem 1.2rem; }
-            .tgo-nav.scrolled { padding: 0.45rem 1.2rem; }
-            .tgo-links a, .tgo-dd-btn { font-size: 0.76rem; padding: 0.35rem 0.55rem; }
-            .tgo-uname { display: none; }
-        }
-        @media (max-width: 640px) {
-            .tgo-links > li:not(:has(.tgo-cta)):not(.tgo-dd-wrap) { display: none; }
-        }
     </style>
 </th:block>
 

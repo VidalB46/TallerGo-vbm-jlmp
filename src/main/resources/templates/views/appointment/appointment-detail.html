@@ -81,7 +81,6 @@
 </head>
 
 <body class="appt-detail-page">
-
 <nav th:replace="~{fragments/navbar :: navbar('')}"></nav>
 
 <div class="page-hero">
@@ -92,7 +91,6 @@
 </div>
 
 <main class="detail-main">
-
     <div th:if="${success}" class="alert alert-success alert-custom mb-4 shadow-sm"><i class="bi bi-check-circle-fill"></i> <span th:text="${success}"></span></div>
     <div th:if="${error}" class="alert alert-danger alert-custom mb-4 shadow-sm"><i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span></div>
 
@@ -114,10 +112,14 @@
                                                         (${#strings.toString(appointment.status) == 'CONFIRMADO' and !appointment.hasBudget} ? 'status-solicitado' :
                                                         (${#strings.toString(appointment.status) == 'CONFIRMADO' and appointment.hasBudget and !appointment.isBudgetAccepted} ? 'status-reparacion' : 'status-confirmado'))">
                     <i class="bi" th:classappend="${#strings.toString(appointment.status) == 'CONFIRMADO' and !appointment.hasBudget} ? 'bi-calculator' : 'bi-check-circle-fill'"></i>
+
                     <span th:if="${#strings.toString(appointment.status) == 'CONFIRMADO' and !appointment.hasBudget}">PRESUPUESTANDO</span>
                     <span th:if="${#strings.toString(appointment.status) == 'CONFIRMADO' and appointment.hasBudget and !appointment.isBudgetAccepted}">ESPERANDO ACEPTACIÓN</span>
+
+                    <span th:if="${#strings.toString(appointment.status) == 'EN_REPARACION' and appointment.hasBudget and !appointment.isBudgetAccepted}">PRESUPUESTO MODIFICADO</span>
+
                     <span th:if="${#strings.toString(appointment.status) == 'CONFIRMADO' and appointment.isBudgetAccepted}">CITA CONFIRMADA</span>
-                    <span th:if="${#strings.toString(appointment.status) != 'CONFIRMADO'}" th:text="${appointment.status.displayName}"></span>
+                    <span th:if="${#strings.toString(appointment.status) != 'CONFIRMADO' and !(#strings.toString(appointment.status) == 'EN_REPARACION' and !appointment.isBudgetAccepted)}" th:text="${appointment.status.displayName}"></span>
                 </span>
             </div>
 
@@ -131,6 +133,23 @@
                         <div style="display: flex; gap: 0.8rem;">
                             <form th:action="@{/appointments/{id}/accept-date(id=${appointment.id})}" method="post"><button type="submit" class="btn-modern btn-success-modern"><i class="bi bi-check-circle"></i> Aceptar</button></form>
                             <form th:action="@{/appointments/{id}/cancel(id=${appointment.id})}" method="post"><button type="submit" class="btn-modern btn-outline">Rechazar</button></form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div sec:authorize="hasRole('CLIENT')"
+                 th:if="${#strings.toString(appointment.status) == 'EN_REPARACION' and appointment.hasBudget and !appointment.isBudgetAccepted}"
+                 style="background: #f0f9ff; border-left: 5px solid #0284c7; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid #e0f2fe;">
+                <div style="display: flex; gap: 1.2rem; align-items: flex-start;">
+                    <i class="bi bi-info-circle-fill" style="font-size: 1.8rem; color: #0284c7;"></i>
+                    <div>
+                        <h5 style="margin: 0 0 0.4rem 0; font-weight: 800; color: #0369a1;">Nueva modificación en el presupuesto</h5>
+                        <p style="margin: 0 0 1rem 0; color: #0c4a6e;">El mecánico ha detectado una nueva necesidad durante la reparación y ha generado un anexo. Por favor, revisa la modificación para que el taller pueda continuar.</p>
+                        <div style="display: flex; gap: 0.8rem;">
+                            <a th:href="@{/budgets/repair/{id}(id=${appointment.repairId})}" class="btn-modern btn-info-modern" style="background: #0284c7; color: white;">
+                                <i class="bi bi-receipt"></i> Revisar Modificación
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -190,9 +209,12 @@
                     </div>
                 </th:block>
 
+                <a th:if="${appointment.hasBudget}" th:href="@{/budgets/repair/{id}(id=${appointment.repairId})}" class="btn-modern btn-info-modern">
+                    <i class="bi bi-receipt"></i> Ver Presupuesto
+                </a>
+
                 <th:block th:if="${#strings.toString(appointment.status) == 'CONFIRMADO' or #strings.toString(appointment.status) == 'EN_TALLER'}">
                     <a th:if="${!appointment.hasBudget}" th:href="@{/budgets/new(repairId=${appointment.repairId})}" class="btn-modern btn-warning-modern">Generar Presupuesto</a>
-                    <a th:if="${appointment.hasBudget}" th:href="@{/budgets/repair/{id}(id=${appointment.repairId})}" class="btn-modern btn-info-modern">Ver Presupuesto</a>
                 </th:block>
 
                 <th:block th:if="${#strings.toString(appointment.status) == 'EN_TALLER' and appointment.isBudgetAccepted}">
@@ -203,13 +225,17 @@
 
                 <th:block th:if="${#strings.toString(appointment.status) == 'EN_REPARACION'}" sec:authorize="hasRole('ADMIN')">
 
-                    <a th:href="@{/budgets/new(repairId=${appointment.repairId})}" class="btn-modern btn-warning-modern">
-                        <i class="bi bi-pencil-square"></i> Modificar Presupuesto
+                    <a th:if="${appointment.isBudgetAccepted}" th:href="@{/budgets/new(repairId=${appointment.repairId})}" class="btn-modern btn-warning-modern">
+                        <i class="bi bi-pencil-square"></i> Modificar
                     </a>
 
-                    <form th:action="@{/repairs/{id}/finish(id=${appointment.repairId})}" method="post" class="m-0">
+                    <form th:if="${appointment.isBudgetAccepted}" th:action="@{/repairs/{id}/finish(id=${appointment.repairId})}" method="post" class="m-0">
                         <button type="submit" class="btn-modern btn-success-modern">Finalizar</button>
                     </form>
+
+                    <div th:unless="${appointment.isBudgetAccepted}" class="text-muted small fw-bold ms-2 d-flex align-items-center gap-1">
+                        <i class="bi bi-clock-history text-warning"></i> Esperando al cliente...
+                    </div>
                 </th:block>
 
                 <form th:if="${#strings.toString(appointment.status) == 'LISTO_RECOGIDA'}" th:action="@{/repairs/{id}/deliver(id=${appointment.repairId})}" method="post" class="m-0">
@@ -244,4 +270,3 @@
     function closeRescheduleModal() { document.getElementById('customRescheduleModal').classList.remove('show'); }
 </script>
 </body>
-</html>

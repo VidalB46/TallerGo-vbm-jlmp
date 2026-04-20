@@ -91,13 +91,19 @@ public class BudgetController {
      * Acción para que el cliente RECHACE el presupuesto y cancele la cita.
      */
     @PostMapping("/{id}/reject")
-    public String rejectBudget(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String rejectBudget(@PathVariable Long id, RedirectAttributes ra) {
         try {
-            // Llamamos a nuestro nuevo método unificado
-            budgetService.rejectBudget(id);
-            redirectAttributes.addFlashAttribute("success", "Presupuesto rechazado y cita cancelada correctamente.");
+            // Guardamos el resultado del servicio
+            boolean isCancelled = budgetService.rejectBudget(id);
+
+            // Elegimos el mensaje correcto según lo que haya pasado
+            if (isCancelled) {
+                ra.addFlashAttribute("success", "Presupuesto rechazado y cita cancelada correctamente.");
+            } else {
+                ra.addFlashAttribute("success", "Modificación rechazada. El taller continuará trabajando con el presupuesto original aceptado.");
+            }
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error al rechazar: " + e.getMessage());
+            ra.addFlashAttribute("error", "Error al rechazar: " + e.getMessage());
         }
         return "redirect:/appointments";
     }
