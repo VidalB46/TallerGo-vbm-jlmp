@@ -2,7 +2,7 @@
      xmlns:th="http://www.thymeleaf.org">
 
     <script>
-        /* ── Navbar scroll ── */
+        /* ── Navbar scroll: Hace que el menú cambie de color al bajar ── */
         (function () {
             var nav = document.getElementById('tgoNav');
             if (!nav) return;
@@ -11,7 +11,7 @@
             window.addEventListener('scroll', upd, { passive: true });
         })();
 
-        /* ── Dropdowns ── */
+        /* ── Dropdowns: Controla los menús de "Personal" y el del Usuario ── */
         (function() {
             var allWraps = '.tgo-dd-wrap, .tgo-avatar-wrap';
 
@@ -32,16 +32,46 @@
                 });
             });
 
-            /* Click fuera → cerrar */
+            /* Click fuera → cerrar menús */
             document.addEventListener('click', function(e) {
                 if (!e.target.closest('.tgo-dd-wrap') && !e.target.closest('.tgo-avatar-wrap')) {
                     closeAll();
                 }
             });
 
-            /* Escape → cerrar */
+            /* Escape → cerrar menús */
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') closeAll();
+            });
+        })();
+
+        /* ── Hamburguesa móvil: LA LÓGICA QUE NECESITAMOS DE LA RAMA ── */
+        (function() {
+            var btn  = document.getElementById('tgoHamburger');
+            var menu = document.getElementById('tgoMobileMenu');
+            var nav  = document.getElementById('tgoNav');
+            if (!btn || !menu) return;
+
+            btn.addEventListener('click', function(e) {
+                e.stopImmediatePropagation();
+                var open = menu.classList.toggle('open');
+                nav.classList.toggle('menu-open', open);
+            });
+
+            /* Click fuera del nav → cerrar menú móvil */
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('#tgoNav')) {
+                    menu.classList.remove('open');
+                    nav.classList.remove('menu-open');
+                }
+            });
+
+            /* Escape → cerrar menú móvil */
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    menu.classList.remove('open');
+                    nav.classList.remove('menu-open');
+                }
             });
         })();
     </script>

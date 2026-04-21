@@ -15,11 +15,9 @@
         <li>
             <a th:href="@{/}" th:classappend="${activeLink == 'home'} ? ' tgo-active'">Inicio</a>
         </li>
-
         <li>
             <a th:href="@{/workshops}" th:classappend="${activeLink == 'workshops'} ? ' tgo-active'">Talleres</a>
         </li>
-
         <li sec:authorize="isAuthenticated()">
             <a th:href="@{/appointments}" th:classappend="${activeLink == 'appointments'} ? ' tgo-active'">Mis Citas</a>
         </li>
@@ -31,7 +29,6 @@
             <a th:href="@{/brands}" th:classappend="${activeLink == 'brands'} ? ' tgo-active'">Marcas</a>
         </li>
 
-        <!-- MENÚ PERSONAL -->
         <li class="tgo-dd-wrap" id="ddPersonal" sec:authorize="hasAnyRole('ADMIN','JEFE_TALLER')">
             <button class="tgo-dd-btn"
                     th:classappend="${activeLink == 'mechanics' or activeLink == 'users'} ? ' tgo-active'">
@@ -43,7 +40,7 @@
                         <i class="bi bi-tools"></i> Mecánicos
                     </a>
                 </li>
-                <li>
+                <li sec:authorize="hasRole('ADMIN')">
                     <a th:href="@{/users}" th:classappend="${activeLink == 'users'} ? ' tgo-dd-active'">
                         <i class="bi bi-people"></i> Usuarios
                     </a>
@@ -66,9 +63,7 @@
             <li class="tgo-dd-label" sec:authentication="name"></li>
             <li class="tgo-dd-sep"></li>
             <li>
-                <a th:href="@{/profile/edit}">
-                    <i class="bi bi-person-gear"></i> Mi Perfil
-                </a>
+                <a th:href="@{/profile/edit}"><i class="bi bi-person-gear"></i> Mi Perfil</a>
             </li>
             <li class="tgo-dd-sep"></li>
             <li>
@@ -81,13 +76,40 @@
         </ul>
     </div>
 
+    <button class="tgo-hamburger" id="tgoHamburger" aria-label="Menú">
+        <span></span><span></span><span></span>
+    </button>
+
+    <div class="tgo-mobile-menu" id="tgoMobileMenu">
+        <div th:if="${#authorization.expression('!isAuthenticated()')}">
+            <a th:href="@{/login}"><i class="bi bi-box-arrow-in-right"></i> Iniciar sesión</a>
+        </div>
+        <div th:if="${#authorization.expression('isAuthenticated()')}">
+            <span class="tgo-mobile-label" sec:authentication="name"></span>
+            <a th:href="@{/}"><i class="bi bi-house"></i> Inicio</a>
+            <a th:href="@{/workshops}"><i class="bi bi-building"></i> Talleres</a>
+            <a th:href="@{/appointments}"><i class="bi bi-calendar-check"></i> Mis Citas</a>
+
+            <div class="tgo-mobile-sep" sec:authorize="hasAnyRole('ADMIN','JEFE_TALLER')"></div>
+
+            <a th:href="@{/mechanics}" sec:authorize="hasAnyRole('ADMIN','JEFE_TALLER')"><i class="bi bi-tools"></i> Mecánicos</a>
+            <a th:href="@{/users}" sec:authorize="hasRole('ADMIN')"><i class="bi bi-people"></i> Usuarios</a>
+            <a th:href="@{/brands}" sec:authorize="hasRole('ADMIN')"><i class="bi bi-shield-check"></i> Marcas</a>
+
+            <div class="tgo-mobile-sep"></div>
+            <a th:href="@{/profile/edit}"><i class="bi bi-person-gear"></i> Mi Perfil</a>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="tgo-mobile-logout"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</button>
+            </form>
+        </div>
+    </div>
 </nav>
 
 <th:block th:fragment="navbarScripts"></th:block>
 
 <th:block th:fragment="navbarCss">
     <style>
-        /* ════ NAVBAR ════ */
+        /* ════ NAVBAR ESTILOS MODERNOS JLMP ════ */
         .tgo-nav {
             position: fixed; top: 0; left: 0; right: 0; z-index: 500;
             padding: 0.75rem 2.5rem;
@@ -100,7 +122,6 @@
             box-shadow: 0 2px 24px rgba(0,0,0,0.45);
             padding: 0.5rem 2.5rem;
         }
-
         .tgo-brand {
             font-size: 1.4rem; font-weight: 900; color: #fff;
             text-decoration: none; letter-spacing: 1.5px;
@@ -115,9 +136,8 @@
             0%,100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.55); }
             50% { box-shadow: 0 0 0 6px rgba(192,57,43,0); }
         }
-
         .tgo-links {
-            display: flex; align-items: center; gap: 0.15rem;
+            display: flex; align-items: center; gap: 0.6rem;
             list-style: none; margin: 0; padding: 0; flex: 1; justify-content: center;
         }
         .tgo-links a {
@@ -125,39 +145,55 @@
             font-size: 0.84rem; font-weight: 500;
             padding: 0.42rem 0.85rem; border-radius: 8px;
             transition: color 0.2s, background 0.2s; white-space: nowrap;
-            display: block;
         }
         .tgo-links a:hover { color: #fff; background: rgba(255,255,255,0.09); }
         .tgo-links a.tgo-active { color: #fff; font-weight: 700; background: rgba(255,255,255,0.07); }
-
         .tgo-links .tgo-cta {
             background: #c0392b; color: #fff !important; font-weight: 600;
             padding: 0.42rem 1.1rem; border-radius: 8px;
             box-shadow: 0 3px 12px rgba(192,57,43,0.35);
         }
-
         .tgo-dd-wrap, .tgo-avatar-wrap { position: relative; list-style: none; }
-
         .tgo-dd-btn, .tgo-avatar-btn {
             display: flex; align-items: center; gap: 0.35rem;
-            color: rgba(255,255,255,0.72);
-            padding: 0.42rem 0.85rem;
-            border-radius: 8px;
+            color: rgba(255,255,255,0.72); font-size: 0.84rem; font-weight: 500;
+            padding: 0.42rem 0.85rem; border-radius: 8px;
             border: none; background: transparent; cursor: pointer;
         }
-
         .tgo-dd-menu {
             display: none; position: absolute;
             top: calc(100% + 6px); left: 50%; transform: translateX(-50%);
             background: rgba(14,14,14,0.98);
-            border-radius: 14px;
-            list-style: none; padding: 0.4rem; min-width: 180px;
+            backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+            border-radius: 14px; padding: 0.4rem; min-width: 180px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
         }
-
-        .tgo-dd-wrap.open .tgo-dd-menu,
-        .tgo-avatar-wrap.open .tgo-dd-menu { display: block; }
-
+        .tgo-dd-wrap.open .tgo-dd-menu, .tgo-avatar-wrap.open .tgo-dd-menu { display: block; }
+        .tgo-dd-menu li a, .tgo-dd-menu li .tgo-dd-logout {
+            display: flex; align-items: center; gap: 0.55rem;
+            padding: 0.58rem 1rem; border-radius: 9px;
+            font-size: 0.83rem; color: rgba(255,255,255,0.72); text-decoration: none;
+            background: transparent; border: none; width: 100%; cursor: pointer;
+        }
+        .tgo-dd-menu li a:hover, .tgo-dd-menu li .tgo-dd-logout:hover { background: rgba(255,255,255,0.07); color: #fff; }
+        .tgo-dd-logout { color: #e88080 !important; }
+        .tgo-dd-sep { height: 1px; background: rgba(255,255,255,0.07); margin: 0.3rem 0.5rem; }
+        .tgo-hamburger {
+            display: none; flex-direction: column; gap: 5px; width: 36px; height: 36px;
+            background: transparent; border: none; cursor: pointer;
+        }
+        .tgo-hamburger span { display: block; width: 22px; height: 2px; background: #fff; border-radius: 2px; }
+        .tgo-mobile-menu {
+            display: none; position: fixed; top: 56px; left: 0; right: 0;
+            background: rgba(10,10,10,0.98); backdrop-filter: blur(18px);
+            padding: 1rem 1.2rem; flex-direction: column; gap: 0.25rem;
+        }
+        .tgo-mobile-menu.open { display: flex; }
+        @media (max-width: 960px) { .tgo-uname { display: none; } }
+        @media (max-width: 640px) {
+            .tgo-links, .tgo-avatar-wrap { display: none; }
+            .tgo-hamburger { display: flex; }
+        }
     </style>
 </th:block>
-
 </html>

@@ -11,14 +11,27 @@
             display: block;
         ">
 
-    <div style="
+    <style>
+        .tgo-footer-grid {
             max-width: 1100px;
-            margin: 0 auto;
+            margin: 0 auto 2rem;
             display: grid;
             grid-template-columns: 1.8fr 1fr 1fr 1fr;
             gap: 2rem;
-            margin-bottom: 2rem;
-        ">
+        }
+        @media (max-width: 768px) {
+            .tgo-footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 480px) {
+            .tgo-footer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <div class="tgo-footer-grid">
 
         <div>
             <div style="font-size:1.2rem; font-weight:800; color:#fff; letter-spacing:1.5px; margin-bottom:0.5rem; display:flex; align-items:center; gap:0.2rem;">
@@ -34,7 +47,11 @@
             <a th:href="@{/}"         style="color:#555; font-size:0.82rem; text-decoration:none; display:block; line-height:2.1; transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#555'">Inicio</a>
             <a th:href="@{/workshops}" style="color:#555; font-size:0.82rem; text-decoration:none; display:block; line-height:2.1; transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#555'">Talleres</a>
 
-            <a sec:authorize="hasAnyRole('ADMIN', 'JEFE_TALLER')" th:href="@{/mechanics}" style="color:#555; font-size:0.82rem; text-decoration:none; display:block; line-height:2.1; transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#555'">Mecánicos</a>
+            <a sec:authorize="hasAnyRole('ADMIN', 'JEFE_TALLER')"
+               th:href="@{/mechanics}"
+               style="color:#555; font-size:0.82rem; text-decoration:none; display:block; line-height:2.1; transition:color 0.2s;"
+               onmouseover="this.style.color='#fff'"
+               onmouseout="this.style.color='#555'">Mecánicos</a>
         </div>
 
         <div>

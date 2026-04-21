@@ -101,10 +101,7 @@ CREATE TABLE IF NOT EXISTS appointments (
   status VARCHAR(20) DEFAULT 'SOLICITADO',
   notes TEXT,
   media_url VARCHAR(255),
-
-  -- NUEVA COLUMNA: Controla si el cliente acepta los cambios de fecha
   is_date_accepted_by_client BOOLEAN NOT NULL DEFAULT TRUE,
-
   CONSTRAINT fk_appt_user FOREIGN KEY (user_id) REFERENCES users(id),
   CONSTRAINT fk_appt_workshop FOREIGN KEY (workshop_id) REFERENCES workshops(id),
   CONSTRAINT fk_appt_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(id)
@@ -121,15 +118,26 @@ CREATE TABLE IF NOT EXISTS repairs (
   CONSTRAINT fk_repair_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(id)
 );
 
+-- Tabla BUDGETS unificada (Estructura de la rama + Lógica de master)
 CREATE TABLE IF NOT EXISTS budgets (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  repair_id BIGINT NOT NULL,
+  repair_id BIGINT UNIQUE NOT NULL, -- UNIQUE para asegurar 1 presupuesto por reparación
   total_gross DECIMAL(10, 2),
   total_net DECIMAL(10, 2),
   accepted BOOLEAN DEFAULT FALSE,
-  rejected BOOLEAN NOT NULL DEFAULT FALSE,
-  notes TEXT,
+  rejected BOOLEAN NOT NULL DEFAULT FALSE, -- Rescatado de master
+  notes TEXT, -- Rescatado de master
   CONSTRAINT fk_budget_repair FOREIGN KEY (repair_id) REFERENCES repairs(id)
+);
+
+-- Tabla BUDGET_LINES (Incorporada de la rama)
+CREATE TABLE IF NOT EXISTS budget_lines (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  budget_id BIGINT NOT NULL,
+  concept VARCHAR(255) NOT NULL,
+  quantity DECIMAL(10, 2) NOT NULL,
+  unit_price DECIMAL(10, 2) NOT NULL,
+  CONSTRAINT fk_budgetline_budget FOREIGN KEY (budget_id) REFERENCES budgets(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS reviews (

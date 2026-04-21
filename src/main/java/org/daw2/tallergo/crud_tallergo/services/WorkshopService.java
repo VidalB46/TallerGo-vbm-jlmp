@@ -44,4 +44,17 @@ public interface WorkshopService {
      * @param id Identificador único del taller a borrar.
      */
     void delete(Integer id);
+
+    /**
+     * Obtiene los datos de un taller para editar en formulario.
+     * @param id Identificador único del taller.
+     * @return DTO de actualización con los datos actuales.
+     */
+    WorkshopUpdateDTO getForEdit(Integer id);
+
+    /**
+     * Actualiza los datos de un taller existente.
+     * @param dto DTO con los nuevos datos del taller.
+     */
+    void update(WorkshopUpdateDTO dto);
 }
