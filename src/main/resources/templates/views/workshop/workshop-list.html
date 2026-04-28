@@ -27,6 +27,21 @@
             <i class="bi bi-plus-lg"></i> Nuevo Taller
         </a>
     </div>
+
+    <!-- Buscador -->
+    <form th:action="@{/workshops}" method="get" class="workshop-search-form">
+        <div class="workshop-search-wrap">
+            <i class="bi bi-search workshop-search-icon"></i>
+            <input type="text" name="q" class="workshop-search-input"
+                   placeholder="Buscar taller por nombre…"
+                   th:value="${q}" autocomplete="off"/>
+            <button type="submit" class="workshop-search-btn">Buscar</button>
+            <a th:if="${q != null and !#strings.isEmpty(q)}"
+               th:href="@{/workshops}" class="workshop-search-clear" title="Limpiar búsqueda">
+                <i class="bi bi-x-lg"></i>
+            </a>
+        </div>
+    </form>
 </div>
 
 <main class="workshops-main">
@@ -34,6 +49,19 @@
     <div th:if="${successMessage}" class="alert-success-custom">
         <i class="bi bi-check-circle-fill"></i>
         <span th:text="${successMessage}"></span>
+    </div>
+
+    <!-- Resultados de búsqueda -->
+    <div th:if="${q != null and !#strings.isEmpty(q)}" class="search-results-info">
+        <i class="bi bi-funnel"></i>
+        Mostrando resultados para: <strong th:text="${q}"></strong>
+        &nbsp;·&nbsp; <span th:text="${page.totalElements}"></span> taller(es) encontrado(s)
+    </div>
+
+    <div th:if="${page.content.isEmpty()}" class="empty-state">
+        <i class="bi bi-search" style="font-size:2.5rem; color:#c0392b; opacity:.4;"></i>
+        <p>No se encontraron talleres<span th:if="${q != null and !#strings.isEmpty(q)}"> para "<strong th:text="${q}"></strong>"</span>.</p>
+        <a th:href="@{/workshops}" class="btn-new" style="margin-top:.5rem;">Ver todos los talleres</a>
     </div>
 
     <div class="workshops-grid">
@@ -76,15 +104,15 @@
 
     <nav class="pagination-bar" th:if="${page.totalPages > 1}">
         <a class="page-btn" th:classappend="${page.first} ? 'disabled'"
-           th:href="@{/workshops(page=${page.number - 1})}">
+           th:href="@{/workshops(page=${page.number - 1}, q=${q})}">
             <i class="bi bi-chevron-left"></i>
         </a>
         <a class="page-btn" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
            th:classappend="${i == page.number} ? 'active'"
-           th:href="@{/workshops(page=${i})}"
+           th:href="@{/workshops(page=${i}, q=${q})}"
            th:text="${i + 1}"></a>
         <a class="page-btn" th:classappend="${page.last} ? 'disabled'"
-           th:href="@{/workshops(page=${page.number + 1})}">
+           th:href="@{/workshops(page=${page.number + 1}, q=${q})}">
             <i class="bi bi-chevron-right"></i>
         </a>
     </nav>

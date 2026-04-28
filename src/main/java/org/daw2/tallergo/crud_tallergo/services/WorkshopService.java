@@ -57,4 +57,12 @@ public interface WorkshopService {
      * @param dto DTO con los nuevos datos del taller.
      */
     void update(WorkshopUpdateDTO dto);
+
+    /**
+     * Búsqueda paginada de talleres por nombre (parcial, case-insensitive).
+     * @param name   Texto a buscar en el nombre del taller.
+     * @param pageable Configuración de paginación.
+     * @return Página de resultados.
+     */
+    Page<WorkshopDTO> search(String name, Pageable pageable);
 }

@@ -85,9 +85,31 @@ public class BrandServiceImpl implements BrandService {
     @Override
     @Transactional(readOnly = true)
     public BrandDetailDTO getDetail(Integer id) {
-        // Uso de fetch join para traer la marca y sus vehículos en una sola consulta
         Brand brand = brandRepository.findByIdWithVehicles(id)
                 .orElseThrow(() -> new ResourceNotFoundException("brand", "id", id));
         return BrandMapper.toDetailDTO(brand);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<BrandDTO> search(String q, String country, Pageable pageable) {
+        boolean hasQ = q != null && !q.isBlank();
+        boolean hasCountry = country != null && !country.isBlank();
+
+        if (hasQ && hasCountry) {
+            return brandRepository.searchByNameAndCountry(q.trim(), country.trim(), pageable).map(BrandMapper::toDTO);
+        } else if (hasQ) {
+            return brandRepository.searchByName(q.trim(), pageable).map(BrandMapper::toDTO);
+        } else if (hasCountry) {
+            return brandRepository.filterByCountry(country.trim(), pageable).map(BrandMapper::toDTO);
+        } else {
+            return brandRepository.findAll(pageable).map(BrandMapper::toDTO);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> getDistinctCountries() {
+        return brandRepository.findDistinctCountries();
     }
 }

@@ -87,4 +87,11 @@ public class WorkshopServiceImpl implements WorkshopService {
         WorkshopMapper.copyToExistingEntity(dto, workshop);
         workshopRepository.save(workshop);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<WorkshopDTO> search(String name, Pageable pageable) {
+        return workshopRepository.findByNameContainingIgnoreCase(name, pageable)
+                .map(WorkshopMapper::toDTO);
+    }
 }

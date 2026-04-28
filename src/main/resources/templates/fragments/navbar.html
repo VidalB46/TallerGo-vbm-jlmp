@@ -49,7 +49,10 @@
         </li>
 
         <li sec:authorize="!isAuthenticated()">
-            <a th:href="@{/login}" class="tgo-cta">Iniciar sesión</a>
+            <a th:href="@{/register}" class="tgo-cta">Registrarse</a>
+        </li>
+        <li sec:authorize="!isAuthenticated()">
+            <a th:href="@{/login}" class="tgo-cta tgo-cta-outline">Iniciar sesión</a>
         </li>
     </ul>
 
@@ -153,6 +156,11 @@
             padding: 0.42rem 1.1rem; border-radius: 8px;
             box-shadow: 0 3px 12px rgba(192,57,43,0.35);
         }
+        .tgo-links .tgo-cta-outline {
+            background: #111 !important; color: #fff !important;
+            border: 1.5px solid #111; box-shadow: none;
+        }
+        .tgo-links .tgo-cta-outline:hover { background: #222 !important; border-color: #222; }
         .tgo-dd-wrap, .tgo-avatar-wrap { position: relative; list-style: none; }
         .tgo-dd-btn, .tgo-avatar-btn {
             display: flex; align-items: center; gap: 0.35rem;

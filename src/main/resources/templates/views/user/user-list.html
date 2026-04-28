@@ -74,6 +74,13 @@
                     <div class="td-actions">
                         <a th:href="@{/users/detail(id=${u.id})}" class="btn-view-sm"><i class="bi bi-eye"></i> Ver</a>
                         <a th:href="@{/users/edit(id=${u.id})}" class="btn-edit-sm"><i class="bi bi-pencil"></i> Editar</a>
+                        <form th:action="@{/users/delete}" method="post" style="display:inline;"
+                              onsubmit="return confirm('¿Seguro que quieres eliminar este usuario?');"
+                              sec:authorize="hasRole('ADMIN')">
+                            <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                            <input type="hidden" name="id" th:value="${u.id}"/>
+                            <button type="submit" class="btn-delete-sm"><i class="bi bi-trash"></i> Eliminar</button>
+                        </form>
                     </div>
                 </td>
             </tr>

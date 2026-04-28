@@ -68,4 +68,16 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
      */
     @Query("SELECT v FROM Vehicle v LEFT JOIN FETCH v.brand WHERE v.id = :id")
     Optional<Vehicle> findByIdWithBrand(@Param("id") Long id);
+
+    /** Búsqueda por modelo o matrícula (admin: todos los vehículos). */
+    @Query("SELECT v FROM Vehicle v WHERE " +
+           "LOWER(v.model) LIKE LOWER(CONCAT('%', :q, '%')) OR " +
+           "LOWER(v.matricula) LIKE LOWER(CONCAT('%', :q, '%'))")
+    Page<Vehicle> searchAll(@Param("q") String q, Pageable pageable);
+
+    /** Búsqueda por modelo o matrícula filtrada por propietario (cliente). */
+    @Query("SELECT v FROM Vehicle v WHERE v.user.id = :userId AND (" +
+           "LOWER(v.model) LIKE LOWER(CONCAT('%', :q, '%')) OR " +
+           "LOWER(v.matricula) LIKE LOWER(CONCAT('%', :q, '%')))")
+    Page<Vehicle> searchByUser(@Param("q") String q, @Param("userId") Long userId, Pageable pageable);
 }

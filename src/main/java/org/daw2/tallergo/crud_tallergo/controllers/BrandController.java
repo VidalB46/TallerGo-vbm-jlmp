@@ -50,11 +50,16 @@ public class BrandController {
     @GetMapping
     public String listBrands(
             @PageableDefault(size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam(value = "q", required = false, defaultValue = "") String q,
+            @RequestParam(value = "country", required = false, defaultValue = "") String country,
             Model model) {
 
         try {
-            Page<BrandDTO> page = brandService.list(pageable);
+            Page<BrandDTO> page = brandService.search(q, country, pageable);
             model.addAttribute("page", page);
+            model.addAttribute("q", q);
+            model.addAttribute("country", country);
+            model.addAttribute("countries", brandService.getDistinctCountries());
 
             String sortParam = "name,asc";
             if (page.getSort().isSorted()) {

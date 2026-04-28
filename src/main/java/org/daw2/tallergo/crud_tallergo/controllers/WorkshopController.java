@@ -24,9 +24,14 @@ public class WorkshopController {
     private final WorkshopService workshopService;
 
     @GetMapping
-    public String list(@PageableDefault(size = 5) Pageable pageable, Model model) {
-        Page<WorkshopDTO> page = workshopService.list(pageable);
+    public String list(@PageableDefault(size = 6) Pageable pageable,
+                       @RequestParam(value = "q", required = false, defaultValue = "") String q,
+                       Model model) {
+        Page<WorkshopDTO> page = q.isBlank()
+                ? workshopService.list(pageable)
+                : workshopService.search(q.trim(), pageable);
         model.addAttribute("page", page);
+        model.addAttribute("q", q);
         return "views/workshop/workshop-list";
     }
 

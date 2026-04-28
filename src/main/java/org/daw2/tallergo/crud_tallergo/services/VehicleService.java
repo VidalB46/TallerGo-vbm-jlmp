@@ -28,4 +28,10 @@ public interface VehicleService {
     void delete(Long id);
     VehicleDetailDTO getDetail(Long id);
     List<VehicleDTO> getVehiclesByUserId(Long userId);
+
+    /** Búsqueda global (admin) por modelo o matrícula con paginación. */
+    Page<VehicleDTO> search(String q, Pageable pageable);
+
+    /** Búsqueda filtrada por propietario por modelo o matrícula con paginación. */
+    Page<VehicleDTO> searchByUser(String q, Long userId, Pageable pageable);
 }

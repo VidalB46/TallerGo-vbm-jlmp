@@ -54,29 +54,28 @@ public class VehicleController {
     @GetMapping
     public String listVehicles(
             @PageableDefault(size = 10, sort = "model", direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam(value = "q", required = false, defaultValue = "") String q,
             Model model,
             Locale locale,
-            Authentication authentication) { // Limpiado el parámetro
+            Authentication authentication) {
 
         try {
-            // Obtener el usuario actual
             User user = userRepository.findByEmail(authentication.getName())
                     .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
-            // Comprobar si es ADMIN
             boolean isAdmin = authentication.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
             Page<VehicleDTO> page;
-            if (isAdmin) {
-                page = vehicleService.list(pageable);
+            if (q.isBlank()) {
+                page = isAdmin ? vehicleService.list(pageable) : vehicleService.listByUser(user.getId(), pageable);
             } else {
-                page = vehicleService.listByUser(user.getId(), pageable);
+                page = isAdmin ? vehicleService.search(q.trim(), pageable) : vehicleService.searchByUser(q.trim(), user.getId(), pageable);
             }
 
             model.addAttribute("page", page);
+            model.addAttribute("q", q);
 
-            // Lógica de ordenamiento
             String sortParam = "model,asc";
             if (page.getSort().isSorted()) {
                 Sort.Order order = page.getSort().iterator().next();

@@ -534,6 +534,105 @@ textarea.form-control, .field-group textarea { resize: vertical; min-height: 110
 .ws-card-img { width: 100%; height: 160px; object-fit: cover; display: block; background: #e0e0e0; }
 .ws-card-img-placeholder { height: 160px; font-size: 2.5rem; color: rgba(255,255,255,0.1); }
 
+/* ── Vehicle sort bar ───────────────────────────────────────────── */
+.vehicle-sort-bar {
+    max-width: 900px; margin: 0.75rem auto 0; padding: 0 1.5rem;
+    display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+    position: relative; z-index: 1;
+}
+.vehicle-sort-label {
+    font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.4);
+    display: flex; align-items: center; gap: 0.35rem; margin-right: 0.25rem;
+}
+.vehicle-sort-btn {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.55);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    font-size: 0.78rem; font-weight: 600; padding: 0.35rem 0.85rem;
+    border-radius: 8px; text-decoration: none; transition: all 0.2s; white-space: nowrap;
+}
+.vehicle-sort-btn:hover { background: rgba(192,57,43,0.15); color: #fff; border-color: #c0392b; }
+.vehicle-sort-btn.active { background: #c0392b; color: #fff; border-color: #c0392b; }
+
+/* ── Workshop search bar ───────────────────────────────────────── */
+.workshop-search-form {
+    max-width: 900px; margin: 1.5rem auto 0; padding: 0 1.5rem;
+    position: relative; z-index: 1;
+}
+.workshop-search-wrap {
+    display: flex; align-items: center; gap: 0;
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: 12px; overflow: hidden;
+    backdrop-filter: blur(10px);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.workshop-search-wrap:focus-within {
+    border-color: #c0392b;
+    box-shadow: 0 0 0 3px rgba(192,57,43,0.15);
+}
+.workshop-search-icon {
+    padding: 0 0.9rem; color: rgba(255,255,255,0.4); font-size: 1rem; flex-shrink: 0;
+}
+.workshop-search-input {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: #fff; font-size: 0.92rem; font-family: inherit;
+    padding: 0.75rem 0; min-width: 0;
+}
+.workshop-search-input::placeholder { color: rgba(255,255,255,0.35); }
+.workshop-search-btn {
+    background: #c0392b; color: #fff; border: none;
+    padding: 0.75rem 1.4rem; font-weight: 600; font-size: 0.85rem;
+    cursor: pointer; transition: background 0.2s; white-space: nowrap; flex-shrink: 0;
+}
+.workshop-search-btn:hover { background: #a93226; }
+.workshop-search-clear {
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 0.8rem; color: rgba(255,255,255,0.4);
+    text-decoration: none; font-size: 0.85rem;
+    transition: color 0.2s; flex-shrink: 0;
+}
+.workshop-search-clear:hover { color: #c0392b; }
+
+/* ── Brand country selector ─────────────────────────────────────── */
+.brand-country-divider {
+    width: 1px; height: 22px; background: rgba(255,255,255,0.12); flex-shrink: 0;
+}
+.brand-country-select {
+    background: transparent; border: none; outline: none;
+    color: rgba(255,255,255,0.7); font-size: 0.85rem; font-family: inherit;
+    padding: 0.75rem 0.9rem; cursor: pointer; flex-shrink: 0;
+    -webkit-appearance: none; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.35)'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 0.6rem center;
+    padding-right: 1.8rem;
+}
+.brand-country-select option { background: #1a1a1a; color: #fff; }
+
+/* ── Filter active badge ────────────────────────────────────────── */
+.filter-active-badge {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    background: rgba(192,57,43,0.15); color: #c0392b;
+    border: 1px solid rgba(192,57,43,0.3);
+    font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.6rem;
+    border-radius: 20px; margin-left: 0.5rem;
+}
+
+
+.search-results-info {
+    font-size: 0.85rem; color: rgba(255,255,255,0.5);
+    margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;
+}
+.search-results-info strong { color: #fff; }
+
+/* ── Empty state ────────────────────────────────────────────────── */
+.empty-state {
+    text-align: center; padding: 4rem 1rem; color: rgba(255,255,255,0.4);
+    display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+}
+.empty-state p { font-size: 1rem; }
+
+
 .mec-card-avatar .avatar-icon, .vehicle-card-top i {
     font-size: 5rem; color: rgba(255,255,255,0.15);
     line-height: 1; display: block;
@@ -963,7 +1062,16 @@ textarea.form-control, .field-group textarea { resize: vertical; min-height: 110
 }
 .btn-edit-sm:hover { background: #e67e22; color: #fff; border-color: #e67e22; }
 
-/* Paginación */
+.btn-delete-sm {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    background: rgba(192,57,43,0.08); color: #c0392b;
+    border: 1.5px solid rgba(192,57,43,0.2);
+    font-size: 0.75rem; font-weight: 600; padding: 0.3rem 0.7rem;
+    border-radius: 7px; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+}
+.btn-delete-sm:hover { background: #c0392b; color: #fff; border-color: #c0392b; }
+
+
 .pagination-bar {
     display: flex; align-items: center; justify-content: center;
     gap: 0.4rem; margin-top: 3rem; flex-wrap: wrap;

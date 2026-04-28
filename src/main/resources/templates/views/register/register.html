@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('Crear Cuenta - TallerGO')}"></head>
-
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/head :: head('Crear Cuenta - TallerGO')}"></th:block>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
     *, *::before, *::after { box-sizing: border-box; }
@@ -64,6 +65,7 @@
         .register-card { padding:1.6rem 1.3rem 1.4rem; }
     }
 </style>
+</head>
 
 <body class="register-page">
 
@@ -71,7 +73,6 @@
     <a th:href="@{/}" class="brand-name">TallerGO<span class="brand-dot"></span></a>
     <ul class="topbar-nav">
         <li><a th:href="@{/}">Inicio</a></li>
-        <li><a th:href="@{/workshops}">Talleres</a></li>
         <li><a th:href="@{/login}">Iniciar Sesión</a></li>
     </ul>
 </header>

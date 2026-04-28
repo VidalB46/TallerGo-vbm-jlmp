@@ -1,10 +1,13 @@
 package org.daw2.tallergo.crud_tallergo.repositories;
 
 import org.daw2.tallergo.crud_tallergo.entities.Brand;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -33,4 +36,23 @@ public interface BrandRepository extends JpaRepository<Brand, Integer> {
      */
     @Query("SELECT b FROM Brand b LEFT JOIN FETCH b.vehicles WHERE b.id = :id")
     Optional<Brand> findByIdWithVehicles(@Param("id") Integer id);
+
+    /** Búsqueda por nombre (parcial, case-insensitive). */
+    @Query(value = "SELECT b FROM Brand b WHERE LOWER(b.name) LIKE LOWER(CONCAT('%', :q, '%'))",
+           countQuery = "SELECT COUNT(b) FROM Brand b WHERE LOWER(b.name) LIKE LOWER(CONCAT('%', :q, '%'))")
+    Page<Brand> searchByName(@Param("q") String q, Pageable pageable);
+
+    /** Filtro exacto por país (case-insensitive). */
+    @Query(value = "SELECT b FROM Brand b WHERE LOWER(b.country) = LOWER(:country)",
+           countQuery = "SELECT COUNT(b) FROM Brand b WHERE LOWER(b.country) = LOWER(:country)")
+    Page<Brand> filterByCountry(@Param("country") String country, Pageable pageable);
+
+    /** Búsqueda combinada: nombre + país. */
+    @Query(value = "SELECT b FROM Brand b WHERE LOWER(b.name) LIKE LOWER(CONCAT('%', :q, '%')) AND LOWER(b.country) = LOWER(:country)",
+           countQuery = "SELECT COUNT(b) FROM Brand b WHERE LOWER(b.name) LIKE LOWER(CONCAT('%', :q, '%')) AND LOWER(b.country) = LOWER(:country)")
+    Page<Brand> searchByNameAndCountry(@Param("q") String q, @Param("country") String country, Pageable pageable);
+
+    /** Lista de países distintos para el selector de filtro. */
+    @Query(value = "SELECT DISTINCT b.country FROM brands b WHERE b.country IS NOT NULL ORDER BY b.country", nativeQuery = true)
+    List<String> findDistinctCountries();
 }

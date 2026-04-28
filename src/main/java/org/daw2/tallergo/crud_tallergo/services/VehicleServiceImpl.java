@@ -76,4 +76,16 @@ public class VehicleServiceImpl implements VehicleService {
                 .map(VehicleMapper::toDTO)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<VehicleDTO> search(String q, Pageable pageable) {
+        return vehicleRepository.searchAll(q, pageable).map(VehicleMapper::toDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<VehicleDTO> searchByUser(String q, Long userId, Pageable pageable) {
+        return vehicleRepository.searchByUser(q, userId, pageable).map(VehicleMapper::toDTO);
+    }
 }

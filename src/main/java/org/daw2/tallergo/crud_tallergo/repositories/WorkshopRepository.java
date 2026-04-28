@@ -1,6 +1,8 @@
 package org.daw2.tallergo.crud_tallergo.repositories;
 
 import org.daw2.tallergo.crud_tallergo.entities.Workshop;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -41,4 +43,10 @@ public interface WorkshopRepository extends JpaRepository<Workshop, Integer> {
      */
     @Query("SELECT w FROM Workshop w LEFT JOIN FETCH w.workshopServices ws JOIN FETCH ws.service WHERE w.id = :id")
     Optional<Workshop> findByIdWithServices(@Param("id") Integer id);
+
+    /**
+     * Búsqueda paginada de talleres por nombre (case-insensitive, coincidencia parcial).
+     */
+    @Query("SELECT w FROM Workshop w WHERE LOWER(w.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    Page<Workshop> findByNameContainingIgnoreCase(@Param("name") String name, Pageable pageable);
 }

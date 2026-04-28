@@ -1,23 +1,6 @@
 -- =======================================================
--- 0. LIMPIEZA DE DATOS
+-- 0. DATOS INICIALES (INSERT IGNORE: no borra usuarios registrados)
 -- =======================================================
-SET FOREIGN_KEY_CHECKS = 0;
-TRUNCATE TABLE reviews;
-TRUNCATE TABLE user_roles;
-TRUNCATE TABLE user_profiles;
-TRUNCATE TABLE budget_lines;
-TRUNCATE TABLE budgets;
-TRUNCATE TABLE repairs;
-TRUNCATE TABLE appointments;
-TRUNCATE TABLE workshop_services;
-TRUNCATE TABLE services;
-TRUNCATE TABLE workshops;
-TRUNCATE TABLE mechanics;
-TRUNCATE TABLE vehicles;
-TRUNCATE TABLE brands;
-TRUNCATE TABLE users;
-TRUNCATE TABLE roles;
-SET FOREIGN_KEY_CHECKS = 1;
 
 -- =======================================================
 -- 1. DATOS DE SEGURIDAD

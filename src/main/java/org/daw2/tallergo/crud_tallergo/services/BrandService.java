@@ -61,4 +61,10 @@ public interface BrandService {
      * @return DTO de detalle completo.
      */
     BrandDetailDTO getDetail(Integer id);
+
+    /** Búsqueda/filtro combinado. Cualquier parámetro puede ser vacío. */
+    Page<BrandDTO> search(String q, String country, Pageable pageable);
+
+    /** Lista de países distintos para el select de filtro. */
+    List<String> getDistinctCountries();
 }
