@@ -268,6 +268,46 @@ body:not(.login-page):not([class*="d-flex"]) > footer { flex: unset !important; 
 }
 
 /* =========================================================
+   MECHANIC DETAIL — TALLER ASIGNADO
+   ========================================================= */
+.workshop-card-header {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 1.2rem 2.5rem;
+    border-bottom: 1.5px solid #f0f0f0;
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: #888;
+}
+.workshop-card-header i { color: #c0392b; font-size: 1rem; }
+
+.workshop-info {
+    padding: 1.5rem 2.5rem;
+    display: flex; flex-direction: column; gap: 0.75rem;
+}
+.workshop-info a {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-size: 1.15rem; font-weight: 800; color: #111;
+    text-decoration: none; transition: color 0.2s;
+}
+.workshop-info a:hover { color: #c0392b; }
+.workshop-info a i { color: #c0392b; font-size: 1.1rem; }
+
+.workshop-meta {
+    display: flex; flex-wrap: wrap; gap: 1rem;
+}
+.workshop-meta span {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 0.85rem; color: #666; font-weight: 500;
+}
+.workshop-meta span i { color: #aaa; font-size: 0.9rem; }
+
+.no-workshop {
+    padding: 2rem 2.5rem;
+    text-align: center; color: #aaa;
+    font-size: 0.9rem; font-weight: 500;
+}
+.no-workshop i { color: #ddd; }
+
+/* =========================================================
    FORM PAGES
    ========================================================= */
 .form-main {
@@ -456,6 +496,37 @@ textarea.form-control, .field-group textarea { resize: vertical; min-height: 110
 }
 .mec-toolbar h2, .list-toolbar h2 { font-size: 1rem; font-weight: 600; color: #888; }
 .mec-toolbar h2 span, .list-toolbar h2 span { color: #111; font-weight: 800; }
+
+/* ── Mechanic search bar ─────────────────────────────────────────── */
+.mec-search-form { display: flex; }
+.mec-search-wrap {
+    display: flex; align-items: center;
+    background: #f4f4f4; border: 1.5px solid #e8e8e8;
+    border-radius: 10px; overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.mec-search-wrap:focus-within {
+    border-color: #c0392b; box-shadow: 0 0 0 3px rgba(192,57,43,0.1);
+    background: #fff;
+}
+.mec-search-icon { padding: 0 0.7rem; color: #bbb; font-size: 0.9rem; flex-shrink: 0; }
+.mec-search-input {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: #1a1a1a; font-size: 0.88rem; font-family: inherit;
+    padding: 0.6rem 0; min-width: 220px;
+}
+.mec-search-input::placeholder { color: #bbb; }
+.mec-search-btn {
+    background: #c0392b; color: #fff; border: none;
+    padding: 0.6rem 1rem; cursor: pointer; transition: background 0.2s; flex-shrink: 0;
+}
+.mec-search-btn:hover { background: #a93226; }
+.mec-search-clear {
+    display: flex; align-items: center; padding: 0 0.7rem;
+    color: #bbb; text-decoration: none; font-size: 0.8rem;
+    transition: color 0.2s; flex-shrink: 0;
+}
+.mec-search-clear:hover { color: #c0392b; }
 
 /* Tabla card */
 .table-card {

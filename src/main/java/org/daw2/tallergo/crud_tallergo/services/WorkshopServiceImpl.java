@@ -57,9 +57,16 @@ public class WorkshopServiceImpl implements WorkshopService {
     @Override
     @Transactional
     public void delete(Integer id) {
-        if (!workshopRepository.existsById(id)) {
-            throw new ResourceNotFoundException("workshop", "id", id);
-        }
+        Workshop workshop = workshopRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("workshop", "id", id));
+
+        // Limpiar relaciones — cascade ALL borrará lo que corresponda
+        workshop.getWorkshopServices().clear();
+        workshop.getReviews().clear();
+        workshop.getMechanics().clear();
+        workshop.getAppointments().clear();
+
+        workshopRepository.saveAndFlush(workshop);
         workshopRepository.deleteById(id);
     }
 

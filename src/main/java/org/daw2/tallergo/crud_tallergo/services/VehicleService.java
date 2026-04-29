@@ -23,7 +23,7 @@ public interface VehicleService {
     Page<VehicleDTO> listByUser(Long userId, Pageable pageable);
 
     VehicleUpdateDTO getForEdit(Long id);
-    void create(VehicleCreateDTO dto);
+    void create(VehicleCreateDTO dto, Long userId);
     void update(VehicleUpdateDTO dto);
     void delete(Long id);
     VehicleDetailDTO getDetail(Long id);

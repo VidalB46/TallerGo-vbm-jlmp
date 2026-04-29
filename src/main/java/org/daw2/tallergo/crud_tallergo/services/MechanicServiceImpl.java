@@ -68,4 +68,10 @@ public class MechanicServiceImpl implements MechanicService {
                 .orElseThrow(() -> new ResourceNotFoundException("mechanic", "id", id));
         return MechanicMapper.toDetailDTO(mechanic);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<MechanicDTO> search(String q, Pageable pageable) {
+        return mechanicRepository.search(q, pageable).map(MechanicMapper::toDTO);
+    }
 }

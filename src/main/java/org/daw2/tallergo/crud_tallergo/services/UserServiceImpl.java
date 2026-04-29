@@ -55,6 +55,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    public Page<UserDTO> search(String q, Pageable pageable) {
+        return userRepository.searchByEmail(q, pageable).map(UserMapper::toDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public UserUpdateDTO getForEdit(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("user", "id", id));

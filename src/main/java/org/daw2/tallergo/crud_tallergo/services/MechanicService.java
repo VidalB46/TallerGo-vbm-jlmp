@@ -37,4 +37,7 @@ public interface MechanicService {
      * @return DTO de detalle del mecánico.
      */
     MechanicDetailDTO getDetail(Long id);
+
+    /** Búsqueda paginada por nombre o especialidad. */
+    Page<MechanicDTO> search(String q, Pageable pageable);
 }

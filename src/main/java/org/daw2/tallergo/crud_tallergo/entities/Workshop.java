@@ -65,19 +65,19 @@ public class Workshop {
     /**
      * Colección de citas programadas en este taller.
      */
-    @OneToMany(mappedBy = "workshop", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "workshop", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Appointment> appointments = new HashSet<>();
 
     /**
      * Relación con la tabla intermedia que define qué servicios específicos ofrece este taller.
      */
-    @OneToMany(mappedBy = "workshop", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "workshop", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<WorkshopService> workshopServices = new HashSet<>();
 
     /**
      * Valoraciones y reseñas dejadas por los clientes sobre este taller.
      */
-    @OneToMany(mappedBy = "workshop", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "workshop", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Review> reviews = new HashSet<>();
 
     /**

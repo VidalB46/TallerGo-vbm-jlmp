@@ -29,9 +29,24 @@
 
     <div class="mec-toolbar">
         <h2><span th:text="${page.totalElements}">0</span> mecánicos en nuestra red</h2>
-        <a th:href="@{/mechanics/new}" class="btn-new-mec" sec:authorize="hasRole('ADMIN')">
-            <i class="bi bi-person-plus-fill"></i> Añadir mecánico
-        </a>
+        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+            <form th:action="@{/mechanics}" method="get" class="mec-search-form">
+                <div class="mec-search-wrap">
+                    <i class="bi bi-search mec-search-icon"></i>
+                    <input type="text" name="q" class="mec-search-input"
+                           placeholder="Buscar por nombre o especialidad…"
+                           th:value="${q}" autocomplete="off"/>
+                    <button type="submit" class="mec-search-btn"><i class="bi bi-search"></i></button>
+                    <a th:if="${q != null and !#strings.isEmpty(q)}"
+                       th:href="@{/mechanics}" class="mec-search-clear" title="Limpiar">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                </div>
+            </form>
+            <a th:href="@{/mechanics/new}" class="btn-new-mec" sec:authorize="hasRole('ADMIN')">
+                <i class="bi bi-person-plus-fill"></i> Añadir mecánico
+            </a>
+        </div>
     </div>
 
     <div class="mec-grid">
@@ -69,14 +84,14 @@
     </div>
 
     <div class="mec-pagination" th:if="${page.totalPages > 1}">
-        <a th:href="@{/mechanics(page=${page.number - 1})}" th:if="${page.hasPreviousPage()}">
+        <a th:href="@{/mechanics(page=${page.number - 1}, q=${q})}" th:if="${page.hasPreviousPage()}">
             <i class="bi bi-chevron-left"></i>
         </a>
         <th:block th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
             <span class="current" th:if="${i == page.number}" th:text="${i + 1}"></span>
-            <a th:unless="${i == page.number}" th:href="@{/mechanics(page=${i})}" th:text="${i + 1}"></a>
+            <a th:unless="${i == page.number}" th:href="@{/mechanics(page=${i}, q=${q})}" th:text="${i + 1}"></a>
         </th:block>
-        <a th:href="@{/mechanics(page=${page.number + 1})}" th:if="${page.hasNextPage()}">
+        <a th:href="@{/mechanics(page=${page.number + 1}, q=${q})}" th:if="${page.hasNextPage()}">
             <i class="bi bi-chevron-right"></i>
         </a>
     </div>

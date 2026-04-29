@@ -21,6 +21,7 @@ public interface UserService {
      * Lista paginada de usuarios para el panel de administración.
      */
     Page<UserDTO> list(Pageable pageable);
+    Page<UserDTO> search(String q, Pageable pageable);
 
     /**
      * Recupera los datos de un usuario preparados para su edición.

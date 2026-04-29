@@ -51,6 +51,6 @@ public class Appointment {
     @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
 
-    @OneToOne(mappedBy = "appointment", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "appointment", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Repair repair;
 }

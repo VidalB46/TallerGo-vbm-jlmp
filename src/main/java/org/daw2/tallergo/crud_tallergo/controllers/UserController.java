@@ -49,11 +49,15 @@ public class UserController {
     @GetMapping
     public String listUsers(
             @PageableDefault(size = 10, sort = "email", direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam(value = "q", required = false, defaultValue = "") String q,
             Model model) {
 
         try {
-            Page<UserDTO> page = userService.list(pageable);
+            Page<UserDTO> page = q.isBlank()
+                    ? userService.list(pageable)
+                    : userService.search(q.trim(), pageable);
             model.addAttribute("page", page);
+            model.addAttribute("q", q);
 
             String sortParam = "email,asc";
             if (page.getSort().isSorted()) {

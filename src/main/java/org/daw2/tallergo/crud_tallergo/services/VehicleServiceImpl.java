@@ -2,10 +2,12 @@ package org.daw2.tallergo.crud_tallergo.services;
 
 import lombok.RequiredArgsConstructor;
 import org.daw2.tallergo.crud_tallergo.dtos.*;
+import org.daw2.tallergo.crud_tallergo.entities.User;
 import org.daw2.tallergo.crud_tallergo.entities.Vehicle;
 import org.daw2.tallergo.crud_tallergo.exceptions.DuplicateResourceException;
 import org.daw2.tallergo.crud_tallergo.exceptions.ResourceNotFoundException;
 import org.daw2.tallergo.crud_tallergo.mappers.VehicleMapper;
+import org.daw2.tallergo.crud_tallergo.repositories.UserRepository;
 import org.daw2.tallergo.crud_tallergo.repositories.VehicleRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class VehicleServiceImpl implements VehicleService {
 
     private final VehicleRepository vehicleRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -41,11 +44,15 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public void create(VehicleCreateDTO dto) {
+    public void create(VehicleCreateDTO dto, Long userId) {
         if (dto.getMatricula() != null && vehicleRepository.existsByMatricula(dto.getMatricula())) {
             throw new DuplicateResourceException("vehicle", "matricula", dto.getMatricula());
         }
-        vehicleRepository.save(VehicleMapper.toEntity(dto));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("user", "id", userId));
+        Vehicle vehicle = VehicleMapper.toEntity(dto);
+        vehicle.setUser(user);
+        vehicleRepository.save(vehicle);
     }
 
     @Override

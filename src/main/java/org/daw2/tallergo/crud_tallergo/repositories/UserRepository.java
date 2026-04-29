@@ -1,6 +1,8 @@
 package org.daw2.tallergo.crud_tallergo.repositories;
 
 import org.daw2.tallergo.crud_tallergo.entities.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -43,4 +45,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * Búsqueda de email ignorando mayúsculas/minúsculas para mejorar la UX en el login.
      */
     Optional<User> findByEmailIgnoreCase(String email);
+
+    /** Búsqueda paginada por email (parcial, case-insensitive). */
+    @Query(value = "SELECT u FROM User u WHERE LOWER(u.email) LIKE LOWER(CONCAT('%', :q, '%'))",
+           countQuery = "SELECT COUNT(u) FROM User u WHERE LOWER(u.email) LIKE LOWER(CONCAT('%', :q, '%'))")
+    Page<User> searchByEmail(@Param("q") String q, Pageable pageable);
 }

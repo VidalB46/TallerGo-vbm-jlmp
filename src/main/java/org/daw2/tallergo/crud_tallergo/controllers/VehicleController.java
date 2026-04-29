@@ -109,13 +109,16 @@ public class VehicleController {
                                 BindingResult result,
                                 RedirectAttributes redirectAttributes,
                                 Model model,
-                                Locale locale) {
+                                Locale locale,
+                                Authentication authentication) {
         if (result.hasErrors()) {
             model.addAttribute("listBrands", brandService.listAll());
             return "views/vehicle/vehicle-form";
         }
         try {
-            vehicleService.create(vehicleDTO);
+            User user = userRepository.findByEmail(authentication.getName())
+                    .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+            vehicleService.create(vehicleDTO, user.getId());
             return "redirect:/vehicles";
         } catch (DuplicateResourceException ex) {
             redirectAttributes.addFlashAttribute("errorMessage", messageSource.getMessage("msg.vehicle-controller.insert.codeExist", null, locale));

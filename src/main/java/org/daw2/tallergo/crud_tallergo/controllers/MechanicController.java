@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+
 /**
  * Controlador para la gestión de mecánicos.
  * Permite listar mecánicos, mostrar el formulario de creación y añadir nuevos mecánicos.
@@ -29,8 +30,13 @@ public class MechanicController {
      * Lista los mecánicos existentes con paginación.
      */
     @GetMapping
-    public String list(@PageableDefault(size = 10) Pageable pageable, Model model) {
-        model.addAttribute("page", mechanicService.list(pageable));
+    public String list(@PageableDefault(size = 10) Pageable pageable,
+                       @RequestParam(value = "q", required = false, defaultValue = "") String q,
+                       Model model) {
+        model.addAttribute("page", q.isBlank()
+                ? mechanicService.list(pageable)
+                : mechanicService.search(q.trim(), pageable));
+        model.addAttribute("q", q);
         return "views/mechanic/mechanic-list";
     }
 
