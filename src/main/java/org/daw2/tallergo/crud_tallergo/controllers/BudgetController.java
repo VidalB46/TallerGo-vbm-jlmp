@@ -13,6 +13,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+/**
+ * Controlador MVC para la gestión de presupuestos ({@link org.daw2.tallergo.crud_tallergo.entities.Budget}).
+ * <p>
+ * Expone las rutas bajo {@code /budgets} y delega la lógica de negocio
+ * en {@link org.daw2.tallergo.crud_tallergo.services.BudgetService}.
+ * </p>
+ */
 @Controller
 @RequestMapping("/budgets")
 @RequiredArgsConstructor

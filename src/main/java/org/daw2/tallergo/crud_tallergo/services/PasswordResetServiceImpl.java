@@ -51,11 +51,13 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     private AppUrlService appUrlService;
 
     /**
-     * Proceso de solicitud:
-     * 1. Verifica usuario (sin confirmar existencia por seguridad ante enumeración).
-     * 2. Invalida tokens previos.
-     * 3. Genera y hashea nuevo token.
-     * 4. Envía correo electrónico.
+     * Inicia el proceso de recuperación de contraseña para el email indicado.
+     * <p>Por seguridad no confirma si el email existe o no (anti-enumeración).
+     * Invalida tokens previos, genera uno nuevo con SHA-256 y envía el correo.</p>
+     *
+     * @param email     Dirección de correo del usuario que solicita el reset.
+     * @param requestIp IP de origen de la petición (auditoría).
+     * @param userAgent Cabecera User-Agent del cliente (auditoría, truncada a 255 caracteres).
      */
     @Transactional
     @Override
@@ -108,11 +110,15 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     }
 
     /**
-     * Proceso de ejecución:
-     * 1. Valida el token contra el hash guardado.
-     * 2. Verifica expiración y uso previo.
-     * 3. Hashea y guarda la nueva password.
-     * 4. Limpia intentos fallidos y desbloquea cuenta.
+     * Valida el token de recuperación y establece la nueva contraseña.
+     * <p>Verifica que el token exista, no haya sido usado y no haya caducado.
+     * Si todo es correcto, hashea la nueva contraseña, desbloquea la cuenta
+     * y consume el token para que no pueda reutilizarse.</p>
+     *
+     * @param rawToken    Token en bruto recibido desde el enlace del correo.
+     * @param newPassword Nueva contraseña en texto plano que se hasheará con BCrypt.
+     * @throws IllegalArgumentException si el token no existe en la base de datos.
+     * @throws IllegalStateException    si el token ya fue usado o ha expirado.
      */
     @Transactional
     @Override
@@ -152,12 +158,25 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 
     // --- Helpers de Seguridad ---
 
+    /**
+     * Genera un token criptográficamente seguro de {@value #TOKEN_BYTES} bytes
+     * codificado en Base64 URL-safe sin relleno.
+     *
+     * @return Token aleatorio listo para incluir en la URL de recuperación.
+     */
     private String generateSecureToken() {
         byte[] bytes = new byte[TOKEN_BYTES];
         new SecureRandom().nextBytes(bytes);
         return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 
+    /**
+     * Calcula el hash SHA-256 de una cadena y lo devuelve como cadena hexadecimal.
+     *
+     * @param raw Texto en claro a hashear.
+     * @return Representación hexadecimal del digest SHA-256.
+     * @throws IllegalStateException si el algoritmo SHA-256 no está disponible en la JVM.
+     */
     private String sha256Hex(String raw) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -170,6 +189,13 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         }
     }
 
+    /**
+     * Trunca una cadena al máximo indicado para evitar desbordamientos en la base de datos.
+     *
+     * @param s   Cadena a truncar (puede ser {@code null}).
+     * @param max Número máximo de caracteres permitidos.
+     * @return La cadena original si cabe, o sus primeros {@code max} caracteres; {@code null} si la entrada es {@code null}.
+     */
     private String safeTruncate(String s, int max) {
         if (s == null) return null;
         return s.length() <= max ? s : s.substring(0, max);

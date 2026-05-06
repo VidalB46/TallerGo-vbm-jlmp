@@ -28,18 +28,37 @@ public class BrandServiceImpl implements BrandService {
     @Autowired
     private BrandRepository brandRepository;
 
+    /**
+     * Devuelve una página paginada con todas las marcas del sistema.
+     *
+     * @param pageable Configuración de página, tamaño y ordenamiento.
+     * @return Página de DTOs de marca.
+     */
     @Override
     @Transactional(readOnly = true)
     public Page<BrandDTO> list(Pageable pageable) {
         return brandRepository.findAll(pageable).map(BrandMapper::toDTO);
     }
 
+    /**
+     * Devuelve la lista completa de marcas sin paginación.
+     * Usado principalmente para poblar selectores en formularios de vehículos.
+     *
+     * @return Lista de todos los DTOs de marca.
+     */
     @Override
     @Transactional(readOnly = true)
     public List<BrandDTO> listAll() {
         return BrandMapper.toDTOList(brandRepository.findAll());
     }
 
+    /**
+     * Recupera los datos de una marca para rellenar el formulario de edición.
+     *
+     * @param id Identificador único de la marca.
+     * @return DTO con los campos editables de la marca.
+     * @throws ResourceNotFoundException si no existe ninguna marca con ese ID.
+     */
     @Override
     @Transactional(readOnly = true)
     public BrandUpdateDTO getForEdit(Integer id) {
@@ -48,6 +67,12 @@ public class BrandServiceImpl implements BrandService {
         return BrandMapper.toUpdateDTO(brand);
     }
 
+    /**
+     * Crea una nueva marca validando que el nombre no esté ya registrado.
+     *
+     * @param dto DTO con los datos de la marca a crear.
+     * @throws DuplicateResourceException si ya existe una marca con el mismo nombre.
+     */
     @Override
     public void create(BrandCreateDTO dto) {
         // Validación de negocio: No se permiten nombres duplicados
@@ -59,6 +84,13 @@ public class BrandServiceImpl implements BrandService {
         brandRepository.save(brand);
     }
 
+    /**
+     * Actualiza los datos de una marca existente.
+     *
+     * @param dto DTO con los nuevos valores, incluyendo el ID de la marca a actualizar.
+     * @throws DuplicateResourceException si el nuevo nombre ya pertenece a otra marca distinta.
+     * @throws ResourceNotFoundException  si no existe ninguna marca con el ID indicado.
+     */
     @Override
     public void update(BrandUpdateDTO dto) {
         // Validación de negocio: El nombre no puede colisionar con otra marca (distinta a la actual)
@@ -74,6 +106,12 @@ public class BrandServiceImpl implements BrandService {
         brandRepository.save(brand);
     }
 
+    /**
+     * Elimina una marca del sistema por su ID.
+     *
+     * @param id Identificador único de la marca.
+     * @throws ResourceNotFoundException si no existe ninguna marca con ese ID.
+     */
     @Override
     public void delete(Integer id) {
         if (!brandRepository.existsById(id)) {
@@ -82,6 +120,13 @@ public class BrandServiceImpl implements BrandService {
         brandRepository.deleteById(id);
     }
 
+    /**
+     * Devuelve el detalle completo de una marca, incluyendo los vehículos asociados.
+     *
+     * @param id Identificador único de la marca.
+     * @return DTO de detalle con la lista de vehículos cargada.
+     * @throws ResourceNotFoundException si no existe ninguna marca con ese ID.
+     */
     @Override
     @Transactional(readOnly = true)
     public BrandDetailDTO getDetail(Integer id) {
@@ -90,6 +135,15 @@ public class BrandServiceImpl implements BrandService {
         return BrandMapper.toDetailDTO(brand);
     }
 
+    /**
+     * Búsqueda de marcas por nombre y/o país de origen con paginación.
+     * Si ningún filtro está activo, devuelve todas las marcas.
+     *
+     * @param q        Texto a buscar en el nombre de la marca (puede ser nulo o vacío).
+     * @param country  País de origen por el que filtrar (puede ser nulo o vacío).
+     * @param pageable Configuración de paginación.
+     * @return Página de marcas que coincidan con los criterios de búsqueda.
+     */
     @Override
     @Transactional(readOnly = true)
     public Page<BrandDTO> search(String q, String country, Pageable pageable) {
@@ -107,6 +161,12 @@ public class BrandServiceImpl implements BrandService {
         }
     }
 
+    /**
+     * Devuelve la lista de países de origen distintos registrados en el sistema.
+     * Usado para poblar el selector de filtro por país en la vista de marcas.
+     *
+     * @return Lista de nombres de países únicos ordenados alfabéticamente.
+     */
     @Override
     @Transactional(readOnly = true)
     public List<String> getDistinctCountries() {

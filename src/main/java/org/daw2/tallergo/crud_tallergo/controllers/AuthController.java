@@ -17,6 +17,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Locale;
 
+/**
+ * Controlador para el registro de nuevos usuarios.
+ * Gestiona el formulario de alta y la validación de contraseñas coincidentes.
+ */
 @Controller
 @RequiredArgsConstructor
 public class AuthController {
@@ -26,12 +30,28 @@ public class AuthController {
     private final UserService userService;
     private final MessageSource messageSource;
 
+    /**
+     * Muestra el formulario de registro de nuevo usuario.
+     *
+     * @param model Modelo para pasar el DTO vacío a la vista.
+     * @return Vista del formulario de registro.
+     */
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("userDto", new UserRegisterDTO());
         return "views/register/register";
     }
 
+    /**
+     * Procesa el formulario de registro validando que las contraseñas coincidan.
+     *
+     * @param userDto  DTO con los datos del nuevo usuario.
+     * @param result   Resultado de la validación del formulario.
+     * @param model    Modelo para mostrar errores en la vista.
+     * @param flash    Atributos flash para el mensaje de éxito tras el registro.
+     * @param locale   Configuración regional para mensajes.
+     * @return Redirección al login si el registro es exitoso, o recarga del formulario si hay errores.
+     */
     @PostMapping("/register")
     public String registerUser(@Valid @ModelAttribute("userDto") UserRegisterDTO userDto,
                                BindingResult result,

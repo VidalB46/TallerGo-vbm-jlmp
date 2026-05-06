@@ -20,6 +20,9 @@ public class VehicleMapper {
     /**
      * Convierte una entidad Vehicle a un DTO básico para listados.
      * Realiza un "flattening" del nombre de la marca.
+     *
+     * @param entity Entidad vehículo (puede ser {@code null}).
+     * @return DTO básico, o {@code null} si la entidad es {@code null}.
      */
     public static VehicleDTO toDTO(Vehicle entity) {
         if (entity == null) return null;
@@ -39,6 +42,9 @@ public class VehicleMapper {
 
     /**
      * Convierte una lista de entidades en una lista de DTOs básicos.
+     *
+     * @param entities Lista de entidades vehículo (puede ser {@code null}).
+     * @return Lista de DTOs, o lista vacía si la entrada es {@code null}.
      */
     public static List<VehicleDTO> toDTOList(List<Vehicle> entities) {
         if (entities == null) return List.of();
@@ -47,6 +53,9 @@ public class VehicleMapper {
 
     /**
      * Convierte la entidad a un DTO de detalle que incluye el objeto BrandDTO completo.
+     *
+     * @param entity Entidad vehículo (puede ser {@code null}).
+     * @return DTO de detalle, o {@code null} si la entidad es {@code null}.
      */
     public static VehicleDetailDTO toDetailDTO(Vehicle entity) {
         if (entity == null) return null;
@@ -65,6 +74,9 @@ public class VehicleMapper {
 
     /**
      * Transforma la entidad en un DTO preparado para formularios de edición.
+     *
+     * @param entity Entidad vehículo (puede ser {@code null}).
+     * @return DTO de actualización prellenado, o {@code null} si la entidad es {@code null}.
      */
     public static VehicleUpdateDTO toUpdateDTO(Vehicle entity) {
         if (entity == null) return null;
@@ -87,6 +99,9 @@ public class VehicleMapper {
     /**
      * Crea una nueva entidad Vehicle a partir de un DTO de creación.
      * Vincula la marca mediante una instancia proxy (solo ID).
+     *
+     * @param dto DTO con los datos del nuevo vehículo (puede ser {@code null}).
+     * @return Nueva entidad {@link Vehicle}, o {@code null} si el DTO es {@code null}.
      */
     public static Vehicle toEntity(VehicleCreateDTO dto) {
         if (dto == null) return null;
@@ -108,6 +123,9 @@ public class VehicleMapper {
 
     /**
      * Convierte un DTO de actualización en una entidad completa (incluye ID).
+     *
+     * @param dto DTO con los datos del vehículo a actualizar (puede ser {@code null}).
+     * @return Entidad {@link Vehicle} con ID, o {@code null} si el DTO es {@code null}.
      */
     public static Vehicle toEntity(VehicleUpdateDTO dto) {
         if (dto == null) return null;
@@ -130,6 +148,9 @@ public class VehicleMapper {
 
     /**
      * Copia los valores de un DTO de actualización sobre una entidad persistente existente.
+     *
+     * @param dto    DTO con los nuevos valores (puede ser {@code null}).
+     * @param entity Entidad existente a actualizar (puede ser {@code null}).
      */
     public static void copyToExistingEntity(VehicleUpdateDTO dto, Vehicle entity) {
         if (dto == null || entity == null) return;

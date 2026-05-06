@@ -18,6 +18,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
+/**
+ * Controlador para la gestión de reseñas de talleres.
+ * Permite crear, listar y visualizar valoraciones dejadas por los clientes.
+ */
 @Controller
 @RequestMapping("/reviews")
 @RequiredArgsConstructor
@@ -27,6 +31,13 @@ public class ReviewController {
     private final WorkshopService workshopService;
     private final UserRepository userRepository;
 
+    /**
+     * Muestra el formulario para escribir una nueva reseña sobre un taller.
+     *
+     * @param workshopId ID del taller sobre el que se quiere dejar la reseña.
+     * @param model      Modelo para pasar el DTO vacío y los datos del taller.
+     * @return Vista del formulario de reseña.
+     */
     @GetMapping("/new")
     public String showReviewForm(@RequestParam Integer workshopId, Model model) {
         ReviewCreateDTO dto = new ReviewCreateDTO();
@@ -39,6 +50,16 @@ public class ReviewController {
         return "views/review/review-form";
     }
 
+    /**
+     * Procesa el formulario y guarda la reseña a nombre del usuario autenticado.
+     *
+     * @param dto                DTO con la puntuación, comentario e ID del taller.
+     * @param result             Resultado de la validación del formulario.
+     * @param authentication     Información del usuario autenticado (email).
+     * @param model              Modelo para recargar datos del taller en caso de error.
+     * @param redirectAttributes Atributos flash para el mensaje de éxito.
+     * @return Redirección al listado de talleres o recarga del formulario si hay errores.
+     */
     @PostMapping("/new")
     public String createReview(@Valid @ModelAttribute("review") ReviewCreateDTO dto,
                                BindingResult result,
@@ -71,6 +92,13 @@ public class ReviewController {
         }
     }
 
+    /**
+     * Lista todas las reseñas de un taller concreto.
+     *
+     * @param workshopId ID del taller cuyas reseñas se quieren visualizar.
+     * @param model      Modelo para pasar la lista de reseñas y los datos del taller.
+     * @return Vista del listado de reseñas del taller.
+     */
     @GetMapping("/workshop/{workshopId}")
     public String listWorkshopReviews(@PathVariable Integer workshopId, Model model) {
         List<ReviewDTO> reviews = reviewService.getReviewsByWorkshop(workshopId);

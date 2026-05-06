@@ -27,10 +27,15 @@ public class MechanicController {
     private final WorkshopService workshopService;
 
     /**
-     * Lista los mecánicos existentes con paginación.
+     * Lista los mecánicos con paginación y búsqueda opcional.
+     *
+     * @param pageable Configuración de página y tamaño (por defecto 8 elementos).
+     * @param q        Texto de búsqueda por nombre o especialidad (opcional).
+     * @param model    Modelo para pasar atributos a la vista.
+     * @return Vista del listado de mecánicos.
      */
     @GetMapping
-    public String list(@PageableDefault(size = 10) Pageable pageable,
+    public String list(@PageableDefault(size = 8) Pageable pageable,
                        @RequestParam(value = "q", required = false, defaultValue = "") String q,
                        Model model) {
         model.addAttribute("page", q.isBlank()
@@ -41,7 +46,11 @@ public class MechanicController {
     }
 
     /**
-     * Muestra el detalle de un mecánico por su ID.
+     * Muestra el detalle completo de un mecánico con su taller asociado.
+     *
+     * @param id    ID del mecánico a mostrar.
+     * @param model Modelo para pasar el DTO de detalle a la vista.
+     * @return Vista de detalle del mecánico.
      */
     @GetMapping("/detail")
     public String detail(@RequestParam("id") Long id, Model model) {
@@ -50,7 +59,10 @@ public class MechanicController {
     }
 
     /**
-     * Muestra el formulario para crear un nuevo mecánico.
+     * Muestra el formulario para dar de alta un nuevo mecánico con la lista de talleres disponibles.
+     *
+     * @param model Modelo para pasar el DTO vacío y la lista de talleres.
+     * @return Vista del formulario de creación de mecánico.
      */
     @GetMapping("/new")
     public String showForm(Model model) {

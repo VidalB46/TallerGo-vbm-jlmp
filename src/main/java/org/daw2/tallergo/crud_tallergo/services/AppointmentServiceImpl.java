@@ -23,6 +23,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+/**
+ * Implementación de la lógica de negocio para la gestión de citas.
+ * Gestiona el ciclo de vida completo de una cita: creación, actualización de estado,
+ * cambio de fecha y confirmación por parte del cliente.
+ */
 @Service
 @RequiredArgsConstructor
 public class AppointmentServiceImpl implements AppointmentService {
@@ -32,12 +37,25 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final VehicleRepository vehicleRepository;
     private final WorkshopRepository workshopRepository;
 
+    /**
+     * Devuelve una página paginada con todas las citas del sistema, con sus detalles cargados.
+     *
+     * @param pageable Configuración de página, tamaño y ordenamiento.
+     * @return Página de DTOs de cita.
+     */
     @Override
     @Transactional(readOnly = true)
     public Page<AppointmentDTO> getAllAppointments(Pageable pageable) {
         return appointmentRepository.findAllWithDetails(pageable).map(AppointmentMapper::toDTO);
     }
 
+    /**
+     * Devuelve el detalle completo de una cita por su ID.
+     *
+     * @param id Identificador único de la cita.
+     * @return DTO de detalle con usuario, vehículo y taller cargados.
+     * @throws IllegalArgumentException si no existe ninguna cita con ese ID.
+     */
     @Override
     @Transactional(readOnly = true)
     public AppointmentDetailDTO getAppointmentById(Long id) {
@@ -46,6 +64,13 @@ public class AppointmentServiceImpl implements AppointmentService {
         return AppointmentMapper.toDetailDTO(appointment);
     }
 
+    /**
+     * Devuelve las citas de un usuario concreto con paginación.
+     *
+     * @param userId   Identificador del usuario propietario de las citas.
+     * @param pageable Configuración de paginación.
+     * @return Página de DTOs de cita del usuario indicado.
+     */
     @Override
     @Transactional(readOnly = true)
     public Page<AppointmentDTO> getAppointmentsByUser(Long userId, Pageable pageable) {
@@ -53,6 +78,13 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .map(AppointmentMapper::toDTO);
     }
 
+    /**
+     * Devuelve las citas de un taller concreto con paginación.
+     *
+     * @param workshopId Identificador del taller.
+     * @param pageable   Configuración de paginación.
+     * @return Página de DTOs de cita del taller indicado.
+     */
     @Override
     @Transactional(readOnly = true)
     public Page<AppointmentDTO> getAppointmentsByWorkshop(Integer workshopId, Pageable pageable) {
@@ -60,6 +92,16 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .map(AppointmentMapper::toDTO);
     }
 
+    /**
+     * Crea una nueva cita validando que el vehículo pertenece al usuario autenticado.
+     *
+     * @param dto       DTO con los datos de la nueva cita (vehículo, taller, fecha).
+     * @param userEmail Email del usuario autenticado que solicita la cita.
+     * @return DTO de la cita recién creada.
+     * @throws UsernameNotFoundException si no se encuentra el usuario por su email.
+     * @throws IllegalArgumentException  si el vehículo o el taller no existen, o el vehículo
+     *                                   no pertenece al usuario.
+     */
     @Override
     @Transactional
     public AppointmentDTO createAppointment(AppointmentCreateDTO dto, String userEmail) {
@@ -82,6 +124,13 @@ public class AppointmentServiceImpl implements AppointmentService {
         return AppointmentMapper.toDTO(savedAppointment);
     }
 
+    /**
+     * Actualiza los datos editables de una cita existente.
+     *
+     * @param dto DTO con los nuevos valores, incluyendo el ID de la cita.
+     * @return DTO actualizado de la cita.
+     * @throws IllegalArgumentException si no existe la cita con el ID indicado.
+     */
     @Override
     @Transactional
     public AppointmentDTO updateAppointment(AppointmentUpdateDTO dto) {
@@ -93,6 +142,12 @@ public class AppointmentServiceImpl implements AppointmentService {
         return AppointmentMapper.toDTO(updatedAppointment);
     }
 
+    /**
+     * Elimina una cita por su ID.
+     *
+     * @param id Identificador único de la cita a eliminar.
+     * @throws IllegalArgumentException si no existe ninguna cita con ese ID.
+     */
     @Override
     @Transactional
     public void deleteAppointment(Long id) {
@@ -102,6 +157,13 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointmentRepository.deleteById(id);
     }
 
+    /**
+     * Cambia el estado de una cita al nuevo estado indicado.
+     *
+     * @param id        Identificador único de la cita.
+     * @param newStatus Nuevo estado a asignar a la cita.
+     * @throws IllegalArgumentException si no existe ninguna cita con ese ID.
+     */
     @Override
     @Transactional
     public void updateStatus(Long id, AppointmentStatus newStatus) {
@@ -111,6 +173,14 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointmentRepository.save(appointment);
     }
 
+    /**
+     * Actualiza la fecha de una cita propuesta por el taller.
+     * Resetea la aceptación del cliente al cambiar la fecha.
+     *
+     * @param id      Identificador único de la cita.
+     * @param newDate Nueva fecha y hora propuesta para la cita.
+     * @throws IllegalArgumentException si no existe ninguna cita con ese ID.
+     */
     @Override
     @Transactional
     public void updateDate(Long id, LocalDateTime newDate) {
@@ -121,6 +191,12 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointmentRepository.save(appointment);
     }
 
+    /**
+     * Registra la aceptación de la fecha por parte del cliente y confirma la cita automáticamente.
+     *
+     * @param id Identificador único de la cita.
+     * @throws IllegalArgumentException si no existe ninguna cita con ese ID.
+     */
     @Override
     @Transactional
     public void acceptDate(Long id) {

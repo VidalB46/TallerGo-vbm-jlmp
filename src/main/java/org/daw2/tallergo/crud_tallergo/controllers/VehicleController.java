@@ -48,12 +48,19 @@ public class VehicleController {
     private UserRepository userRepository; // Movido arriba con el resto de dependencias
 
     /**
-     * Lista los vehículos filtrando por rol: el Administrador ve todos,
-     * mientras que el Cliente solo visualiza los de su propiedad.
+     * Lista los vehículos con paginación y búsqueda.
+     * El administrador ve todos; el cliente solo ve los suyos.
+     *
+     * @param pageable       Configuración de página y ordenamiento.
+     * @param q              Texto de búsqueda (modelo, matrícula o VIN).
+     * @param model          Modelo para pasar atributos a la vista.
+     * @param locale         Configuración regional para mensajes.
+     * @param authentication Información del usuario autenticado (rol y email).
+     * @return Vista del listado de vehículos.
      */
     @GetMapping
     public String listVehicles(
-            @PageableDefault(size = 10, sort = "model", direction = Sort.Direction.ASC) Pageable pageable,
+            @PageableDefault(size = 8, sort = "model", direction = Sort.Direction.ASC) Pageable pageable,
             @RequestParam(value = "q", required = false, defaultValue = "") String q,
             Model model,
             Locale locale,
@@ -91,8 +98,13 @@ public class VehicleController {
         return "views/vehicle/vehicle-list";
     }
 
-    // --- EL RESTO DE MÉTODOS SE MANTIENEN IGUAL ---
-
+    /**
+     * Muestra el formulario de alta de un nuevo vehículo con las marcas disponibles.
+     *
+     * @param model  Modelo para pasar el DTO vacío y la lista de marcas.
+     * @param locale Configuración regional para mensajes de error.
+     * @return Vista del formulario de creación de vehículo.
+     */
     @GetMapping("/new")
     public String showNewForm(Model model, Locale locale) {
         try {
@@ -104,6 +116,17 @@ public class VehicleController {
         return "views/vehicle/vehicle-form";
     }
 
+    /**
+     * Procesa el formulario de creación y registra el vehículo a nombre del usuario autenticado.
+     *
+     * @param vehicleDTO         DTO con los datos del vehículo a crear.
+     * @param result             Resultado de la validación del formulario.
+     * @param redirectAttributes Atributos flash para mensajes de error.
+     * @param model              Modelo para recargar la lista de marcas en caso de error.
+     * @param locale             Configuración regional para mensajes.
+     * @param authentication     Información del usuario autenticado.
+     * @return Redirección al listado de vehículos o recarga del formulario si hay errores.
+     */
     @PostMapping("/insert")
     public String insertVehicle(@Valid @ModelAttribute("vehicle") VehicleCreateDTO vehicleDTO,
                                 BindingResult result,
@@ -126,6 +149,14 @@ public class VehicleController {
         }
     }
 
+    /**
+     * Muestra el formulario de edición de un vehículo existente.
+     *
+     * @param id     ID del vehículo a editar.
+     * @param model  Modelo para pasar el DTO y la lista de marcas.
+     * @param locale Configuración regional para mensajes de error.
+     * @return Vista del formulario de edición o redirección al listado si hay error.
+     */
     @GetMapping("/edit")
     public String showEditForm(@RequestParam("id") Long id, Model model, Locale locale) {
         try {
@@ -138,6 +169,16 @@ public class VehicleController {
         return "views/vehicle/vehicle-form";
     }
 
+    /**
+     * Procesa el formulario de edición y actualiza los datos del vehículo.
+     *
+     * @param vehicleDTO         DTO con los datos actualizados del vehículo.
+     * @param result             Resultado de la validación del formulario.
+     * @param redirectAttributes Atributos flash para mensajes de error.
+     * @param model              Modelo para recargar la lista de marcas en caso de error.
+     * @param locale             Configuración regional para mensajes.
+     * @return Redirección al listado de vehículos o recarga del formulario si hay errores.
+     */
     @PostMapping("/update")
     public String updateVehicle(@Valid @ModelAttribute("vehicle") VehicleUpdateDTO vehicleDTO,
                                 BindingResult result,
@@ -157,6 +198,14 @@ public class VehicleController {
         }
     }
 
+    /**
+     * Elimina un vehículo por su ID.
+     *
+     * @param id                 ID del vehículo a eliminar.
+     * @param redirectAttributes Atributos flash para mensajes de error.
+     * @param locale             Configuración regional para mensajes.
+     * @return Redirección al listado de vehículos.
+     */
     @PostMapping("/delete")
     public String deleteVehicle(@RequestParam("id") Long id, RedirectAttributes redirectAttributes, Locale locale) {
         try {
@@ -167,6 +216,15 @@ public class VehicleController {
         return "redirect:/vehicles";
     }
 
+    /**
+     * Muestra el detalle completo de un vehículo con su marca.
+     *
+     * @param id                 ID del vehículo a mostrar.
+     * @param model              Modelo para pasar el DTO a la vista.
+     * @param redirectAttributes Atributos flash para mensajes de error.
+     * @param locale             Configuración regional para mensajes.
+     * @return Vista de detalle del vehículo o redirección al listado si hay error.
+     */
     @GetMapping("/detail")
     public String showDetail(@RequestParam("id") Long id, Model model, RedirectAttributes redirectAttributes, Locale locale) {
         try {

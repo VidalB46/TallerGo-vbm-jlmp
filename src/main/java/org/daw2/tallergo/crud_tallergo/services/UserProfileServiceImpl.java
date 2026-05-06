@@ -40,7 +40,11 @@ public class UserProfileServiceImpl implements UserProfileService {
     private FileStorageService fileStorageService;
 
     /**
-     * Recupera el perfil unificado (Cuenta + Datos Personales) para ser editado.
+     * Recupera el perfil unificado (datos de cuenta + datos personales) para el formulario de edición.
+     *
+     * @param email Email del usuario autenticado.
+     * @return DTO con los campos editables del perfil del usuario.
+     * @throws ResourceNotFoundException si no existe ningún usuario con ese email.
      */
     @Override
     @Transactional(readOnly = true)
@@ -54,10 +58,15 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     /**
-     * Proceso de actualización del perfil:
-     * 1. Valida la existencia del usuario.
-     * 2. Gestiona el ciclo de vida de la imagen (Validar -> Guardar nueva -> Borrar antigua).
-     * 3. Crea o actualiza la entidad UserProfile según corresponda.
+     * Actualiza el perfil de un usuario: datos personales e imagen de avatar.
+     * <p>Si se sube una nueva imagen, primero se valida, se almacena y finalmente
+     * se elimina la imagen anterior del disco. Si no se sube imagen, se conserva la actual.</p>
+     *
+     * @param email            Email del usuario autenticado cuyo perfil se actualiza.
+     * @param profileDto       DTO con los nuevos valores del perfil.
+     * @param profileImageFile Nuevo archivo de imagen de perfil (puede ser {@code null} o vacío).
+     * @throws ResourceNotFoundException si no existe ningún usuario con ese email.
+     * @throws InvalidFileException      si el archivo no es una imagen o supera los 2 MB.
      */
     @Override
     public void updateProfile(String email, UserProfileFormDTO profileDto, MultipartFile profileImageFile) {
@@ -104,7 +113,10 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     /**
-     * Validaciones de seguridad para archivos subidos: Tipo MIME y tamaño.
+     * Valida el tipo MIME y el tamaño de la imagen de perfil subida.
+     *
+     * @param file Archivo a validar.
+     * @throws InvalidFileException si el tipo MIME no es una imagen o el tamaño supera los 2 MB.
      */
     private void validateProfileImage(MultipartFile file) {
         String contentType = file.getContentType();

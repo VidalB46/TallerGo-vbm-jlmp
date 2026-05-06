@@ -18,6 +18,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Configuración central de Spring Security para TallerGo.
+ * Define reglas de acceso por rol, el proveedor de autenticación basado en BD,
+ * el soporte de login con OAuth2 (GitHub/Google) y la gestión de sesiones.
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
@@ -34,6 +39,14 @@ public class SecurityConfig {
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
+    /**
+     * Define la cadena de filtros de seguridad: rutas públicas y protegidas por rol,
+     * formulario de login, integración OAuth2 y política de sesiones.
+     *
+     * @param http Constructor de la configuración HTTP de Spring Security.
+     * @return Cadena de filtros de seguridad configurada.
+     * @throws Exception si ocurre algún error durante la configuración de HttpSecurity.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         logger.info("Entrando en el método securityFilterChain");
@@ -89,6 +102,12 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Configura el proveedor de autenticación basado en base de datos.
+     * Enlaza el {@link CustomUserDetailsService} con el {@link PasswordEncoder} BCrypt.
+     *
+     * @return Proveedor de autenticación listo para usar por Spring Security.
+     */
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         logger.info("Entrando en el método authenticationProvider");
@@ -101,6 +120,12 @@ public class SecurityConfig {
         return provider;
     }
 
+    /**
+     * Registra el codificador de contraseñas BCrypt como bean de Spring.
+     * Se usa al crear usuarios y al validar credenciales en el login.
+     *
+     * @return Instancia de {@link BCryptPasswordEncoder}.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         logger.info("Entrando en el método passwordEncoder");

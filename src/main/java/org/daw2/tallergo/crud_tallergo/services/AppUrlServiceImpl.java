@@ -31,7 +31,10 @@ public class AppUrlServiceImpl implements AppUrlService {
     private String resetPath;
 
     /**
-     * Genera la URL de recuperación de contraseña adjuntando el token como query param.
+     * Genera la URL completa de recuperación de contraseña con el token como parámetro.
+     *
+     * @param rawToken Token en bruto generado para el usuario.
+     * @return URL absoluta con el token como query param {@code ?token=...}.
      */
     @Override
     public String buildResetUrl(String rawToken) {
@@ -39,8 +42,13 @@ public class AppUrlServiceImpl implements AppUrlService {
     }
 
     /**
-     * Construye una URL absoluta combinando la base, la ruta y los parámetros de consulta.
-     * Maneja automáticamente la limpieza de slashes (barras) para evitar "//" en la URL final.
+     * Construye una URL absoluta combinando la base configurada, la ruta y los parámetros de consulta.
+     * Normaliza automáticamente las barras para evitar dobles slashes en la URL final.
+     *
+     * @param path        Ruta relativa del endpoint (con o sin barra inicial).
+     * @param queryParams Mapa de parámetros de consulta {@code clave → valor} (puede ser {@code null}).
+     * @return URL absoluta correctamente formada y codificada.
+     * @throws IllegalStateException si la propiedad {@code app.public-base-url} no está configurada.
      */
     @Override
     public String buildUrl(String path, Map<String, String> queryParams) {
@@ -58,6 +66,10 @@ public class AppUrlServiceImpl implements AppUrlService {
 
     /**
      * Elimina la barra final de la URL base para unificar el formato.
+     *
+     * @param s URL base a normalizar.
+     * @return URL base sin barra final.
+     * @throws IllegalStateException si la cadena es nula, vacía o en blanco.
      */
     private String trimTrailingSlash(String s) {
         if (s == null || s.isBlank()) {
@@ -67,7 +79,10 @@ public class AppUrlServiceImpl implements AppUrlService {
     }
 
     /**
-     * Asegura que la ruta relativa comience con una barra.
+     * Asegura que la ruta relativa comienza con una barra.
+     *
+     * @param p Ruta a normalizar (puede ser {@code null} o vacía).
+     * @return La ruta con barra inicial, o {@code "/"} si la entrada está vacía.
      */
     private String ensureLeadingSlash(String p) {
         if (p == null || p.isBlank()) return "/";

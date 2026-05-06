@@ -23,18 +23,36 @@ public class WorkshopServiceImpl implements WorkshopService {
 
     private final WorkshopRepository workshopRepository;
 
+    /**
+     * Devuelve una página paginada con todos los talleres del sistema.
+     *
+     * @param pageable Configuración de página, tamaño y ordenamiento.
+     * @return Página de DTOs de taller.
+     */
     @Override
     @Transactional(readOnly = true)
     public Page<WorkshopDTO> list(Pageable pageable) {
         return workshopRepository.findAll(pageable).map(WorkshopMapper::toDTO);
     }
 
+    /**
+     * Devuelve la lista completa de talleres sin paginación.
+     * Usado para poblar selectores y desplegables en el frontend.
+     *
+     * @return Lista de DTOs de todos los talleres.
+     */
     @Override
     @Transactional(readOnly = true)
     public List<WorkshopDTO> listAll() {
         return WorkshopMapper.toDTOList(workshopRepository.findAll());
     }
 
+    /**
+     * Crea un nuevo taller validando que el NIF no esté ya registrado.
+     *
+     * @param dto DTO con los datos del taller a crear.
+     * @throws DuplicateResourceException si ya existe un taller con el mismo NIF.
+     */
     @Override
     @Transactional
     public void create(WorkshopCreateDTO dto) {
@@ -45,6 +63,13 @@ public class WorkshopServiceImpl implements WorkshopService {
         workshopRepository.save(WorkshopMapper.toEntity(dto));
     }
 
+    /**
+     * Devuelve el detalle completo de un taller, incluyendo la lista de mecánicos.
+     *
+     * @param id Identificador único del taller.
+     * @return DTO de detalle del taller con sus mecánicos cargados.
+     * @throws ResourceNotFoundException si no existe ningún taller con ese ID.
+     */
     @Override
     @Transactional(readOnly = true)
     public WorkshopDetailDTO getDetail(Integer id) {
@@ -54,6 +79,12 @@ public class WorkshopServiceImpl implements WorkshopService {
         return WorkshopMapper.toDetailDTO(workshop);
     }
 
+    /**
+     * Elimina un taller y limpia sus relaciones antes de borrar el registro.
+     *
+     * @param id Identificador único del taller a eliminar.
+     * @throws ResourceNotFoundException si no existe ningún taller con ese ID.
+     */
     @Override
     @Transactional
     public void delete(Integer id) {
@@ -70,6 +101,13 @@ public class WorkshopServiceImpl implements WorkshopService {
         workshopRepository.deleteById(id);
     }
 
+    /**
+     * Recupera los datos de un taller para rellenar el formulario de edición.
+     *
+     * @param id Identificador único del taller.
+     * @return DTO con los campos editables del taller.
+     * @throws ResourceNotFoundException si no existe ningún taller con ese ID.
+     */
     @Override
     @Transactional(readOnly = true)
     public WorkshopUpdateDTO getForEdit(Integer id) {
@@ -86,6 +124,12 @@ public class WorkshopServiceImpl implements WorkshopService {
         return dto;
     }
 
+    /**
+     * Actualiza los datos de un taller existente.
+     *
+     * @param dto DTO con los nuevos valores, incluyendo el ID del taller a actualizar.
+     * @throws ResourceNotFoundException si no existe ningún taller con ese ID.
+     */
     @Override
     @Transactional
     public void update(WorkshopUpdateDTO dto) {
@@ -95,6 +139,13 @@ public class WorkshopServiceImpl implements WorkshopService {
         workshopRepository.save(workshop);
     }
 
+    /**
+     * Busca talleres cuyo nombre contenga el texto indicado (case-insensitive).
+     *
+     * @param name     Texto a buscar en el nombre del taller.
+     * @param pageable Configuración de paginación.
+     * @return Página de talleres que coincidan con el criterio.
+     */
     @Override
     @Transactional(readOnly = true)
     public Page<WorkshopDTO> search(String name, Pageable pageable) {

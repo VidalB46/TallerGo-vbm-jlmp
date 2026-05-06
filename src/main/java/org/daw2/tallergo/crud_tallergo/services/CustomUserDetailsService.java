@@ -27,9 +27,13 @@ public class CustomUserDetailsService implements UserDetailsService {
     private UserRepository userRepository;
 
     /**
-     * Localiza al usuario basado en su email (username) y construye el objeto UserDetails.
-     * Se marca como @Transactional para asegurar que la carga de roles (Lazy) funcione
-     * si no se usara EntityGraph en el repositorio.
+     * Localiza al usuario por su email y construye el objeto {@link UserDetails} para Spring Security.
+     * <p>Se marca como {@code readOnly} para optimizar la sesión de Hibernate.
+     * Los roles se mapean directamente como authorities de Spring Security.</p>
+     *
+     * @param username Email del usuario (usado como nombre de usuario en esta aplicación).
+     * @return Objeto {@link UserDetails} con credenciales, roles y estado de la cuenta.
+     * @throws UsernameNotFoundException si no existe ningún usuario con ese email.
      */
     @Override
     @Transactional(readOnly = true)

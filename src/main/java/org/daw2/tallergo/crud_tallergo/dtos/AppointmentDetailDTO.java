@@ -6,6 +6,10 @@ import lombok.NoArgsConstructor;
 import org.daw2.tallergo.crud_tallergo.enums.AppointmentStatus;
 import java.time.LocalDateTime;
 
+/**
+ * DTO de detalle para una cita ({@link org.daw2.tallergo.crud_tallergo.entities.Appointment}).
+ * Contiene toda la información de la cita junto con el vehículo, taller y estado del presupuesto asociado.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

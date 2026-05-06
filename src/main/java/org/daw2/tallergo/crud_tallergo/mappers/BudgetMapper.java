@@ -12,6 +12,12 @@ import java.util.stream.Collectors;
  */
 public class BudgetMapper {
 
+    /**
+     * Convierte una entidad {@link Budget} a un DTO simplificado para listados.
+     *
+     * @param entity Entidad presupuesto (puede ser {@code null}).
+     * @return DTO básico, o {@code null} si la entidad es {@code null}.
+     */
     public static BudgetDTO toDTO(Budget entity) {
         if (entity == null) return null;
 
@@ -27,6 +33,13 @@ public class BudgetMapper {
         return dto;
     }
 
+    /**
+     * Convierte una entidad {@link Budget} a un DTO de detalle completo.
+     * Incluye las líneas de presupuesto y la matrícula del vehículo asociado.
+     *
+     * @param entity Entidad presupuesto (puede ser {@code null}).
+     * @return DTO de detalle, o {@code null} si la entidad es {@code null}.
+     */
     public static BudgetDetailDTO toDetailDTO(Budget entity) {
         if (entity == null) return null;
 
@@ -59,6 +72,10 @@ public class BudgetMapper {
     /**
      * Mapea un DTO de creación de presupuesto a una Entidad.
      * No mapea los totales porque estos deben ser calculados por el servicio.
+     *
+     * @param dto    DTO con los datos del nuevo presupuesto (puede ser {@code null}).
+     * @param repair Reparación a la que pertenece el presupuesto.
+     * @return Nueva entidad {@link Budget}, o {@code null} si el DTO es {@code null}.
      */
     public static Budget toEntity(BudgetCreateDTO dto, Repair repair) {
         if (dto == null) return null;
@@ -88,6 +105,9 @@ public class BudgetMapper {
 
     /**
      * Mapea una entidad de línea de presupuesto a su DTO correspondiente.
+     *
+     * @param entity Entidad línea de presupuesto (puede ser {@code null}).
+     * @return DTO de la línea, o {@code null} si la entidad es {@code null}.
      */
     public static BudgetLineDTO toLineDTO(BudgetLine entity) {
         if (entity == null) return null;
@@ -102,6 +122,13 @@ public class BudgetMapper {
         return dto;
     }
 
+    /**
+     * Actualiza los campos de una entidad {@link Budget} existente con los valores del DTO.
+     * Solo se aplican los campos no nulos del DTO.
+     *
+     * @param dto    DTO con los nuevos valores (puede ser {@code null}).
+     * @param entity Entidad a actualizar (puede ser {@code null}).
+     */
     public static void updateEntity(BudgetUpdateDTO dto, Budget entity) {
         if (dto == null || entity == null) return;
 

@@ -26,6 +26,9 @@ public class MechanicServiceImpl implements MechanicService {
     /**
      * Obtiene una página de mecánicos.
      * Se marca como readOnly para optimizar el rendimiento de la sesión de Hibernate.
+     *
+     * @param pageable Configuración de página, tamaño y ordenamiento.
+     * @return Página de DTOs de mecánico.
      */
     @Override
     @Transactional(readOnly = true)
@@ -36,6 +39,8 @@ public class MechanicServiceImpl implements MechanicService {
     /**
      * Crea un nuevo mecánico.
      * La transacción asegura que la operación se complete correctamente en la base de datos.
+     *
+     * @param dto DTO con los datos del mecánico a crear.
      */
     @Override
     @Transactional
@@ -48,6 +53,9 @@ public class MechanicServiceImpl implements MechanicService {
     /**
      * Elimina un mecánico por su ID.
      * Lanza una excepción personalizada si el mecánico no existe para informar al usuario.
+     *
+     * @param id Identificador único del mecánico a eliminar.
+     * @throws ResourceNotFoundException si no existe ningún mecánico con ese ID.
      */
     @Override
     @Transactional
@@ -60,6 +68,10 @@ public class MechanicServiceImpl implements MechanicService {
 
     /**
      * Obtiene el detalle completo de un mecánico con su taller asociado.
+     *
+     * @param id Identificador único del mecánico.
+     * @return DTO de detalle con la información del taller cargada.
+     * @throws ResourceNotFoundException si no existe ningún mecánico con ese ID.
      */
     @Override
     @Transactional(readOnly = true)
@@ -69,6 +81,13 @@ public class MechanicServiceImpl implements MechanicService {
         return MechanicMapper.toDetailDTO(mechanic);
     }
 
+    /**
+     * Búsqueda de mecánicos por nombre o especialidad (parcial, case-insensitive).
+     *
+     * @param q        Texto a buscar en los campos del mecánico.
+     * @param pageable Configuración de paginación.
+     * @return Página de resultados que coincidan con la búsqueda.
+     */
     @Override
     @Transactional(readOnly = true)
     public Page<MechanicDTO> search(String q, Pageable pageable) {

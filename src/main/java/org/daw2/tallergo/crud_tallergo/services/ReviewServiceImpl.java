@@ -19,6 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Implementación de la lógica de negocio para la gestión de reseñas de talleres.
+ * Permite a los usuarios autenticados crear y consultar valoraciones sobre los talleres.
+ */
 @Service
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
@@ -27,6 +31,13 @@ public class ReviewServiceImpl implements ReviewService {
     private final UserRepository userRepository;
     private final WorkshopRepository workshopRepository;
 
+    /**
+     * Devuelve el detalle completo de una reseña por su ID.
+     *
+     * @param id Identificador único de la reseña.
+     * @return DTO de detalle con usuario y taller asociados.
+     * @throws IllegalArgumentException si no existe ninguna reseña con ese ID.
+     */
     @Override
     @Transactional(readOnly = true)
     public ReviewDetailDTO getReviewById(Long id) {
@@ -35,6 +46,12 @@ public class ReviewServiceImpl implements ReviewService {
         return ReviewMapper.toDetailDTO(review);
     }
 
+    /**
+     * Devuelve todas las reseñas de un taller concreto.
+     *
+     * @param workshopId Identificador del taller.
+     * @return Lista de DTOs de reseña del taller indicado.
+     */
     @Override
     @Transactional(readOnly = true)
     public List<ReviewDTO> getReviewsByWorkshop(Integer workshopId) {
@@ -43,6 +60,15 @@ public class ReviewServiceImpl implements ReviewService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Crea una nueva reseña para un taller a nombre del usuario autenticado.
+     *
+     * @param dto       DTO con la puntuación, comentario e ID del taller.
+     * @param userEmail Email del usuario autenticado que publica la reseña.
+     * @return DTO de la reseña recién creada.
+     * @throws UsernameNotFoundException si no se encuentra el usuario por su email.
+     * @throws IllegalArgumentException  si el taller no existe.
+     */
     @Override
     @Transactional
     public ReviewDTO createReview(ReviewCreateDTO dto, String userEmail) {
@@ -56,6 +82,12 @@ public class ReviewServiceImpl implements ReviewService {
         return ReviewMapper.toDTO(reviewRepository.save(review));
     }
 
+    /**
+     * Elimina una reseña por su ID.
+     *
+     * @param id Identificador único de la reseña a eliminar.
+     * @throws IllegalArgumentException si no existe ninguna reseña con ese ID.
+     */
     @Override
     @Transactional
     public void deleteReview(Long id) {

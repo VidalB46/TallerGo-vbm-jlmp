@@ -21,6 +21,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+/**
+ * Implementación de la lógica de negocio para la gestión de presupuestos.
+ * Incluye lógica de versionado: si el cliente aún no ha aceptado el presupuesto actual,
+ * se sobrescribe; si ya lo aceptó, se genera una nueva versión (v2, v3...).
+ * El IVA aplicado es del 21 % sobre el total bruto de las líneas.
+ */
 @Service
 @RequiredArgsConstructor
 public class BudgetServiceImpl implements BudgetService {
@@ -34,6 +40,13 @@ public class BudgetServiceImpl implements BudgetService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    /**
+     * Devuelve el detalle completo de un presupuesto por su ID.
+     *
+     * @param id Identificador único del presupuesto.
+     * @return DTO de detalle con líneas, totales y estado de aceptación.
+     * @throws IllegalArgumentException si no existe ningún presupuesto con ese ID.
+     */
     @Override
     @Transactional(readOnly = true)
     public BudgetDetailDTO getBudgetById(Long id) {
@@ -42,6 +55,13 @@ public class BudgetServiceImpl implements BudgetService {
         return BudgetMapper.toDetailDTO(budget);
     }
 
+    /**
+     * Devuelve el detalle del presupuesto activo para una reparación concreta.
+     *
+     * @param repairId Identificador único de la reparación.
+     * @return DTO de detalle del presupuesto activo.
+     * @throws IllegalArgumentException si la reparación no existe o no tiene presupuesto activo.
+     */
     @Override
     @Transactional(readOnly = true)
     public BudgetDetailDTO getBudgetByRepairId(Long repairId) {
@@ -55,6 +75,15 @@ public class BudgetServiceImpl implements BudgetService {
         return BudgetMapper.toDetailDTO(budget);
     }
 
+    /**
+     * Crea o actualiza el presupuesto de una reparación aplicando lógica de versionado.
+     * Si el presupuesto actual no ha sido aceptado se sobrescribe; si ya fue aceptado
+     * se genera uno nuevo. Calcula automáticamente el total bruto y el total con IVA.
+     *
+     * @param dto DTO con las líneas y notas del nuevo presupuesto.
+     * @return DTO del presupuesto creado o actualizado.
+     * @throws IllegalArgumentException si no existe la reparación indicada.
+     */
     @Override
     @Transactional
     public BudgetDTO createBudget(BudgetCreateDTO dto) {
@@ -113,6 +142,13 @@ public class BudgetServiceImpl implements BudgetService {
         return BudgetMapper.toDTO(budgetRepository.save(budget));
     }
 
+    /**
+     * Actualiza los campos editables de un presupuesto (p. ej. notas o estado).
+     *
+     * @param dto DTO con los nuevos valores y el ID del presupuesto.
+     * @return DTO actualizado del presupuesto.
+     * @throws IllegalArgumentException si no existe ningún presupuesto con ese ID.
+     */
     @Override
     @Transactional
     public BudgetDTO updateBudget(BudgetUpdateDTO dto) {
@@ -122,12 +158,26 @@ public class BudgetServiceImpl implements BudgetService {
         return BudgetMapper.toDTO(budgetRepository.save(budget));
     }
 
+    /**
+     * Elimina un presupuesto por su ID.
+     *
+     * @param id Identificador único del presupuesto a eliminar.
+     */
     @Override
     @Transactional
     public void deleteBudget(Long id) {
         budgetRepository.deleteById(id);
     }
 
+    /**
+     * Marca un presupuesto como rechazado por el cliente.
+     * Si no existe ninguna versión aceptada anterior, cancela la cita asociada.
+     *
+     * @param id Identificador único del presupuesto a rechazar.
+     * @return {@code true} si la cita ha sido cancelada; {@code false} si solo se rechazó
+     *         el anexo y la cita continúa activa.
+     * @throws IllegalArgumentException si no existe ningún presupuesto con ese ID.
+     */
     @Override
     @Transactional
     public boolean rejectBudget(Long id) {

@@ -47,18 +47,38 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    /**
+     * Devuelve una página de usuarios ordenados según los parámetros de paginación.
+     *
+     * @param pageable Configuración de página, tamaño y ordenamiento.
+     * @return Página de DTOs de usuario.
+     */
     @Override
     @Transactional(readOnly = true)
     public Page<UserDTO> list(Pageable pageable) {
         return userRepository.findAll(pageable).map(UserMapper::toDTO);
     }
 
+    /**
+     * Busca usuarios cuyo email contenga el texto indicado (búsqueda parcial).
+     *
+     * @param q        Texto a buscar en el email del usuario.
+     * @param pageable Configuración de paginación.
+     * @return Página de DTOs de usuario que coinciden con la búsqueda.
+     */
     @Override
     @Transactional(readOnly = true)
     public Page<UserDTO> search(String q, Pageable pageable) {
         return userRepository.searchByEmail(q, pageable).map(UserMapper::toDTO);
     }
 
+    /**
+     * Recupera los datos de un usuario formateados para el formulario de edición.
+     *
+     * @param id Identificador único del usuario.
+     * @return DTO con los campos editables del usuario.
+     * @throws ResourceNotFoundException si no existe ningún usuario con el ID indicado.
+     */
     @Override
     @Transactional(readOnly = true)
     public UserUpdateDTO getForEdit(Long id) {
@@ -67,6 +87,14 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toUpdateDTO(user);
     }
 
+    /**
+     * Crea un nuevo usuario desde el panel de administración.
+     * Genera una contraseña temporal aleatoria, la hashea y obliga al usuario
+     * a cambiarla en el primer inicio de sesión.
+     *
+     * @param dto DTO con los datos del nuevo usuario, incluyendo roles e email.
+     * @throws DuplicateResourceException si ya existe un usuario con el mismo email.
+     */
     @Override
     public void create(UserCreateDTO dto) {
         if (userRepository.existsByEmail(dto.getEmail())) {
@@ -92,6 +120,14 @@ public class UserServiceImpl implements UserService {
         logger.info("Usuario creado por administrador: {} (contraseña temporal generada)", user.getEmail());
     }
 
+    /**
+     * Actualiza los datos de un usuario existente.
+     * Si se proporcionan nuevos IDs de roles, estos reemplazan completamente a los actuales.
+     *
+     * @param dto DTO con los nuevos valores del usuario, incluyendo su ID.
+     * @throws ResourceNotFoundException  si no existe ningún usuario con el ID indicado.
+     * @throws DuplicateResourceException si el nuevo email ya está en uso por otro usuario.
+     */
     @Override
     public void update(UserUpdateDTO dto) {
         User existingUser = userRepository.findById(dto.getId())
@@ -113,6 +149,12 @@ public class UserServiceImpl implements UserService {
         logger.info("Usuario actualizado: {}", existingUser.getEmail());
     }
 
+    /**
+     * Elimina permanentemente un usuario del sistema por su ID.
+     *
+     * @param id Identificador único del usuario a eliminar.
+     * @throws ResourceNotFoundException si no existe ningún usuario con el ID indicado.
+     */
     @Override
     public void delete(Long id) {
         if (!userRepository.existsById(id)) {
@@ -122,6 +164,13 @@ public class UserServiceImpl implements UserService {
         logger.warn("Usuario con ID {} eliminado", id);
     }
 
+    /**
+     * Devuelve la vista detallada de un usuario junto con sus roles asignados.
+     *
+     * @param id Identificador único del usuario.
+     * @return DTO con toda la información del usuario y sus roles.
+     * @throws ResourceNotFoundException si no existe ningún usuario con el ID indicado.
+     */
     @Override
     @Transactional(readOnly = true)
     public UserDetailDTO getDetail(Long id) {
@@ -130,6 +179,11 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toDetailDTO(user);
     }
 
+    /**
+     * Devuelve la lista de todos los roles disponibles en el sistema.
+     *
+     * @return Lista de roles registrados en base de datos.
+     */
     @Override
     @Transactional(readOnly = true)
     public List<Role> findAllRoles() {
@@ -139,6 +193,10 @@ public class UserServiceImpl implements UserService {
     /**
      * Flujo de autoregistro para clientes externos.
      * Aplica por defecto ROLE_CLIENT y encripta la contraseña con BCrypt.
+     *
+     * @param dto DTO con el email y contraseña introducidos por el usuario en el formulario de registro.
+     * @throws DuplicateResourceException si ya existe un usuario con ese email.
+     * @throws IllegalStateException      si el rol ROLE_CLIENT no está definido en la base de datos.
      */
     @Override
     public void registerNewClient(UserRegisterDTO dto) {

@@ -21,6 +21,9 @@ public class MechanicMapper {
 
     /**
      * Convierte una entidad Mechanic a un DTO simplificado para listados.
+     *
+     * @param entity Entidad mecánico (puede ser {@code null}).
+     * @return DTO básico, o {@code null} si la entidad es {@code null}.
      */
     public static MechanicDTO toDTO(Mechanic entity) {
         if (entity == null) return null;
@@ -38,6 +41,9 @@ public class MechanicMapper {
 
     /**
      * Convierte una colección de entidades en una lista de DTOs básicos.
+     *
+     * @param entities Lista de entidades mecánico (puede ser {@code null}).
+     * @return Lista de DTOs, o lista vacía si la entrada es {@code null}.
      */
     public static List<MechanicDTO> toDTOList(List<Mechanic> entities) {
         if (entities == null) return List.of();
@@ -46,6 +52,9 @@ public class MechanicMapper {
 
     /**
      * Convierte una entidad a un DTO de detalle completo, incluyendo el objeto WorkshopDTO.
+     *
+     * @param entity Entidad mecánico (puede ser {@code null}).
+     * @return DTO de detalle, o {@code null} si la entidad es {@code null}.
      */
     public static MechanicDetailDTO toDetailDTO(Mechanic entity) {
         if (entity == null) return null;
@@ -64,6 +73,9 @@ public class MechanicMapper {
     /**
      * Prepara un DTO de actualización a partir de una entidad existente.
      * Utiliza el patrón Builder si está disponible en el DTO.
+     *
+     * @param entity Entidad mecánico (puede ser {@code null}).
+     * @return DTO de actualización prellenado, o {@code null} si la entidad es {@code null}.
      */
     public static MechanicUpdateDTO toUpdateDTO(Mechanic entity) {
         if (entity == null) return null;
@@ -82,6 +94,9 @@ public class MechanicMapper {
     /**
      * Transforma un DTO de creación en una nueva entidad Mechanic.
      * Nota: El taller se asocia mediante una instancia "proxy" (solo ID).
+     *
+     * @param dto DTO con los datos del nuevo mecánico (puede ser {@code null}).
+     * @return Nueva entidad {@link Mechanic}, o {@code null} si el DTO es {@code null}.
      */
     public static Mechanic toEntity(MechanicCreateDTO dto) {
         if (dto == null) return null;
@@ -100,6 +115,9 @@ public class MechanicMapper {
 
     /**
      * Actualiza el estado de una entidad persistente con los datos de un DTO de actualización.
+     *
+     * @param dto    DTO con los nuevos valores (puede ser {@code null}).
+     * @param entity Entidad existente a actualizar (puede ser {@code null}).
      */
     public static void copyToExistingEntity(MechanicUpdateDTO dto, Mechanic entity) {
         if (dto == null || entity == null) return;

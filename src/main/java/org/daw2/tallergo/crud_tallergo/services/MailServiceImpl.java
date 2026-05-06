@@ -42,18 +42,38 @@ public class MailServiceImpl implements MailService {
     @Value("${spring.mail.from:noreply@tallergo.com}")
     private String defaultFrom;
 
+    /**
+     * Envía un correo en texto plano.
+     *
+     * @param to      Dirección de correo del destinatario.
+     * @param subject Asunto del mensaje.
+     * @param text    Cuerpo del mensaje en texto plano.
+     */
     @Override
     public void sendText(String to, String subject, String text) {
         send(to, subject, text, false);
     }
 
+    /**
+     * Envía un correo con cuerpo HTML.
+     *
+     * @param to      Dirección de correo del destinatario.
+     * @param subject Asunto del mensaje.
+     * @param html    Cuerpo del mensaje en formato HTML.
+     */
     @Override
     public void sendHtml(String to, String subject, String html) {
         send(to, subject, html, true);
     }
 
     /**
-     * Procesa una plantilla HTML, traduce el asunto y envía el correo.
+     * Procesa una plantilla Thymeleaf, traduce el asunto y envía el correo resultante.
+     *
+     * @param to           Dirección de correo del destinatario.
+     * @param subjectKey   Clave i18n del asunto (buscada en {@code messages*.properties}).
+     * @param templateName Nombre de la plantilla Thymeleaf (sin extensión {@code .html}).
+     * @param variables    Variables dinámicas inyectadas en el contexto de la plantilla.
+     * @param locale       Idioma del destinatario, usado para traducción y plantilla.
      */
     @Override
     public void sendTemplate(String to, String subjectKey, String templateName, Map<String, Object> variables, Locale locale) {
@@ -74,7 +94,13 @@ public class MailServiceImpl implements MailService {
     }
 
     /**
-     * Método privado de bajo nivel para la construcción del MimeMessage.
+     * Método privado de bajo nivel para la construcción y envío del {@link MimeMessage}.
+     *
+     * @param to     Dirección de correo del destinatario.
+     * @param subject Asunto del mensaje.
+     * @param body   Cuerpo del mensaje (texto plano o HTML).
+     * @param isHtml {@code true} para enviar el cuerpo como HTML; {@code false} para texto plano.
+     * @throws IllegalStateException si ocurre un error al construir o enviar el mensaje.
      */
     private void send(String to, String subject, String body, boolean isHtml) {
         try {

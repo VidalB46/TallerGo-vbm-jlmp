@@ -28,8 +28,10 @@ public class FileStorageService {
 
     /**
      * Guarda un archivo en el sistema de ficheros con un nombre único (UUID).
+     *
      * @param file El archivo recibido desde el controlador.
-     * @return La ruta web relativa para acceder al archivo (ej: /uploads/uuid.png).
+     * @return La ruta web relativa para acceder al archivo (ej: {@code /uploads/uuid.png}),
+     *         o {@code null} si el archivo está vacío o se produce un error de E/S.
      */
     public String saveFile(MultipartFile file) {
         if (file == null || file.isEmpty()) return null;
@@ -64,7 +66,10 @@ public class FileStorageService {
 
     /**
      * Elimina un archivo del disco basándose en su ruta web o nombre.
-     * @param filePathOrWebPath Ruta completa o relativa almacenada en la DB.
+     * Si el archivo no existe no lanza excepción (operación idempotente).
+     *
+     * @param filePathOrWebPath Ruta completa o relativa almacenada en la DB
+     *                          (ej: {@code /uploads/uuid.png} o simplemente {@code uuid.png}).
      */
     public void deleteFile(String filePathOrWebPath) {
         if (filePathOrWebPath == null || filePathOrWebPath.isBlank()) return;
@@ -83,7 +88,10 @@ public class FileStorageService {
     }
 
     /**
-     * Extrae la extensión de un nombre de archivo (ej: image.jpg -> jpg).
+     * Extrae la extensión de un nombre de archivo (p. ej. {@code image.jpg} → {@code jpg}).
+     *
+     * @param fileName Nombre del archivo con o sin extensión.
+     * @return La extensión sin punto, o cadena vacía si no tiene extensión.
      */
     private String getFileExtension(String fileName) {
         if (fileName != null) {
@@ -96,7 +104,11 @@ public class FileStorageService {
     }
 
     /**
-     * Limpia la ruta para obtener solo el nombre del fichero real.
+     * Limpia la ruta recibida para obtener únicamente el nombre del fichero físico.
+     * Elimina el prefijo {@code /uploads/} y cualquier segmento de directorio previo.
+     *
+     * @param filePathOrWebPath Ruta web o nombre de fichero a normalizar.
+     * @return Nombre de fichero sin prefijos de ruta.
      */
     private String normalizeFileName(String filePathOrWebPath) {
         String value = filePathOrWebPath.trim();

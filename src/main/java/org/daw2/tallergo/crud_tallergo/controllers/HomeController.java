@@ -25,7 +25,8 @@ public class HomeController {
      */
     @GetMapping("/")
     public String home(Model model) {
-        model.addAttribute("workshops", workshopService.listAll());
+        var all = workshopService.listAll();
+        model.addAttribute("workshops", all.subList(0, Math.min(4, all.size())));
         return "index";
     }
 }

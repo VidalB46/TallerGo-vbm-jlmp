@@ -23,6 +23,9 @@ public class UserMapper {
 
     /**
      * Convierte una entidad User a un DTO básico para listados generales.
+     *
+     * @param entity Entidad usuario (puede ser {@code null}).
+     * @return DTO básico, o {@code null} si la entidad es {@code null}.
      */
     public static UserDTO toDTO(User entity) {
         if (entity == null) return null;
@@ -53,6 +56,9 @@ public class UserMapper {
 
     /**
      * Convierte una lista de entidades en una lista de DTOs básicos.
+     *
+     * @param entities Lista de entidades usuario (puede ser {@code null}).
+     * @return Lista de DTOs, o lista vacía si la entrada es {@code null}.
      */
     public static List<UserDTO> toDTOList(List<User> entities) {
         if (entities == null) return List.of();
@@ -63,6 +69,9 @@ public class UserMapper {
      * Convierte la entidad a un DTO de detalle completo.
      * Realiza un "flattening" de la entidad UserProfile para que los campos
      * aparezcan en el primer nivel del DTO.
+     *
+     * @param entity Entidad usuario (puede ser {@code null}).
+     * @return DTO de detalle con perfil aplanado, o {@code null} si la entidad es {@code null}.
      */
     public static UserDetailDTO toDetailDTO(User entity) {
         if (entity == null) return null;
@@ -103,6 +112,9 @@ public class UserMapper {
 
     /**
      * Prepara un DTO de actualización, extrayendo los IDs de los roles.
+     *
+     * @param entity Entidad usuario (puede ser {@code null}).
+     * @return DTO de actualización prellenado, o {@code null} si la entidad es {@code null}.
      */
     public static UserUpdateDTO toUpdateDTO(User entity) {
         if (entity == null) return null;
@@ -132,6 +144,12 @@ public class UserMapper {
     // DTO → Entity (Conversiones de Entrada)
     // ──────────────────────────────────────────────────────────────────────────
 
+    /**
+     * Crea una nueva entidad {@link User} a partir de un DTO de creación.
+     *
+     * @param dto DTO con los datos del nuevo usuario (puede ser {@code null}).
+     * @return Nueva entidad {@link User}, o {@code null} si el DTO es {@code null}.
+     */
     public static User toEntity(UserCreateDTO dto) {
         if (dto == null) return null;
 
@@ -147,6 +165,12 @@ public class UserMapper {
         return e;
     }
 
+    /**
+     * Crea una nueva entidad {@link User} a partir de un DTO de actualización.
+     *
+     * @param dto DTO con los datos del usuario (puede ser {@code null}).
+     * @return Nueva entidad {@link User}, o {@code null} si el DTO es {@code null}.
+     */
     public static User toEntity(UserUpdateDTO dto) {
         if (dto == null) return null;
 
@@ -165,6 +189,9 @@ public class UserMapper {
 
     /**
      * Copia datos del DTO a una entidad persistente para actualizaciones parciales.
+     *
+     * @param dto    DTO con los nuevos valores (puede ser {@code null}).
+     * @param entity Entidad existente a actualizar (puede ser {@code null}).
      */
     public static void copyToExistingEntity(UserUpdateDTO dto, User entity) {
         if (dto == null || entity == null) return;
@@ -181,6 +208,13 @@ public class UserMapper {
 
     // --- Métodos sobrecargados para gestión de Roles (usados en Services) ---
 
+    /**
+     * Crea una nueva entidad {@link User} a partir de un DTO de creación con roles resueltos.
+     *
+     * @param dto   DTO con los datos del nuevo usuario (puede ser {@code null}).
+     * @param roles Conjunto de roles a asignar al usuario.
+     * @return Nueva entidad {@link User} con roles, o {@code null} si el DTO es {@code null}.
+     */
     public static User toEntity(UserCreateDTO dto, Set<Role> roles) {
         if (dto == null) return null;
         User e = toEntity(dto);
@@ -188,6 +222,13 @@ public class UserMapper {
         return e;
     }
 
+    /**
+     * Crea una nueva entidad {@link User} a partir de un DTO de actualización con roles resueltos.
+     *
+     * @param dto   DTO con los datos del usuario (puede ser {@code null}).
+     * @param roles Conjunto de roles a asignar al usuario.
+     * @return Nueva entidad {@link User} con roles, o {@code null} si el DTO es {@code null}.
+     */
     public static User toEntity(UserUpdateDTO dto, Set<Role> roles) {
         if (dto == null) return null;
         User e = toEntity(dto);
@@ -195,6 +236,13 @@ public class UserMapper {
         return e;
     }
 
+    /**
+     * Actualiza una entidad persistente con los datos del DTO y los roles resueltos.
+     *
+     * @param dto    DTO con los nuevos valores (puede ser {@code null}).
+     * @param entity Entidad existente a actualizar (puede ser {@code null}).
+     * @param roles  Conjunto de roles a asignar al usuario.
+     */
     public static void copyToExistingEntity(UserUpdateDTO dto, User entity, Set<Role> roles) {
         if (dto == null || entity == null) return;
         copyToExistingEntity(dto, entity);

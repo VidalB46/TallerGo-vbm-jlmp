@@ -19,45 +19,71 @@ public interface UserService {
 
     /**
      * Lista paginada de usuarios para el panel de administración.
+     *
+     * @param pageable Configuración de página, tamaño y ordenamiento.
+     * @return Página de DTOs de usuario.
      */
     Page<UserDTO> list(Pageable pageable);
+
+    /**
+     * Búsqueda paginada de usuarios por email u otros campos.
+     *
+     * @param q        Texto a buscar.
+     * @param pageable Configuración de paginación.
+     * @return Página de DTOs de usuario coincidentes.
+     */
     Page<UserDTO> search(String q, Pageable pageable);
 
     /**
-     * Recupera los datos de un usuario preparados para su edición.
+     * Recupera los datos de un usuario preparados para su edición en formulario.
+     *
+     * @param id Identificador único del usuario.
+     * @return DTO con los campos editables del usuario.
      */
     UserUpdateDTO getForEdit(Long id);
 
     /**
-     * Crea un usuario desde el panel de administración (pudiendo asignar roles específicos).
+     * Crea un usuario desde el panel de administración (puede asignar roles específicos).
+     *
+     * @param dto DTO con los datos del nuevo usuario.
      */
     void create(UserCreateDTO dto);
 
     /**
      * Actualiza los datos de cuenta de un usuario existente.
+     *
+     * @param dto DTO con los nuevos valores e ID del usuario.
      */
     void update(UserUpdateDTO dto);
 
     /**
-     * Elimina un usuario del sistema.
+     * Elimina un usuario del sistema por su ID.
+     *
+     * @param id Identificador único del usuario a eliminar.
      */
     void delete(Long id);
 
     /**
      * Obtiene la vista detallada de un usuario, incluyendo roles y actividad.
+     *
+     * @param id Identificador único del usuario.
+     * @return DTO de detalle con información completa del usuario.
      */
     UserDetailDTO getDetail(Long id);
 
     /**
      * Recupera todos los roles disponibles en el sistema (ROLE_USER, ROLE_ADMIN, etc.).
      * Útil para los desplegables en formularios de creación/edición.
+     *
+     * @return Lista de todos los roles existentes.
      */
     List<Role> findAllRoles();
 
     /**
      * Flujo de registro público para nuevos clientes.
-     * Implementa la lógica de asignación de rol por defecto (ROLE_USER) y
-     * preparación inicial de la cuenta.
+     * Asigna el rol por defecto {@code ROLE_CLIENT} y prepara la cuenta inicial.
+     *
+     * @param dto DTO con los datos del cliente a registrar (email, contraseña, etc.).
      */
     void registerNewClient(UserRegisterDTO dto);
 }

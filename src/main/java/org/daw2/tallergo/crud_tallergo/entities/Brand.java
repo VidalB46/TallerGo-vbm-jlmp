@@ -44,7 +44,8 @@ public class Brand {
 
     /**
      * Constructor para inicializar una marca con nombre y país.
-     * * @param name Nombre de la marca.
+     *
+     * @param name    Nombre de la marca.
      * @param country País de procedencia.
      */
     public Brand(String name, String country) {

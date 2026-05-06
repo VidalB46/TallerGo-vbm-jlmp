@@ -48,6 +48,18 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
+    /**
+     * Se ejecuta tras una autenticación OAuth2 exitosa.
+     * Si el usuario no existe en la BD se crea automáticamente con rol {@code ROLE_CLIENT}.
+     * A continuación recarga el {@link UserDetails} local para aplicar roles y permisos propios,
+     * actualiza el {@link SecurityContextHolder} y redirige a la página de inicio.
+     *
+     * @param request        La petición HTTP que originó la autenticación.
+     * @param response       La respuesta HTTP sobre la que se realiza la redirección.
+     * @param authentication Objeto de autenticación OAuth2 con los atributos del proveedor externo.
+     * @throws IOException      si ocurre un error de E/S durante la redirección.
+     * @throws ServletException si ocurre un error general del servlet.
+     */
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {

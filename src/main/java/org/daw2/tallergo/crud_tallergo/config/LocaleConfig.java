@@ -12,6 +12,14 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import java.util.Locale;
 
+/**
+ * Configuración de internacionalización (i18n) de la aplicación.
+ * <p>
+ * Define el {@link LocaleResolver} basado en sesión y el interceptor
+ * {@link LocaleChangeInterceptor} que permite cambiar el idioma activo
+ * mediante el parámetro {@code lang} en la URL.
+ * </p>
+ */
 @Configuration
 public class LocaleConfig implements WebMvcConfigurer {
 

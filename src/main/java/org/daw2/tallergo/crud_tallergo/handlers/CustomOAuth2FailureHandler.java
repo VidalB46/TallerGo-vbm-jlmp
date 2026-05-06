@@ -22,9 +22,13 @@ public class CustomOAuth2FailureHandler implements AuthenticationFailureHandler 
 
     /**
      * Se ejecuta automáticamente cuando una autenticación OAuth2 (Google, GitHub, etc.) falla.
-     * * @param request La petición HTTP.
-     * @param response La respuesta HTTP.
-     * @param exception La excepción detallada del fallo de autenticación.
+     * Limpia el contexto de seguridad, invalida la sesión y redirige al login con mensaje de error.
+     *
+     * @param request   La petición HTTP que originó el intento de autenticación.
+     * @param response  La respuesta HTTP sobre la que se realiza la redirección.
+     * @param exception La excepción que describe el motivo del fallo de autenticación.
+     * @throws IOException      si ocurre un error de E/S durante la redirección.
+     * @throws ServletException si ocurre un error general del servlet.
      */
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,

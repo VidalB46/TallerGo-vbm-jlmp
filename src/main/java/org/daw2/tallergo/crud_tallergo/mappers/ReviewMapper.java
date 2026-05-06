@@ -8,8 +8,18 @@ import org.daw2.tallergo.crud_tallergo.entities.Review;
 import org.daw2.tallergo.crud_tallergo.entities.User;
 import org.daw2.tallergo.crud_tallergo.entities.Workshop;
 
+/**
+ * Clase utilitaria para mapear datos entre la entidad {@link Review} y sus DTOs.
+ * Todos los métodos son estáticos para evitar instanciación innecesaria.
+ */
 public class ReviewMapper {
 
+    /**
+     * Convierte una entidad {@link Review} a un DTO resumido para listados.
+     *
+     * @param entity Entidad de reseña (puede ser {@code null}).
+     * @return DTO resumido, o {@code null} si la entidad es {@code null}.
+     */
     public static ReviewDTO toDTO(Review entity) {
         if (entity == null) return null;
 
@@ -24,6 +34,12 @@ public class ReviewMapper {
                 .build();
     }
 
+    /**
+     * Convierte una entidad {@link Review} a un DTO de detalle completo.
+     *
+     * @param entity Entidad de reseña (puede ser {@code null}).
+     * @return DTO de detalle con usuario y taller incluidos, o {@code null}.
+     */
     public static ReviewDetailDTO toDetailDTO(Review entity) {
         if (entity == null) return null;
 
@@ -44,6 +60,14 @@ public class ReviewMapper {
         return dto;
     }
 
+    /**
+     * Crea una nueva entidad {@link Review} a partir del DTO y sus relaciones.
+     *
+     * @param dto      DTO con rating, comentario e ID del taller (puede ser {@code null}).
+     * @param user     Usuario que publica la reseña.
+     * @param workshop Taller valorado.
+     * @return Nueva entidad de reseña, o {@code null} si el DTO es {@code null}.
+     */
     public static Review toEntity(ReviewCreateDTO dto, User user, Workshop workshop) {
         if (dto == null) return null;
 
@@ -56,6 +80,12 @@ public class ReviewMapper {
         return entity;
     }
 
+    /**
+     * Actualiza los campos modificables de una entidad {@link Review} existente.
+     *
+     * @param dto    DTO con los nuevos valores (campos nulos se ignoran).
+     * @param entity Entidad de reseña a actualizar.
+     */
     public static void updateEntity(ReviewUpdateDTO dto, Review entity) {
         if (dto == null || entity == null) return;
 
