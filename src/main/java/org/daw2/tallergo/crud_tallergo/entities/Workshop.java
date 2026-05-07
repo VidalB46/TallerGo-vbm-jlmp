@@ -86,4 +86,7 @@ public class Workshop {
      */
     @OneToMany(mappedBy = "workshop", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Mechanic> mechanics = new HashSet<>();
+
+    @org.hibernate.annotations.Formula("(SELECT AVG(r.rating) FROM reviews r WHERE r.workshop_id = id)")
+    private Double averageRating;
 }

@@ -449,22 +449,40 @@ textarea.form-control, .field-group textarea { resize: vertical; min-height: 110
     outline: none; background: #fff;
 }
 
-/* Validación */
-.form-group input.is-invalid, .form-group select.is-invalid, .form-group textarea.is-invalid,
-.field-group input.is-invalid, .field-group select.is-invalid, .field-group textarea.is-invalid,
-.form-control-custom.is-invalid, .is-invalid { border-color: #dc3545; background-color: #fff8f8; }
-.field-error, .invalid-feedback {
-    font-size: 0.78rem; color: #c0392b; margin-top: 0.35rem;
-    display: flex; align-items: center; gap: 0.3rem;
-}
+/* VALIDACIÓN  (MUESTRA LOS ERRORES AL ENVIAR) */
+
+/* 1. Ocultar los textos de error por defecto */
 .invalid-feedback-custom {
-    font-size: 0.78rem; color: #c0392b; margin-top: 0.35rem;
-    display: none; align-items: center; gap: 0.3rem;
+    display: none;
+    font-size: 0.78rem;
+    color: #c0392b;
+    margin-top: 0.35rem;
+    align-items: center;
+    gap: 0.3rem;
 }
-.was-validated .is-invalid ~ .invalid-feedback-custom,
-.is-invalid ~ .invalid-feedback-custom { display: flex; }
-.was-validated .form-control-custom:invalid { border-color: #dc3545; }
-.was-validated .form-control-custom:invalid ~ .invalid-feedback { display: block !important; }
+
+/* 2. Mostrar los textos si el form ha intentado enviarse (.was-validated) y el campo está vacío (:invalid) */
+.was-validated input:invalid ~ .invalid-feedback-custom,
+.was-validated select:invalid ~ .invalid-feedback-custom,
+.was-validated textarea:invalid ~ .invalid-feedback-custom {
+    display: flex;
+    animation: fadeUp 0.3s ease; /* Animación sutil de aparición */
+}
+
+/* 3. Poner el borde rojo y fondo rosado a los campos vacíos */
+.was-validated input:invalid,
+.was-validated select:invalid,
+.was-validated textarea:invalid {
+    border-color: #c0392b !important;
+    background-color: #fff8f8 !important;
+}
+
+/* 4. Poner el borde verde a los campos que SÍ están bien rellenados (Opcional, pero da buen feedback) */
+.was-validated input:valid,
+.was-validated select:valid,
+.was-validated textarea:valid {
+    border-color: #27ae60;
+}
 
 /* Avatar */
 .avatar-preview-wrap { display: flex; align-items: center; gap: 1.2rem; margin-bottom: 1rem; flex-wrap: wrap; }
@@ -627,43 +645,49 @@ textarea.form-control, .field-group textarea { resize: vertical; min-height: 110
 
 /* ── Workshop search bar ───────────────────────────────────────── */
 .workshop-search-form {
-    max-width: 900px; margin: 1.5rem auto 0; padding: 0 1.5rem;
+    max-width: 600px; margin: 1.5rem auto 0; padding: 0 1.5rem;
     position: relative; z-index: 1;
 }
 .workshop-search-wrap {
     display: flex; align-items: center; gap: 0;
     background: rgba(255,255,255,0.08);
     border: 1.5px solid rgba(255,255,255,0.15);
-    border-radius: 12px; overflow: hidden;
+    border-radius: 50px; /* Redondeo completo tipo píldora */
+    padding: 0.3rem 0.3rem 0.3rem 1.2rem; /* Más padding izquierdo, menos derecho para el botón */
+    overflow: hidden;
     backdrop-filter: blur(10px);
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
 }
 .workshop-search-wrap:focus-within {
     border-color: #c0392b;
     box-shadow: 0 0 0 3px rgba(192,57,43,0.15);
+    background: rgba(255,255,255,0.12);
 }
 .workshop-search-icon {
-    padding: 0 0.9rem; color: rgba(255,255,255,0.4); font-size: 1rem; flex-shrink: 0;
+    color: rgba(255,255,255,0.5); font-size: 1.1rem; flex-shrink: 0;
+    margin-right: 0.5rem;
 }
 .workshop-search-input {
     flex: 1; background: transparent; border: none; outline: none;
-    color: #fff; font-size: 0.92rem; font-family: inherit;
-    padding: 0.75rem 0; min-width: 0;
+    color: #fff; font-size: 0.95rem; font-family: inherit;
+    padding: 0.6rem 0; min-width: 0;
 }
-.workshop-search-input::placeholder { color: rgba(255,255,255,0.35); }
-.workshop-search-btn {
-    background: #c0392b; color: #fff; border: none;
-    padding: 0.75rem 1.4rem; font-weight: 600; font-size: 0.85rem;
-    cursor: pointer; transition: background 0.2s; white-space: nowrap; flex-shrink: 0;
-}
-.workshop-search-btn:hover { background: #a93226; }
+.workshop-search-input::placeholder { color: rgba(255,255,255,0.4); }
 .workshop-search-clear {
     display: flex; align-items: center; justify-content: center;
     padding: 0 0.8rem; color: rgba(255,255,255,0.4);
-    text-decoration: none; font-size: 0.85rem;
+    text-decoration: none; font-size: 1rem;
     transition: color 0.2s; flex-shrink: 0;
 }
-.workshop-search-clear:hover { color: #c0392b; }
+.workshop-search-clear:hover { color: #fff; }
+.workshop-search-btn {
+    background: #c0392b; color: #fff; border: none;
+    padding: 0.65rem 1.5rem; font-weight: 600; font-size: 0.9rem;
+    border-radius: 40px; /* Redondeado para encajar en la píldora */
+    cursor: pointer; transition: background 0.2s, transform 0.1s; white-space: nowrap; flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(192,57,43,0.3);
+}
+.workshop-search-btn:hover { background: #a93226; transform: scale(1.02); }
 
 /* ── Brand country selector ─────────────────────────────────────── */
 .brand-country-divider {
@@ -724,14 +748,18 @@ textarea.form-control, .field-group textarea { resize: vertical; min-height: 110
 .mec-card-body, .ws-card-body, .vehicle-card-body, .appt-card-body {
     padding: 1rem 1.1rem 1.1rem; flex: 1; display: flex; flex-direction: column;
 }
+
 .mec-card-name, .ws-card-name, .vehicle-card-model, .appt-card-date {
-    font-size: 0.97rem; font-weight: 700; color: #111; margin-bottom: 0.3rem;
+    font-size: 1.05rem; font-weight: 800; color: #111;
+    margin-top: 0.6rem;
+    margin-bottom: 0.4rem;
+    line-height: 1.3;
 }
 .mec-card-workshop, .ws-card-location, .vehicle-card-plate, .appt-card-time {
     display: flex; align-items: center; gap: 0.35rem;
-    color: #aaa; font-size: 0.75rem; margin-bottom: 0.9rem;
+    color: #888; font-size: 0.8rem; margin-bottom: 0.9rem;
 }
-.mec-card-workshop i, .ws-card-location i { color: #c0392b; font-size: 0.7rem; }
+.mec-card-workshop i, .ws-card-location i { color: #c0392b; font-size: 0.75rem; }
 .mec-card-actions, .ws-card-footer, .vehicle-card-actions, .appt-card-actions {
     display: flex; gap: 0.5rem; margin-top: auto; flex-wrap: wrap;
 }
@@ -1469,4 +1497,23 @@ textarea.form-control, .field-group textarea { resize: vertical; min-height: 110
 @media (max-width: 600px) {
     .reschedule-form { flex-direction: column; align-items: stretch; }
     .reschedule-actions .btn-submit { width: 100%; }
+}
+
+/* =========================================================
+   CORRECCIÓN DE TIPOGRAFÍA
+   ========================================================= */
+.page-label, .detail-id, .detail-section-title,
+.detail-field label, .field-label, .form-section-title,
+.form-group label, .form-label, .data-table thead th,
+.vehicles-table thead th, .users-table-wrap thead th,
+.tgo-modal-label, .reschedule-label, .vehicle-brand,
+.workshop-card-header, .status-badge, .status-badge-lg {
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    font-size: 0.85rem;
+}
+
+/* Mantenemos en mayúsculas solo las matrículas y los NIFs */
+.td-matricula, .vehicle-matricula-badge {
+    text-transform: uppercase !important;
 }

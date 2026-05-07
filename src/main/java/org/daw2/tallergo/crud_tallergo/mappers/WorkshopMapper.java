@@ -27,6 +27,7 @@ public class WorkshopMapper {
                 .name(entity.getName())
                 .location(entity.getLocation())
                 .phone(entity.getPhone())
+                .averageRating(entity.getAverageRating())
                 .build();
     }
 
@@ -50,6 +51,7 @@ public class WorkshopMapper {
         dto.setName(entity.getName());
         dto.setLocation(entity.getLocation());
         dto.setSchedule(entity.getSchedule());
+        dto.setAverageRating(entity.getAverageRating());
 
         // Mapeo de la relación 1:N con mecánicos
         if (entity.getMechanics() != null) {

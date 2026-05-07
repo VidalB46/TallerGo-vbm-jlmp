@@ -69,4 +69,7 @@ public class Appointment {
     /** Reparación derivada de esta cita, si existe. */
     @OneToOne(mappedBy = "appointment", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Repair repair;
+
+    @Column(name = "archived_by_client")
+    private boolean archivedByClient = false;
 }

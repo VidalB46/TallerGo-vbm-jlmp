@@ -38,4 +38,6 @@ public class WorkshopDTO {
      * Teléfono de contacto del taller.
      */
     private String phone;
+
+    private Double averageRating;
 }

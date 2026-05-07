@@ -42,7 +42,7 @@
 
             <div class="detail-header">
                 <div>
-                    <div class="detail-id">Gestión #<span th:text="${appointment.id}"></span></div>
+                    <div class="detail-id">Gestión de cita</div>
                     <div class="detail-date-big" th:text="${#temporals.format(appointment.startDate, 'dd MMM yyyy')}"></div>
                     <div class="detail-time-big">
                         <i class="bi bi-clock"></i>
@@ -168,9 +168,6 @@
                     <form th:if="${appointment.isBudgetAccepted}" th:action="@{/repairs/{id}/receive(id=${appointment.repairId})}" method="post" class="m-0">
                         <button type="submit" class="btn-modern btn-primary-modern"><i class="bi bi-box-arrow-in-right"></i> Recepcionar Vehículo</button>
                     </form>
-                    <div th:unless="${appointment.isBudgetAccepted}" class="text-muted small fw-bold ms-2 d-flex align-items-center gap-1">
-                        <i class="bi bi-lock-fill" style="color: #c0392b;"></i> Recepción bloqueada hasta aprobación
-                    </div>
                 </th:block>
 
                 <a th:if="${appointment.hasBudget}" th:href="@{/budgets/repair/{id}(id=${appointment.repairId})}" class="btn-modern btn-info-modern">

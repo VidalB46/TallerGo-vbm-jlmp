@@ -38,4 +38,7 @@ public class WorkshopDetailDTO {
      * Lista de mecánicos asociados al taller.
      */
     private List<MechanicDTO> mechanics;
+
+
+    private Double averageRating;
 }
