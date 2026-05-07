@@ -84,14 +84,14 @@
     </div>
 
     <div class="mec-pagination" th:if="${page.totalPages > 1}">
-        <a th:href="@{/mechanics(page=${page.number - 1}, q=${q})}" th:if="${page.hasPreviousPage()}">
+        <a th:href="@{/mechanics(page=${page.number - 1}, q=${q})}" th:if="${page.hasPrevious()}">
             <i class="bi bi-chevron-left"></i>
         </a>
         <th:block th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
             <span class="current" th:if="${i == page.number}" th:text="${i + 1}"></span>
             <a th:unless="${i == page.number}" th:href="@{/mechanics(page=${i}, q=${q})}" th:text="${i + 1}"></a>
         </th:block>
-        <a th:href="@{/mechanics(page=${page.number + 1}, q=${q})}" th:if="${page.hasNextPage()}">
+        <a th:href="@{/mechanics(page=${page.number + 1}, q=${q})}" th:if="${page.hasNext()}">
             <i class="bi bi-chevron-right"></i>
         </a>
     </div>

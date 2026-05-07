@@ -175,8 +175,17 @@
             backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
             border-radius: 14px; padding: 0.4rem; min-width: 180px;
             box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+            list-style: none;
         }
+        .tgo-dd-right { left: auto; right: 0; transform: none; }
         .tgo-dd-wrap.open .tgo-dd-menu, .tgo-avatar-wrap.open .tgo-dd-menu { display: block; }
+        .tgo-dd-menu li { list-style: none; padding: 0; margin: 0; }
+        .tgo-dd-label {
+            padding: 0.5rem 1rem; font-size: 0.78rem;
+            color: rgba(255,255,255,0.4); font-weight: 500;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            max-width: 230px; cursor: default;
+        }
         .tgo-dd-menu li a, .tgo-dd-menu li .tgo-dd-logout {
             display: flex; align-items: center; gap: 0.55rem;
             padding: 0.58rem 1rem; border-radius: 9px;
@@ -185,7 +194,7 @@
         }
         .tgo-dd-menu li a:hover, .tgo-dd-menu li .tgo-dd-logout:hover { background: rgba(255,255,255,0.07); color: #fff; }
         .tgo-dd-logout { color: #e88080 !important; }
-        .tgo-dd-sep { height: 1px; background: rgba(255,255,255,0.07); margin: 0.3rem 0.5rem; }
+        .tgo-dd-sep { height: 1px; background: rgba(255,255,255,0.07); margin: 0.3rem 0.5rem; list-style: none; }
         .tgo-hamburger {
             display: none; flex-direction: column; gap: 5px; width: 36px; height: 36px;
             background: transparent; border: none; cursor: pointer;

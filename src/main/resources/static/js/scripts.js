@@ -38,4 +38,27 @@ document.addEventListener("DOMContentLoaded", function() {
             setTimeout(() => alert.remove(), 500);
         }, 5000);
     });
+
+    // 4. DROPDOWN DE USUARIO Y PERSONAL (solo clic, nunca hover)
+    document.querySelectorAll('.tgo-avatar-wrap, #ddPersonal').forEach(function(wrap) {
+        const btn = wrap.querySelector('.tgo-avatar-btn, .tgo-dd-btn');
+        if (!btn) return;
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isOpen = wrap.classList.contains('open');
+            // Cerrar todos los dropdowns abiertos
+            document.querySelectorAll('.tgo-avatar-wrap.open, #ddPersonal.open')
+                    .forEach(function(el) { el.classList.remove('open'); });
+            if (!isOpen) wrap.classList.add('open');
+        });
+    });
+    // Cerrar al hacer clic fuera
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.tgo-avatar-wrap.open, #ddPersonal.open')
+                .forEach(function(el) { el.classList.remove('open'); });
+    });
+    // Evitar que un clic dentro del menú lo cierre
+    document.querySelectorAll('.tgo-dd-menu').forEach(function(menu) {
+        menu.addEventListener('click', function(e) { e.stopPropagation(); });
+    });
 });

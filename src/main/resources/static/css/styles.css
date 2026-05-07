@@ -48,6 +48,144 @@ main {
 }
 
 /* =========================================================
+  NAVBAR CUSTOM (tgo-nav) - DROPDOWN DE USUARIO
+  ========================================================= */
+
+/* Contenedor del avatar */
+.tgo-avatar-wrap {
+  position: relative;
+}
+
+/* Botón del avatar */
+.tgo-avatar-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.4rem 0.65rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.tgo-avatar-btn:hover {
+  background: rgba(255,255,255,0.1);
+}
+.tgo-avatar-btn .tgo-uname {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tgo-chev {
+  font-size: 0.75rem;
+  transition: transform 0.2s;
+}
+.tgo-avatar-wrap.open .tgo-chev,
+#ddPersonal.open .tgo-chev {
+  transform: rotate(180deg);
+}
+
+/* Menú desplegable - oculto por defecto, solo abre con .open por JS */
+.tgo-dd-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 210px;
+  background: #1a1a1a;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  list-style: none;
+  margin: 0;
+  padding: 0.4rem 0;
+  z-index: 9999;
+}
+/* Dropdown alineado a la derecha (avatar de usuario) */
+.tgo-dd-right {
+  left: auto;
+  right: 0;
+}
+/* Solo muestra cuando tiene clase .open (añadida por JS al clic) */
+.tgo-avatar-wrap.open > .tgo-dd-menu,
+#ddPersonal.open > .tgo-dd-menu {
+  display: block;
+}
+
+/* Ítem label (email/nombre en gris) */
+.tgo-dd-label {
+  padding: 0.55rem 1rem;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.4);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 230px;
+  cursor: default;
+  list-style: none;
+}
+
+/* Separador */
+.tgo-dd-sep {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  margin: 0.3rem 0;
+  list-style: none;
+  padding: 0;
+}
+
+/* Quitar bullets de todos los li dentro del menú */
+.tgo-dd-menu li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Ítems enlace */
+.tgo-dd-menu li a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  color: rgba(255,255,255,0.85);
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.tgo-dd-menu li a:hover {
+  background: rgba(255,255,255,0.07);
+  color: #fff;
+}
+
+/* Botón cerrar sesión */
+.tgo-dd-logout {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: none;
+  color: #e74c3c;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  text-align: left;
+}
+.tgo-dd-logout:hover {
+  background: rgba(231,76,60,0.1);
+}
+
+/* =========================================================
   HEADER / NAVBAR
   ========================================================= */
 .navbar {
