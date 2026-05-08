@@ -20,11 +20,11 @@
     <div class="page-hero-inner" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.5rem;">
         <div class="page-hero-text">
             <div class="page-label">Garage</div>
-            <h1>Mis Vehículos</h1>
-            <p>Gestiona todos los vehículos vinculados a tu cuenta.</p>
+            <h1 th:text="#{msg.vehicle-list.title}">Mis Vehículos</h1>
+            <p th:text="#{msg.vehicle-list.subtitle}">Gestiona todos los vehículos vinculados a tu cuenta.</p>
         </div>
         <a th:href="@{/vehicles/new}" class="btn-new">
-            <i class="bi bi-plus-lg"></i> Añadir Vehículo
+            <i class="bi bi-plus-lg"></i> <span th:text="#{msg.vehicle-list.add}">Añadir Vehículo</span>
         </a>
     </div>
 
@@ -33,11 +33,10 @@
         <div class="workshop-search-wrap">
             <i class="bi bi-search workshop-search-icon"></i>
             <input type="text" name="q" class="workshop-search-input"
-                   placeholder="Buscar por modelo o matrícula…"
+                   th:placeholder="#{msg.vehicle-list.search.placeholder}"
                    th:value="${q}" autocomplete="off"/>
-            <!-- Mantener ordenamiento al buscar -->
             <input type="hidden" name="sort" th:value="${sortParam}"/>
-            <button type="submit" class="workshop-search-btn">Buscar</button>
+            <button type="submit" class="workshop-search-btn" th:text="#{msg.vehicle-list.search.btn}">Buscar</button>
             <a th:if="${q != null and !#strings.isEmpty(q)}"
                th:href="@{/vehicles(sort=${sortParam})}" class="workshop-search-clear" title="Limpiar">
                 <i class="bi bi-x-lg"></i>

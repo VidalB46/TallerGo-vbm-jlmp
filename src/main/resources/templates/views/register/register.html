@@ -86,9 +86,9 @@
 <section class="register-hero">
     <div class="register-hero-content">
 
-        <div class="register-badge"><i class="bi bi-person-plus-fill"></i> Únete gratis</div>
-        <h1>Crea tu cuenta en <span>TallerGO</span></h1>
-        <p class="subtitle">Gestiona tus vehículos y citas en segundos.</p>
+        <div class="register-badge"><i class="bi bi-person-plus-fill"></i> <span th:text="#{msg.register.badge}">Únete gratis</span></div>
+        <h1 th:text="#{msg.register.title}">Crea tu cuenta en TallerGO</h1>
+        <p class="subtitle" th:text="#{msg.register.subtitle}">Gestiona tus vehículos y citas en segundos.</p>
 
         <div class="register-card">
 
@@ -102,9 +102,8 @@
                 <div class="input-group-float">
                     <input type="email" id="email" th:field="*{email}" class="float-input" placeholder=" " required autofocus
                            th:classappend="${#fields.hasErrors('email')} ? ' is-invalid'"/>
-                    <label for="email" class="float-label">Email</label>
+                    <label for="email" class="float-label" th:text="#{spring.security.ui.login.username}">Email</label>
                     <i class="bi bi-envelope input-icon"></i>
-                    <div class="invalid-feedback-custom">Introduce un correo electrónico válido.</div>
                     <div th:if="${#fields.hasErrors('email')}" class="field-error">
                         <i class="bi bi-exclamation-circle-fill"></i><span th:errors="*{email}"></span>
                     </div>
@@ -113,9 +112,8 @@
                 <div class="input-group-float">
                     <input type="password" id="password" th:field="*{password}" class="float-input" placeholder=" " required
                            th:classappend="${#fields.hasErrors('password')} ? ' is-invalid'"/>
-                    <label for="password" class="float-label">Contraseña</label>
+                    <label for="password" class="float-label" th:text="#{spring.security.ui.login.password}">Contraseña</label>
                     <i class="bi bi-eye input-icon" id="togglePassword"></i>
-                    <div class="invalid-feedback-custom">La contraseña es obligatoria.</div>
                     <div th:if="${#fields.hasErrors('password')}" class="field-error">
                         <i class="bi bi-exclamation-circle-fill"></i><span th:errors="*{password}"></span>
                     </div>
@@ -124,20 +122,20 @@
                 <div class="input-group-float">
                     <input type="password" id="confirmPassword" th:field="*{confirmPassword}" class="float-input" placeholder=" " required
                            th:classappend="${#fields.hasErrors('confirmPassword')} ? ' is-invalid'"/>
-                    <label for="confirmPassword" class="float-label">Confirmar Contraseña</label>
+                    <label for="confirmPassword" class="float-label" th:text="#{msg.register.confirmPassword}">Confirmar Contraseña</label>
                     <i class="bi bi-eye input-icon" id="toggleConfirm"></i>
-                    <div class="invalid-feedback-custom">Debes confirmar tu contraseña.</div>
                     <div th:if="${#fields.hasErrors('confirmPassword')}" class="field-error">
                         <i class="bi bi-exclamation-circle-fill"></i><span th:errors="*{confirmPassword}"></span>
                     </div>
                 </div>
 
-                <button type="submit" class="btn-register">Crear cuenta &nbsp;→</button>
+                <button type="submit" class="btn-register" th:text="#{msg.register.submit}">Crear cuenta</button>
 
             </form>
 
             <div class="register-footer-link">
-                ¿Ya tienes cuenta? <a th:href="@{/login}">Inicia sesión aquí</a>
+                <span th:text="#{msg.register.hasAccount}">¿Ya tienes cuenta?</span>
+                <a th:href="@{/login}" th:text="#{msg.register.loginLink}">Inicia sesión aquí</a>
             </div>
 
         </div>

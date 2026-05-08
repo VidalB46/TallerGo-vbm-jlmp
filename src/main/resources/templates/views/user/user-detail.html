@@ -17,9 +17,9 @@
 
 <div class="page-hero">
     <div class="page-hero-inner">
-        <div class="page-label">Administración</div>
-        <h1>Detalle de Usuario</h1>
-        <p>Información completa de la cuenta.</p>
+        <div class="page-label" th:text="#{msg.label.admin}">Administración</div>
+        <h1 th:text="#{msg.user-detail.title}">Detalle de Usuario</h1>
+        <p th:text="#{msg.user-detail.subtitle}">Información completa de la cuenta.</p>
     </div>
 </div>
 
@@ -35,19 +35,19 @@
                     <i class="bi bi-envelope-fill"></i>
                     <span th:text="${user.email}"></span>
                 </div>
-                <span th:if="${user.active}" class="badge-active"><i class="bi bi-check-circle-fill"></i> Activo</span>
-                <span th:unless="${user.active}" class="badge-inactive"><i class="bi bi-x-circle-fill"></i> Inactivo</span>
+                <span th:if="${user.active}" class="badge-active"><i class="bi bi-check-circle-fill"></i> <span th:text="#{msg.user-detail.status.active}">Activo</span></span>
+                <span th:unless="${user.active}" class="badge-inactive"><i class="bi bi-x-circle-fill"></i> <span th:text="#{msg.user-detail.status.inactive}">Inactivo</span></span>
             </div>
 
             <div class="detail-section">
                 <div class="detail-section-title"><i class="bi bi-shield-lock"></i> Cuenta</div>
                 <div class="detail-grid">
                     <div class="detail-field">
-                        <label>ID</label>
+                        <label th:text="#{msg.user-detail.field.id}">ID</label>
                         <span><i class="bi bi-hash"></i><span th:text="${user.id}"></span></span>
                     </div>
                     <div class="detail-field">
-                        <label>Roles</label>
+                        <label th:text="#{msg.user-detail.field.roles}">Roles</label>
                         <span>
                             <span th:each="r : ${user.roles}" class="badge-role" th:text="${r}"></span>
                         </span>
@@ -57,14 +57,14 @@
 
             <div class="detail-section">
                 <div class="detail-section-title"><i class="bi bi-person"></i> Perfil Personal</div>
-                <div class="no-profile" th:if="${user.firstName == null}">Este usuario no ha configurado su perfil todavía.</div>
+                <div class="no-profile" th:if="${user.firstName == null}" th:text="#{msg.user-detail.no.profile}">Este usuario no ha configurado su perfil todavía.</div>
                 <div class="detail-grid" th:if="${user.firstName != null}">
                     <div class="detail-field">
-                        <label>Nombre</label>
+                        <label th:text="#{msg.user-detail.field.name}">Nombre</label>
                         <span><i class="bi bi-person-badge"></i><span th:text="${user.firstName} + ' ' + ${user.lastName}"></span></span>
                     </div>
                     <div class="detail-field">
-                        <label>Teléfono</label>
+                        <label th:text="#{msg.user-detail.field.phone}">Teléfono</label>
                         <span><i class="bi bi-telephone"></i><span th:text="${user.phoneNumber} ?: 'N/A'"></span></span>
                     </div>
                 </div>
@@ -72,8 +72,8 @@
 
         </div>
         <div class="detail-card-footer">
-            <a th:href="@{/users}" class="btn-back"><i class="bi bi-arrow-left"></i> Volver</a>
-            <a th:href="@{/users/edit(id=${user.id})}" class="btn-edit"><i class="bi bi-pencil"></i> Editar</a>
+            <a th:href="@{/users}" class="btn-back"><i class="bi bi-arrow-left"></i> <span th:text="#{msg.common.back}">Volver</span></a>
+            <a th:href="@{/users/edit(id=${user.id})}" class="btn-edit"><i class="bi bi-pencil"></i> <span th:text="#{msg.common.edit}">Editar</span></a>
         </div>
     </div>
 </main>

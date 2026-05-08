@@ -19,11 +19,11 @@
     <div class="page-hero-inner" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.5rem;">
         <div class="page-hero-text">
             <div class="page-label">Gestión</div>
-            <h1>Marcas</h1>
-            <p>Administra las marcas de vehículos del taller.</p>
+            <h1 th:text="#{msg.brand-list.title}">Marcas</h1>
+            <p th:text="#{msg.brand-list.subtitle}">Administra las marcas de vehículos del taller.</p>
         </div>
         <a th:href="@{/brands/new}" class="btn-hero-new" sec:authorize="hasRole('ADMIN')">
-            <i class="bi bi-plus-lg"></i> Nueva Marca
+            <i class="bi bi-plus-lg"></i> <span th:text="#{msg.brand-list.add}">Nueva Marca</span>
         </a>
     </div>
 
@@ -32,17 +32,14 @@
         <div class="workshop-search-wrap">
             <i class="bi bi-search workshop-search-icon"></i>
             <input type="text" name="q" class="workshop-search-input"
-                   placeholder="Buscar por nombre de marca…"
+                   th:placeholder="#{msg.brand-list.search.placeholder}"
                    th:value="${q}" autocomplete="off"/>
             <div class="brand-country-divider"></div>
             <select name="country" class="brand-country-select">
-                <option value="" th:selected="${country == null or #strings.isEmpty(country)}">Todos los países</option>
-                <option th:each="c : ${countries}"
-                        th:value="${c}"
-                        th:text="${c}"
-                        th:selected="${c == country}"></option>
+                <option value="" th:selected="${country == null or #strings.isEmpty(country)}" th:text="#{msg.brand-list.country.all}">Todos los países</option>
+                <option th:each="c : ${countries}" th:value="${c}" th:text="${c}" th:selected="${c == country}"></option>
             </select>
-            <button type="submit" class="workshop-search-btn">Filtrar</button>
+            <button type="submit" class="workshop-search-btn" th:text="#{msg.brand-list.filter.btn}">Filtrar</button>
             <a th:if="${(q != null and !#strings.isEmpty(q)) or (country != null and !#strings.isEmpty(country))}"
                th:href="@{/brands}" class="workshop-search-clear" title="Limpiar filtros">
                 <i class="bi bi-x-lg"></i>
@@ -80,10 +77,10 @@
             <table class="data-table" th:if="${!page.isEmpty()}">
                 <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Nombre</th>
-                    <th>País</th>
-                    <th>Acciones</th>
+                    <th th:text="#{msg.brand-list.id}">#</th>
+                    <th th:text="#{msg.brand-list.name}">Nombre</th>
+                    <th th:text="#{msg.brand-list.country}">País</th>
+                    <th th:text="#{msg.brand-list.actions}">Acciones</th>
                 </tr>
                 </thead>
                 <tbody>

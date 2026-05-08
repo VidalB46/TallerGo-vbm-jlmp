@@ -18,8 +18,8 @@
 
 <div class="page-hero">
     <div class="page-hero-inner">
-        <div class="page-label">Administración</div>
-        <h1>Editar Taller</h1>
+        <div class="page-label" th:text="#{msg.workshop-form.label}">Administración</div>
+        <h1 th:text="#{msg.workshop-form.title.edit}">Editar Taller</h1>
         <p th:text="${workshop.name}">Nombre del taller</p>
     </div>
 </div>
@@ -42,35 +42,35 @@
 
             <div class="field-group">
                 <input type="text" th:field="*{nif}" id="nif" class="field-input" placeholder=" " required />
-                <label for="nif" class="field-label">NIF / CIF</label>
+                <label for="nif" class="field-label" th:text="#{msg.workshop-form.field.nif}">NIF / CIF</label>
                 <div th:if="${#fields.hasErrors('nif')}" class="field-error"><i class="bi bi-exclamation-circle"></i> <span th:errors="*{nif}"></span></div>
             </div>
 
             <div class="field-group">
                 <input type="text" th:field="*{name}" id="name" class="field-input" placeholder=" " required />
-                <label for="name" class="field-label">Nombre del Taller</label>
+                <label for="name" class="field-label" th:text="#{msg.workshop-form.field.name}">Nombre del Taller</label>
                 <div th:if="${#fields.hasErrors('name')}" class="field-error"><i class="bi bi-exclamation-circle"></i> <span th:errors="*{name}"></span></div>
             </div>
 
             <div class="form-row">
                 <div class="field-group">
                     <input type="text" th:field="*{phone}" id="phone" class="field-input" placeholder=" " />
-                    <label for="phone" class="field-label">Teléfono</label>
+                    <label for="phone" class="field-label" th:text="#{msg.workshop-form.field.phone}">Teléfono</label>
                 </div>
                 <div class="field-group">
                     <input type="email" th:field="*{email}" id="email" class="field-input" placeholder=" " />
-                    <label for="email" class="field-label">Email de contacto</label>
+                    <label for="email" class="field-label" th:text="#{msg.workshop-form.field.email}">Email de contacto</label>
                 </div>
             </div>
 
             <div class="field-group">
                 <input type="text" th:field="*{location}" id="location" class="field-input" placeholder=" " />
-                <label for="location" class="field-label">Ubicación / Dirección</label>
+                <label for="location" class="field-label" th:text="#{msg.workshop-form.field.location}">Ubicación / Dirección</label>
             </div>
 
             <div class="field-group">
                 <input type="text" th:field="*{schedule}" id="schedule" class="field-input" placeholder=" " />
-                <label for="schedule" class="field-label">Horario (ej: 09:00 - 18:00)</label>
+                <label for="schedule" class="field-label" th:text="#{msg.workshop-form.field.schedule}">Horario (ej: 09:00 - 18:00)</label>
             </div>
 
             <div class="form-actions">

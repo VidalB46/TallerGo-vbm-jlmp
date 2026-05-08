@@ -20,8 +20,8 @@
 <section class="mec-hero">
     <div class="mec-hero-content">
         <i class="bi bi-person-gear mec-hero-icon"></i>
-        <h1><span>Mecánicos</span></h1>
-        <p>Profesionales certificados al servicio de tu vehículo</p>
+        <h1><span th:text="#{msg.mecanico.list.title}">Mecánicos</span></h1>
+        <p th:text="#{msg.mecanico.list.subtitle}">Profesionales certificados al servicio de tu vehículo</p>
     </div>
 </section>
 
@@ -34,7 +34,7 @@
                 <div class="mec-search-wrap">
                     <i class="bi bi-search mec-search-icon"></i>
                     <input type="text" name="q" class="mec-search-input"
-                           placeholder="Buscar por nombre o especialidad…"
+                           th:placeholder="#{msg.mecanico.list.search.placeholder}"
                            th:value="${q}" autocomplete="off"/>
                     <button type="submit" class="mec-search-btn"><i class="bi bi-search"></i></button>
                     <a th:if="${q != null and !#strings.isEmpty(q)}"
@@ -44,7 +44,7 @@
                 </div>
             </form>
             <a th:href="@{/mechanics/new}" class="btn-new-mec" sec:authorize="hasRole('ADMIN')">
-                <i class="bi bi-person-plus-fill"></i> Añadir mecánico
+                <i class="bi bi-person-plus-fill"></i> <span th:text="#{msg.mecanico.action.new}">Añadir mecánico</span>
             </a>
         </div>
     </div>
@@ -68,14 +68,14 @@
                 </div>
                 <div class="mec-card-actions">
                     <a th:href="@{/mechanics/detail(id=${m.id})}" class="btn-detail-mec">
-                        <i class="bi bi-eye"></i> Ver ficha
+                        <i class="bi bi-eye"></i> <span th:text="#{msg.common.viewDetail}">Ver ficha</span>
                     </a>
                     <form th:action="@{/mechanics/delete}" method="post"
                           style="flex:1;display:contents;" sec:authorize="hasRole('ADMIN')">
                         <input type="hidden" name="id" th:value="${m.id}"/>
                         <button type="submit" class="btn-delete-mec"
-                                onclick="return confirm('¿Confirmas eliminar a este mecánico?')">
-                            <i class="bi bi-person-dash"></i> Eliminar
+                                th:onclick="'return confirm(\'' + #{msg.mecanico.delete.confirm} + '\')'">
+                            <i class="bi bi-person-dash"></i> <span th:text="#{msg.common.delete}">Eliminar</span>
                         </button>
                     </form>
                 </div>

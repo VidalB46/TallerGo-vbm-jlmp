@@ -19,11 +19,11 @@
     <div class="page-hero-inner" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.5rem;">
         <div class="page-hero-text">
             <div class="page-label">Administración</div>
-            <h1>Usuarios</h1>
-            <p>Gestiona las cuentas y permisos de los usuarios del sistema.</p>
+            <h1 th:text="#{msg.user-list.title}">Usuarios</h1>
+            <p th:text="#{msg.user-list.subtitle}">Gestiona las cuentas y permisos de los usuarios del sistema.</p>
         </div>
         <a th:href="@{/users/new}" class="btn-new" sec:authorize="hasRole('ADMIN')">
-            <i class="bi bi-person-plus-fill"></i> Nuevo Usuario
+            <i class="bi bi-person-plus-fill"></i> <span th:text="#{msg.user-list.add}">Nuevo Usuario</span>
         </a>
     </div>
 
@@ -31,9 +31,9 @@
         <div class="workshop-search-wrap">
             <i class="bi bi-search workshop-search-icon"></i>
             <input type="text" name="q" class="workshop-search-input"
-                   placeholder="Buscar por email…"
+                   th:placeholder="#{msg.user-list.search.placeholder}"
                    th:value="${q}" autocomplete="off"/>
-            <button type="submit" class="workshop-search-btn">Buscar</button>
+            <button type="submit" class="workshop-search-btn" th:text="#{msg.user-list.search.btn}">Buscar</button>
             <a th:if="${q != null and !#strings.isEmpty(q)}"
                th:href="@{/users}" class="workshop-search-clear" title="Limpiar">
                 <i class="bi bi-x-lg"></i>
@@ -70,8 +70,8 @@
                     </a>
                 </th>
                 <th>Roles</th>
-                <th>Estado</th>
-                <th>Acciones</th>
+                <th th:text="#{msg.user-list.active}">Estado</th>
+                <th th:text="#{msg.user-list.actions}">Acciones</th>
             </tr>
             </thead>
             <tbody>
@@ -87,8 +87,8 @@
                     <span th:each="role : ${u.roles}" class="badge-role" th:text="${role}"></span>
                 </td>
                 <td>
-                    <span th:if="${u.active}" class="badge-active"><i class="bi bi-check-circle-fill"></i> Activo</span>
-                    <span th:unless="${u.active}" class="badge-inactive"><i class="bi bi-x-circle-fill"></i> Inactivo</span>
+                    <span th:if="${u.active}" class="badge-active"><i class="bi bi-check-circle-fill"></i> <span th:text="#{msg.bool.yes}">Activo</span></span>
+                    <span th:unless="${u.active}" class="badge-inactive"><i class="bi bi-x-circle-fill"></i> <span th:text="#{msg.bool.no}">Inactivo</span></span>
                 </td>
                 <td>
                     <div class="td-actions">

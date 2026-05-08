@@ -17,9 +17,9 @@
 
 <div class="page-hero">
     <div class="page-hero-inner">
-        <div class="page-label">Personal</div>
-        <h1>Nuevo Mecánico</h1>
-        <p>Rellena los datos para registrar un nuevo mecánico.</p>
+        <div class="page-label" th:text="#{msg.label.mechanics}">Personal</div>
+        <h1 th:text="#{msg.mechanic-form.title}">Nuevo Mecánico</h1>
+        <p th:text="#{msg.mechanic-form.subtitle}">Rellena los datos para registrar un nuevo mecánico.</p>
     </div>
 </div>
 
@@ -29,17 +29,17 @@
         <form th:action="@{/mechanics/insert}" th:object="${mechanic}" method="post">
             <div class="form-card-body">
                 <div class="form-group">
-                    <label><i class="bi bi-person"></i> Nombre</label>
-                    <input type="text" th:field="*{name}" placeholder="Nombre del mecánico" required/>
+                    <label><i class="bi bi-person"></i> <span th:text="#{msg.mechanic-form.field.name}">Nombre</span></label>
+                    <input type="text" th:field="*{name}" th:placeholder="#{msg.mechanic-form.name.placeholder}" required/>
                 </div>
                 <div class="form-group">
-                    <label><i class="bi bi-tools"></i> Especialidad</label>
-                    <input type="text" th:field="*{specialty}" placeholder="Ej: Motor, Electricidad, Carrocería"/>
+                    <label><i class="bi bi-tools"></i> <span th:text="#{msg.mechanic-form.field.specialty}">Especialidad</span></label>
+                    <input type="text" th:field="*{specialty}" th:placeholder="#{msg.mechanic-form.specialty.placeholder}"/>
                 </div>
                 <div class="form-group">
-                    <label><i class="bi bi-building"></i> Taller</label>
+                    <label><i class="bi bi-building"></i> <span th:text="#{msg.mechanic-form.field.workshop}">Taller</span></label>
                     <select th:field="*{workshopId}">
-                        <option value="">— Sin asignar —</option>
+                        <option value="" th:text="#{msg.mechanic-form.workshop.none}">— Sin asignar —</option>
                         <option th:each="ws : ${listWorkshops}"
                                 th:value="${ws.id}"
                                 th:text="${ws.name}"></option>
@@ -47,8 +47,8 @@
                 </div>
             </div>
             <div class="form-card-footer">
-                <a th:href="@{/mechanics}" class="btn-cancel"><i class="bi bi-x-lg"></i> Cancelar</a>
-                <button type="submit" class="btn-save"><i class="bi bi-check-lg"></i> Guardar</button>
+                <a th:href="@{/mechanics}" class="btn-cancel"><i class="bi bi-x-lg"></i> <span th:text="#{msg.common.cancel}">Cancelar</span></a>
+                <button type="submit" class="btn-save"><i class="bi bi-check-lg"></i> <span th:text="#{msg.mechanic-form.submit}">Guardar</span></button>
             </div>
         </form>
     </div>

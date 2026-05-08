@@ -20,11 +20,11 @@
     <div class="page-hero-inner" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.5rem;">
         <div class="page-hero-text">
             <div class="page-label">Directorio</div>
-            <h1>Talleres</h1>
-            <p>Encuentra el taller que más confianza te transmita.</p>
+            <h1 th:text="#{msg.workshop-list.title}">Talleres</h1>
+            <p th:text="#{msg.workshop-list.subtitle}">Encuentra el taller que más confianza te transmita.</p>
         </div>
         <a th:href="@{/workshops/new}" class="btn-new" sec:authorize="hasRole('ADMIN')">
-            <i class="bi bi-plus-lg"></i> Nuevo Taller
+            <i class="bi bi-plus-lg"></i> <span th:text="#{msg.workshop-list.add}">Nuevo Taller</span>
         </a>
     </div>
 
@@ -32,9 +32,9 @@
         <div class="workshop-search-wrap">
             <i class="bi bi-search workshop-search-icon"></i>
             <input type="text" name="q" class="workshop-search-input"
-                   placeholder="Buscar taller por nombre…"
+                   th:placeholder="#{msg.workshop-list.search.placeholder}"
                    th:value="${q}" autocomplete="off"/>
-            <button type="submit" class="workshop-search-btn">Buscar</button>
+            <button type="submit" class="workshop-search-btn" th:text="#{msg.workshop-list.search.btn}">Buscar</button>
             <a th:if="${q != null and !#strings.isEmpty(q)}"
                th:href="@{/workshops}" class="workshop-search-clear" title="Limpiar búsqueda">
                 <i class="bi bi-x-lg"></i>

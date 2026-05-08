@@ -17,9 +17,9 @@
 
 <div class="page-hero">
     <div class="page-hero-inner">
-        <div class="page-label">Marcas</div>
-        <h1 th:text="${brand.id != null} ? 'Editar Marca' : 'Nueva Marca'">Marca</h1>
-        <p th:text="${brand.id != null} ? 'Modifica los datos de la marca.' : 'Registra una nueva marca de vehículo.'"></p>
+        <div class="page-label" th:text="#{msg.label.brands}">Marcas</div>
+        <h1 th:text="${brand.id != null} ? #{msg.brand-form.title.edit} : #{msg.brand-form.title.new}">Marca</h1>
+        <p th:text="${brand.id != null} ? #{msg.brand-form.subtitle.edit} : #{msg.brand-form.subtitle.new}"></p>
     </div>
 </div>
 
@@ -27,7 +27,7 @@
     <div class="form-card">
         <div class="form-card-header">
             <i class="bi bi-shield-plus"></i>
-            <h2 th:text="${brand.id != null} ? 'Editar marca' : 'Nueva marca'">Marca</h2>
+            <h2 th:text="${brand.id != null} ? #{msg.brand-form.heading.edit} : #{msg.brand-form.heading.new}">Marca</h2>
         </div>
 
         <form th:action="${brand.id != null} ? @{/brands/update} : @{/brands/insert}"
@@ -42,22 +42,22 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="name">Nombre <span style="color:#c0392b">*</span></label>
-                    <input type="text" id="name" class="form-control" th:field="*{name}" placeholder="Ej: Toyota, BMW, Ford…" required/>
+                    <label for="name" th:text="#{msg.brand-form.field.name}">Nombre</label> <span style="color:#c0392b">*</span>
+                    <input type="text" id="name" class="form-control" th:field="*{name}" th:placeholder="#{msg.brand-form.name.placeholder}" required/>
                 </div>
 
                 <div class="form-group">
-                    <label for="country">País de origen</label>
-                    <input type="text" id="country" class="form-control" th:field="*{country}" placeholder="Ej: Japón, Alemania, EE.UU.…"/>
+                    <label for="country" th:text="#{msg.brand-form.field.country}">País de origen</label>
+                    <input type="text" id="country" class="form-control" th:field="*{country}" th:placeholder="#{msg.brand-form.country.placeholder}"/>
                 </div>
 
             </div>
 
             <div class="form-card-footer">
-                <a th:href="@{/brands}" class="btn-cancel"><i class="bi bi-x"></i> Cancelar</a>
+                <a th:href="@{/brands}" class="btn-cancel"><i class="bi bi-x"></i> <span th:text="#{msg.common.cancel}">Cancelar</span></a>
                 <button type="submit" class="btn-submit">
                     <i class="bi bi-check2"></i>
-                    <span th:text="${brand.id != null} ? 'Guardar cambios' : 'Crear marca'">Guardar</span>
+                    <span th:text="${brand.id != null} ? #{msg.brand-form.submit.edit} : #{msg.brand-form.submit.new}">Guardar</span>
                 </button>
             </div>
         </form>

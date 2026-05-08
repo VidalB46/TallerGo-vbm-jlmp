@@ -18,9 +18,9 @@
 
 <div class="page-hero">
     <div class="page-hero-inner">
-        <div class="page-label">Garage</div>
-        <h1 th:text="${vehicle.id == null} ? 'Añadir Vehículo' : 'Editar Vehículo'">Vehículo</h1>
-        <p th:text="${vehicle.id == null} ? 'Registra un nuevo vehículo en tu cuenta.' : 'Actualiza los datos de tu vehículo.'"></p>
+        <div class="page-label" th:text="#{msg.label.garage}">Garage</div>
+        <h1 th:text="${vehicle.id == null} ? #{msg.vehicle-form.title.new} : #{msg.vehicle-form.title.edit}">Vehículo</h1>
+        <p th:text="${vehicle.id == null} ? #{msg.vehicle-form.subtitle.new} : #{msg.vehicle-form.subtitle.edit}"></p>
     </div>
 </div>
 
@@ -34,9 +34,9 @@
             <div class="form-card-body">
 
                 <div class="field-group">
-                    <label for="brand"><i class="bi bi-tags"></i> Marca</label>
+                    <label for="brand"><i class="bi bi-tags"></i> <span th:text="#{msg.vehicle-form.field.brand}">Marca</span></label>
                     <select id="brand" th:field="*{brandId}" required>
-                        <option value="">-- Selecciona una marca --</option>
+                        <option value="" th:text="#{msg.vehicle-form.brand.select}">-- Selecciona una marca --</option>
                         <option th:each="br : ${listBrands}"
                                 th:value="${br.id}"
                                 th:text="${br.name}"></option>
@@ -49,7 +49,7 @@
 
                 <div class="field-row cols-2">
                     <div class="field-group">
-                        <label for="model"><i class="bi bi-car-front"></i> Modelo</label>
+                        <label for="model"><i class="bi bi-car-front"></i> <span th:text="#{msg.vehicle-form.field.model}">Modelo</span></label>
                         <input type="text" id="model" th:field="*{model}"
                                placeholder="Ej: Corolla, A3, Golf..."
                                th:classappend="${#fields.hasErrors('model')} ? 'is-invalid'" required/>
@@ -59,7 +59,7 @@
                         </div>
                     </div>
                     <div class="field-group">
-                        <label for="matricula"><i class="bi bi-card-text"></i> Matrícula</label>
+                        <label for="matricula"><i class="bi bi-card-text"></i> <span th:text="#{msg.vehicle-form.field.plate}">Matrícula</span></label>
                         <input type="text" id="matricula" th:field="*{matricula}"
                                placeholder="Ej: 1234 ABC"
                                th:classappend="${#fields.hasErrors('matricula')} ? 'is-invalid'" required/>
@@ -72,17 +72,17 @@
 
                 <div class="field-row cols-3">
                     <div class="field-group">
-                        <label for="year"><i class="bi bi-calendar3"></i> Año</label>
+                        <label for="year"><i class="bi bi-calendar3"></i> <span th:text="#{msg.vehicle-form.field.year}">Año</span></label>
                         <input type="number" id="year" th:field="*{year}"
                                placeholder="Ej: 2020" min="1900" max="2099"/>
                     </div>
                     <div class="field-group">
-                        <label for="km"><i class="bi bi-speedometer2"></i> Kilometraje</label>
+                        <label for="km"><i class="bi bi-speedometer2"></i> <span th:text="#{msg.vehicle-form.field.km}">Kilometraje</span></label>
                         <input type="number" id="km" th:field="*{km}"
                                placeholder="Ej: 45000" min="0"/>
                     </div>
                     <div class="field-group">
-                        <label for="color"><i class="bi bi-palette"></i> Color</label>
+                        <label for="color"><i class="bi bi-palette"></i> <span th:text="#{msg.vehicle-form.field.color}">Color</span></label>
                         <input type="text" id="color" th:field="*{color}"
                                placeholder="Ej: Blanco"/>
                     </div>
@@ -93,10 +93,10 @@
             <div class="form-card-footer">
                 <button type="submit" class="btn-submit">
                     <i th:class="${vehicle.id == null} ? 'bi bi-plus-circle' : 'bi bi-floppy'"></i>
-                    <span th:text="${vehicle.id == null} ? 'Añadir vehículo' : 'Guardar cambios'"></span>
+                    <span th:text="${vehicle.id == null} ? #{msg.vehicle-form.submit.new} : #{msg.vehicle-form.submit.edit}"></span>
                 </button>
                 <a th:href="@{/vehicles}" class="btn-back">
-                    <i class="bi bi-arrow-left"></i> Cancelar
+                    <i class="bi bi-arrow-left"></i> <span th:text="#{msg.common.cancel}">Cancelar</span>
                 </a>
             </div>
 

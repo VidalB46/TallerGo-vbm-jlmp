@@ -398,40 +398,38 @@
 <section class="login-hero">
     <div class="login-hero-content">
 
-        <div class="login-badge"><i class="bi bi-shield-check-fill"></i> Acceso seguro</div>
-        <h1>Bienvenido a <span>TallerGO</span></h1>
-        <p class="subtitle">Inicia sesión para gestionar tus citas y vehículos.</p>
+        <div class="login-badge"><i class="bi bi-shield-check-fill"></i> <span th:text="#{msg.login.badge}">Acceso seguro</span></div>
+        <h1 th:text="#{msg.login.title}">Bienvenido a TallerGO</h1>
+        <p class="subtitle" th:text="#{msg.login.subtitle}">Inicia sesión para gestionar tus citas y vehículos.</p>
 
         <div class="login-card">
 
             <div th:if="${errorMessage}" class="login-alert error"><i class="bi bi-exclamation-circle-fill"></i><span th:text="${errorMessage}"></span></div>
-            <div th:if="${param.error}" class="login-alert error"><i class="bi bi-exclamation-circle-fill"></i><span th:text="#{spring.security.ui.login.error} ?: 'Usuario o contraseña incorrectos'"></span></div>
-            <div th:if="${param.logout}" class="login-alert success"><i class="bi bi-check-circle-fill"></i><span th:text="#{spring.security.ui.login.logout-success} ?: 'Has cerrado sesión correctamente'"></span></div>
+            <div th:if="${param.error}" class="login-alert error"><i class="bi bi-exclamation-circle-fill"></i><span th:text="#{spring.security.ui.login.error}">Usuario o contraseña incorrectos</span></div>
+            <div th:if="${param.logout}" class="login-alert success"><i class="bi bi-check-circle-fill"></i><span th:text="#{spring.security.ui.login.logout-success}">Has cerrado sesión correctamente</span></div>
 
             <form th:action="@{/login}" method="post" autocomplete="on" class="needs-validation" novalidate>
 
                 <div class="input-group-float">
                     <input type="email" id="username" name="username" class="float-input" placeholder=" " required autofocus>
-                    <label for="username" class="float-label">Email</label>
+                    <label for="username" class="float-label" th:text="#{spring.security.ui.login.username}">Email</label>
                     <i class="bi bi-envelope input-icon"></i>
-                    <div class="invalid-feedback-custom">El correo electrónico es obligatorio.</div>
                 </div>
 
                 <div class="input-group-float">
                     <input type="password" id="password" name="password" class="float-input" placeholder=" " required>
-                    <label for="password" class="float-label">Contraseña</label>
+                    <label for="password" class="float-label" th:text="#{spring.security.ui.login.password}">Contraseña</label>
                     <i class="bi bi-eye input-icon" id="togglePassword"></i>
-                    <div class="invalid-feedback-custom">Debes introducir tu contraseña.</div>
                 </div>
 
-                <button type="submit" class="btn-login">Entrar &nbsp;→</button>
+                <button type="submit" class="btn-login" th:text="#{spring.security.ui.login.submit}">Entrar</button>
 
-                <div class="login-divider">O continúa con</div>
+                <div class="login-divider" th:text="#{msg.login.oauth.divider}">O continúa con</div>
                 <a th:href="@{/oauth2/authorization/github}" class="github-btn"><i class="bi bi-github"></i> GitHub</a>
 
                 <div class="extra-links">
-                    <a th:href="@{/register}">Crear cuenta</a>
-                    <a th:href="@{/auth/forgot-password}">¿Olvidaste la contraseña?</a>
+                    <a th:href="@{/register}" th:text="#{spring.security.ui.login.register}">Crear cuenta</a>
+                    <a th:href="@{/auth/forgot-password}" th:text="#{spring.security.ui.login.forgot}">¿Olvidaste la contraseña?</a>
                 </div>
             </form>
         </div>

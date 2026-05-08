@@ -17,9 +17,9 @@
 
 <div class="page-hero">
     <div class="page-hero-inner">
-        <div class="page-label">Personal</div>
+        <div class="page-label" th:text="#{msg.label.mechanics}">Personal</div>
         <h1 th:text="${mechanic.name}">Mecánico</h1>
-        <p>Ficha completa del mecánico.</p>
+        <p th:text="#{msg.mechanic-detail.subtitle}">Ficha completa del mecánico.</p>
     </div>
 </div>
 
@@ -33,23 +33,23 @@
             </div>
             <div class="detail-grid">
                 <div class="detail-field">
-                    <label>ID</label>
+                    <label th:text="#{msg.mechanic-detail.field.id}">ID</label>
                     <span><i class="bi bi-hash"></i><span th:text="${mechanic.id}"></span></span>
                 </div>
                 <div class="detail-field">
-                    <label>Especialidad</label>
+                    <label th:text="#{msg.mechanic-detail.field.specialty}">Especialidad</label>
                     <span><i class="bi bi-tools"></i><span th:text="${mechanic.specialty} ?: 'N/A'"></span></span>
                 </div>
             </div>
         </div>
         <div class="detail-card-footer">
-            <a th:href="@{/mechanics}" class="btn-back"><i class="bi bi-arrow-left"></i> Volver</a>
-            <a th:href="@{/mechanics/edit(id=${mechanic.id})}" class="btn-edit" sec:authorize="hasRole('ADMIN')"><i class="bi bi-pencil"></i> Editar</a>
+            <a th:href="@{/mechanics}" class="btn-back"><i class="bi bi-arrow-left"></i> <span th:text="#{msg.common.back}">Volver</span></a>
+            <a th:href="@{/mechanics/edit(id=${mechanic.id})}" class="btn-edit" sec:authorize="hasRole('ADMIN')"><i class="bi bi-pencil"></i> <span th:text="#{msg.common.edit}">Editar</span></a>
         </div>
     </div>
 
     <div class="detail-card" th:if="${mechanic.workshop != null}">
-        <div class="workshop-card-header"><i class="bi bi-building"></i><span>Taller asignado</span></div>
+        <div class="workshop-card-header"><i class="bi bi-building"></i><span th:text="#{msg.mechanic-detail.section.workshop}">Taller asignado</span></div>
         <div class="workshop-info">
             <a th:href="@{/workshops/detail(id=${mechanic.workshop.id})}"><i class="bi bi-building-fill"></i><span th:text="${mechanic.workshop.name}"></span></a>
             <div class="workshop-meta">
@@ -60,7 +60,7 @@
     </div>
 
     <div class="detail-card" th:unless="${mechanic.workshop != null}">
-        <div class="no-workshop"><i class="bi bi-building-x" style="font-size:2rem;display:block;margin-bottom:0.5rem;"></i>Este mecánico no está asignado a ningún taller.</div>
+        <div class="no-workshop"><i class="bi bi-building-x" style="font-size:2rem;display:block;margin-bottom:0.5rem;"></i><span th:text="#{msg.mechanic-detail.no.workshop}">Este mecánico no está asignado a ningún taller.</span></div>
     </div>
 </main>
 

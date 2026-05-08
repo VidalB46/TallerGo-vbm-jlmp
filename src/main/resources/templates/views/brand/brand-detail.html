@@ -17,9 +17,9 @@
 
 <div class="page-hero">
     <div class="page-hero-inner">
-        <div class="page-label">Marcas</div>
+        <div class="page-label" th:text="#{msg.label.brands}">Marcas</div>
         <h1 th:text="${brand.name}">Marca</h1>
-        <p>Información detallada y vehículos asociados.</p>
+        <p th:text="#{msg.brand-detail.subtitle}">Información detallada y vehículos asociados.</p>
     </div>
 </div>
 
@@ -42,29 +42,29 @@
             </div>
             <div class="detail-meta">
                 <div class="meta-item">
-                    <label>ID</label>
+                    <label th:text="#{msg.common.id}">ID</label>
                     <span th:text="${brand.id}"></span>
                 </div>
                 <div class="meta-item">
-                    <label>País de origen</label>
+                    <label th:text="#{msg.brand-detail.field.country}">País de origen</label>
                     <span th:text="${brand.country} ?: 'N/A'"></span>
                 </div>
                 <div class="meta-item">
-                    <label>Vehículos registrados</label>
+                    <label th:text="#{msg.brand-detail.field.vehicles}">Vehículos registrados</label>
                     <span th:text="${brand.vehicles != null} ? ${#lists.size(brand.vehicles)} : '0'"></span>
                 </div>
             </div>
         </div>
         <div class="detail-card-footer">
-            <a th:href="@{/brands}" class="btn-back"><i class="bi bi-arrow-left"></i> Volver</a>
-            <a th:href="@{/brands/edit(id=${brand.id})}" class="btn-edit" sec:authorize="hasRole('ADMIN')"><i class="bi bi-pencil"></i> Editar</a>
+            <a th:href="@{/brands}" class="btn-back"><i class="bi bi-arrow-left"></i> <span th:text="#{msg.common.back}">Volver</span></a>
+            <a th:href="@{/brands/edit(id=${brand.id})}" class="btn-edit" sec:authorize="hasRole('ADMIN')"><i class="bi bi-pencil"></i> <span th:text="#{msg.common.edit}">Editar</span></a>
         </div>
     </div>
 
     <div class="vehicles-card">
         <div class="vehicles-card-header">
             <i class="bi bi-car-front"></i>
-            <span>Vehículos de esta marca</span>
+            <span th:text="#{msg.brand-detail.section.vehicles}">Vehículos de esta marca</span>
         </div>
 
         <div class="empty-vehicles" th:if="${brand.vehicles == null or brand.vehicles.isEmpty()}">
@@ -76,8 +76,8 @@
             <table class="vehicles-table" th:if="${brand.vehicles != null and !brand.vehicles.isEmpty()}">
                 <thead>
                 <tr>
-                    <th>Modelo</th>
-                    <th>Matrícula</th>
+                    <th th:text="#{msg.brand-detail.table.model}">Modelo</th>
+                    <th th:text="#{msg.brand-detail.table.plate}">Matrícula</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -87,7 +87,7 @@
                     <td><span class="td-matricula" th:text="${v.matricula}"></span></td>
                     <td>
                         <a th:href="@{/vehicles/detail(id=${v.id})}" class="btn-vehicle-link">
-                            <i class="bi bi-eye"></i> Ver
+                            <i class="bi bi-eye"></i> <span th:text="#{msg.brand-detail.action.view}">Ver</span>
                         </a>
                     </td>
                 </tr>

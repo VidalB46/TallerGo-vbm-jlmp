@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Migración: añadir workshop_id si la tabla ya existía sin esa columna
 ALTER TABLE users ADD COLUMN IF NOT EXISTS workshop_id INT NULL REFERENCES workshops(id);
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS archived_by_client BOOLEAN NOT NULL DEFAULT FALSE;
 
 CREATE TABLE IF NOT EXISTS user_profiles (
    user_id BIGINT PRIMARY KEY,

@@ -56,7 +56,7 @@ public class SecurityConfig {
                     logger.debug("Configurando autorización de solicitudes HTTP por Roles");
                     auth
                             // 1. RUTAS PÚBLICAS
-                            .requestMatchers("/", "/js/**", "/css/**", "/images/**", "/login", "/register", "/auth/**", "/error", "/error/**").permitAll()
+                            .requestMatchers("/", "/js/**", "/css/**", "/images/**", "/login", "/register", "/auth/**", "/error", "/error/**", "/lang").permitAll()
 
                             // 2. SOLO ADMINISTRADOR GLOBAL: Gestión de personal, usuarios y configuración global
                             .requestMatchers("/users/**").hasRole("ADMIN")

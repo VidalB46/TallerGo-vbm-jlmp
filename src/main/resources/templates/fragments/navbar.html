@@ -11,22 +11,28 @@
         TallerGO<span class="tgo-brand-dot"></span>
     </a>
 
+    <!-- Selector de idioma junto al logo -->
+    <div class="tgo-lang-wrap">
+        <a th:href="@{/lang(lang=es)}" class="tgo-lang-btn" title="Español">🇪🇸</a>
+        <a th:href="@{/lang(lang=en)}" class="tgo-lang-btn" title="English">🇬🇧</a>
+    </div>
+
     <ul class="tgo-links">
         <li>
-            <a th:href="@{/}" th:classappend="${activeLink == 'home'} ? ' tgo-active'">Inicio</a>
+            <a th:href="@{/}" th:classappend="${activeLink == 'home'} ? ' tgo-active'" th:text="#{msg.nav.home}">Inicio</a>
         </li>
         <li>
-            <a th:href="@{/workshops}" th:classappend="${activeLink == 'workshops'} ? ' tgo-active'">Talleres</a>
+            <a th:href="@{/workshops}" th:classappend="${activeLink == 'workshops'} ? ' tgo-active'" th:text="#{msg.nav.workshops}">Talleres</a>
         </li>
         <li sec:authorize="isAuthenticated()">
-            <a th:href="@{/appointments}" th:classappend="${activeLink == 'appointments'} ? ' tgo-active'">Mis Citas</a>
+            <a th:href="@{/appointments}" th:classappend="${activeLink == 'appointments'} ? ' tgo-active'" th:text="#{msg.nav.appointments}">Mis Citas</a>
         </li>
         <li sec:authorize="isAuthenticated()">
-            <a th:href="@{/vehicles}" th:classappend="${activeLink == 'vehicles'} ? ' tgo-active'">Mis Vehículos</a>
+            <a th:href="@{/vehicles}" th:classappend="${activeLink == 'vehicles'} ? ' tgo-active'" th:text="#{msg.header.vehicles}">Mis Vehículos</a>
         </li>
 
         <li sec:authorize="hasRole('ADMIN')">
-            <a th:href="@{/brands}" th:classappend="${activeLink == 'brands'} ? ' tgo-active'">Marcas</a>
+            <a th:href="@{/brands}" th:classappend="${activeLink == 'brands'} ? ' tgo-active'" th:text="#{msg.header.brands}">Marcas</a>
         </li>
 
         <li class="tgo-dd-wrap" id="ddPersonal" sec:authorize="hasAnyRole('ADMIN','JEFE_TALLER')">
@@ -37,22 +43,22 @@
             <ul class="tgo-dd-menu">
                 <li>
                     <a th:href="@{/mechanics}" th:classappend="${activeLink == 'mechanics'} ? ' tgo-dd-active'">
-                        <i class="bi bi-tools"></i> Mecánicos
+                        <i class="bi bi-tools"></i> <span th:text="#{msg.nav.mecanicos}">Mecánicos</span>
                     </a>
                 </li>
                 <li sec:authorize="hasRole('ADMIN')">
                     <a th:href="@{/users}" th:classappend="${activeLink == 'users'} ? ' tgo-dd-active'">
-                        <i class="bi bi-people"></i> Usuarios
+                        <i class="bi bi-people"></i> <span th:text="#{msg.header.users}">Usuarios</span>
                     </a>
                 </li>
             </ul>
         </li>
 
         <li sec:authorize="!isAuthenticated()">
-            <a th:href="@{/register}" class="tgo-cta">Registrarse</a>
+            <a th:href="@{/register}" class="tgo-cta" th:text="#{msg.nav.register}">Registrarse</a>
         </li>
         <li sec:authorize="!isAuthenticated()">
-            <a th:href="@{/login}" class="tgo-cta tgo-cta-outline">Iniciar sesión</a>
+            <a th:href="@{/login}" class="tgo-cta tgo-cta-outline" th:text="#{msg.nav.login}">Iniciar sesión</a>
         </li>
     </ul>
 
@@ -66,7 +72,7 @@
             <li class="tgo-dd-label" sec:authentication="name"></li>
             <li class="tgo-dd-sep"></li>
             <li>
-                <a th:href="@{/profile/edit}"><i class="bi bi-person-gear"></i> Mi Perfil</a>
+                <a th:href="@{/profile/edit}"><i class="bi bi-person-gear"></i> <span th:text="#{menu.editProfile}">Mi Perfil</span></a>
             </li>
             <li class="tgo-dd-sep"></li>
             <li>
@@ -85,30 +91,50 @@
 
     <div class="tgo-mobile-menu" id="tgoMobileMenu">
         <div th:if="${#authorization.expression('!isAuthenticated()')}">
-            <a th:href="@{/login}"><i class="bi bi-box-arrow-in-right"></i> Iniciar sesión</a>
+            <a th:href="@{/login}"><i class="bi bi-box-arrow-in-right"></i> <span th:text="#{msg.nav.login}">Iniciar sesión</span></a>
         </div>
         <div th:if="${#authorization.expression('isAuthenticated()')}">
             <span class="tgo-mobile-label" sec:authentication="name"></span>
-            <a th:href="@{/}"><i class="bi bi-house"></i> Inicio</a>
-            <a th:href="@{/workshops}"><i class="bi bi-building"></i> Talleres</a>
-            <a th:href="@{/appointments}"><i class="bi bi-calendar-check"></i> Mis Citas</a>
+            <a th:href="@{/}"><i class="bi bi-house"></i> <span th:text="#{msg.nav.home}">Inicio</span></a>
+            <a th:href="@{/workshops}"><i class="bi bi-building"></i> <span th:text="#{msg.nav.workshops}">Talleres</span></a>
+            <a th:href="@{/appointments}"><i class="bi bi-calendar-check"></i> <span th:text="#{msg.nav.appointments}">Mis Citas</span></a>
 
             <div class="tgo-mobile-sep" sec:authorize="hasAnyRole('ADMIN','JEFE_TALLER')"></div>
 
-            <a th:href="@{/mechanics}" sec:authorize="hasAnyRole('ADMIN','JEFE_TALLER')"><i class="bi bi-tools"></i> Mecánicos</a>
-            <a th:href="@{/users}" sec:authorize="hasRole('ADMIN')"><i class="bi bi-people"></i> Usuarios</a>
-            <a th:href="@{/brands}" sec:authorize="hasRole('ADMIN')"><i class="bi bi-shield-check"></i> Marcas</a>
+            <a th:href="@{/mechanics}" sec:authorize="hasAnyRole('ADMIN','JEFE_TALLER')"><i class="bi bi-tools"></i> <span th:text="#{msg.nav.mecanicos}">Mecánicos</span></a>
+            <a th:href="@{/users}" sec:authorize="hasRole('ADMIN')"><i class="bi bi-people"></i> <span th:text="#{msg.header.users}">Usuarios</span></a>
+            <a th:href="@{/brands}" sec:authorize="hasRole('ADMIN')"><i class="bi bi-shield-check"></i> <span th:text="#{msg.header.brands}">Marcas</span></a>
 
             <div class="tgo-mobile-sep"></div>
-            <a th:href="@{/profile/edit}"><i class="bi bi-person-gear"></i> Mi Perfil</a>
+            <a th:href="@{/profile/edit}"><i class="bi bi-person-gear"></i> <span th:text="#{menu.editProfile}">Mi Perfil</span></a>
             <form th:action="@{/logout}" method="post">
-                <button type="submit" class="tgo-mobile-logout"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</button>
+                <button type="submit" class="tgo-mobile-logout"><i class="bi bi-box-arrow-right"></i> <span th:text="#{menu.logout}">Cerrar sesión</span></button>
             </form>
+        </div>
+        <div class="tgo-mobile-sep"></div>
+        <div style="display:flex; gap:0.6rem; justify-content:center; padding:0.5rem 0;">
+            <a th:href="@{/lang(lang=es)}" class="tgo-lang-btn" title="Español">🇪🇸 ES</a>
+            <a th:href="@{/lang(lang=en)}" class="tgo-lang-btn" title="English">🇬🇧 EN</a>
         </div>
     </div>
 </nav>
 
+<script th:inline="none">
+    function changeLang(lang) {
+        var url = new URL(window.location.href);
+        url.searchParams.set('lang', lang);
+        window.location.href = url.toString();
+    }
+</script>
+
 <th:block th:fragment="navbarScripts"></th:block>
+<script th:inline="none">
+    function changeLang(lang) {
+        var url = new URL(window.location.href);
+        url.searchParams.set('lang', lang);
+        window.location.href = url.toString();
+    }
+</script>
 
 <th:block th:fragment="navbarCss">
     <style>
@@ -206,6 +232,13 @@
             padding: 1rem 1.2rem; flex-direction: column; gap: 0.25rem;
         }
         .tgo-mobile-menu.open { display: flex; }
+        .tgo-lang-wrap { display: flex; align-items: center; gap: 0.3rem; margin-left: 0.4rem; }
+        .tgo-lang-btn {
+            font-size: 1.25rem; text-decoration: none; padding: 0.15rem 0.3rem;
+            border-radius: 6px; transition: background 0.2s; line-height: 1;
+            cursor: pointer;
+        }
+        .tgo-lang-btn:hover { background: rgba(255,255,255,0.15); }
         @media (max-width: 960px) { .tgo-uname { display: none; } }
         @media (max-width: 640px) {
             .tgo-links, .tgo-avatar-wrap { display: none; }

@@ -17,9 +17,9 @@
 
 <div class="page-hero">
     <div class="page-hero-inner">
-        <div class="page-label">Administración</div>
-        <h1 th:text="${user.id != null} ? 'Editar Usuario' : 'Nuevo Usuario'">Usuario</h1>
-        <p th:text="${user.id != null} ? 'Modifica los datos de la cuenta.' : 'Crea una nueva cuenta de usuario.'"></p>
+        <div class="page-label" th:text="#{msg.label.admin}">Administración</div>
+        <h1 th:text="${user.id != null} ? #{msg.user-form.title.edit} : #{msg.user-form.title.new}">Usuario</h1>
+        <p th:text="${user.id != null} ? #{msg.user-form.subtitle.edit} : #{msg.user-form.subtitle.new}"></p>
     </div>
 </div>
 
@@ -27,7 +27,7 @@
     <div class="form-card">
         <div class="form-card-header">
             <i class="bi bi-person-gear"></i>
-            <h2 th:text="${user.id != null} ? 'Editar cuenta' : 'Crear cuenta'">Cuenta</h2>
+            <h2 th:text="${user.id != null} ? #{msg.user-form.heading.edit} : #{msg.user-form.heading.new}">Cuenta</h2>
         </div>
 
         <form th:action="${user.id != null} ? @{/users/update} : @{/users/insert}"
@@ -42,12 +42,12 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="email">Email</label>
+                    <label for="email" th:text="#{msg.user-form.field.email}">Email</label>
                     <input type="email" id="email" class="form-control" th:field="*{email}" placeholder="usuario@ejemplo.com" required/>
                 </div>
 
                 <div class="form-group">
-                    <label for="roleIds">Roles</label>
+                    <label for="roleIds" th:text="#{msg.user-form.field.roles}">Roles</label>
                     <select id="roleIds" name="roleIds" class="form-control" multiple>
                         <option th:each="role : ${allRoles}"
                                 th:value="${role.id}"
@@ -55,40 +55,40 @@
                                 th:selected="${user.roleIds != null and user.roleIds.contains(role.id)}">
                         </option>
                     </select>
-                    <div class="form-hint">Mantén Ctrl (o Cmd) para seleccionar varios roles.</div>
+                    <div class="form-hint" th:text="#{msg.user-form.roles.hint}">Mantén Ctrl (o Cmd) para seleccionar varios roles.</div>
                 </div>
 
                 <div class="form-group" id="workshopSelector" style="display:none;">
-                    <label for="workshopId"><i class="bi bi-building"></i> Taller asignado</label>
+                    <label for="workshopId"><i class="bi bi-building"></i> <span th:text="#{msg.user-form.field.workshop}">Taller asignado</span></label>
                     <select id="workshopId" name="workshopId" class="form-control">
-                        <option value="">— Sin taller —</option>
+                        <option value="" th:text="#{msg.user-form.workshop.none}">— Sin taller —</option>
                         <option th:each="ws : ${allWorkshops}"
                                 th:value="${ws.id}"
                                 th:text="${ws.name}"
                                 th:selected="${user.workshopId != null and user.workshopId == ws.id}">
                         </option>
                     </select>
-                    <div class="form-hint">Taller que gestionará este usuario.</div>
+                    <div class="form-hint" th:text="#{msg.user-form.workshop.hint}">Taller que gestionará este usuario.</div>
                 </div>
 
                 <div class="form-group">
-                    <label>Opciones de cuenta</label>
+                    <label th:text="#{msg.user-form.field.options}">Opciones de cuenta</label>
                     <div class="checks-grid">
                         <label class="check-item">
                             <input type="checkbox" th:field="*{active}"/>
-                            <span><i class="bi bi-toggle-on"></i> Activo</span>
+                            <span><i class="bi bi-toggle-on"></i> <span th:text="#{msg.user-form.check.active}">Activo</span></span>
                         </label>
                         <label class="check-item">
                             <input type="checkbox" th:field="*{accountNonLocked}"/>
-                            <span><i class="bi bi-unlock"></i> Cuenta desbloqueada</span>
+                            <span><i class="bi bi-unlock"></i> <span th:text="#{msg.user-form.check.unlocked}">Cuenta desbloqueada</span></span>
                         </label>
                         <label class="check-item">
                             <input type="checkbox" th:field="*{emailVerified}"/>
-                            <span><i class="bi bi-envelope-check"></i> Email verificado</span>
+                            <span><i class="bi bi-envelope-check"></i> <span th:text="#{msg.user-form.check.emailVerified}">Email verificado</span></span>
                         </label>
                         <label class="check-item">
                             <input type="checkbox" th:field="*{mustChangePassword}"/>
-                            <span><i class="bi bi-key"></i> Debe cambiar contraseña</span>
+                            <span><i class="bi bi-key"></i> <span th:text="#{msg.user-form.check.mustChange}">Debe cambiar contraseña</span></span>
                         </label>
                     </div>
                 </div>
@@ -96,10 +96,10 @@
             </div>
 
             <div class="form-card-footer">
-                <a th:href="@{/users}" class="btn-cancel"><i class="bi bi-x"></i> Cancelar</a>
+                <a th:href="@{/users}" class="btn-cancel"><i class="bi bi-x"></i> <span th:text="#{msg.common.cancel}">Cancelar</span></a>
                 <button type="submit" class="btn-submit">
                     <i class="bi bi-check2"></i>
-                    <span th:text="${user.id != null} ? 'Guardar cambios' : 'Crear usuario'">Guardar</span>
+                    <span th:text="${user.id != null} ? #{msg.user-form.submit.edit} : #{msg.user-form.submit.new}">Guardar</span>
                 </button>
             </div>
         </form>

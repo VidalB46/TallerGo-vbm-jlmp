@@ -18,9 +18,9 @@
 
 <div class="page-hero">
     <div class="page-hero-inner">
-        <div class="page-label">Agenda</div>
-        <h1>Solicitar Cita</h1>
-        <p>Elige el taller, el vehículo y la fecha que mejor te venga.</p>
+        <div class="page-label" th:text="#{msg.appointment-form.label}">Agenda</div>
+        <h1 th:text="#{msg.appointment-form.title}">Solicitar Cita</h1>
+        <p th:text="#{msg.appointment-form.subtitle}">Elige el taller, el vehículo y la fecha que mejor te venga.</p>
     </div>
 </div>
 
@@ -36,10 +36,10 @@
             <form th:action="@{/appointments/new}" th:object="${appointment}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
 
                 <div class="field-group">
-                    <label for="workshopId"><i class="bi bi-building"></i> Taller</label>
+                    <label for="workshopId"><i class="bi bi-building"></i> <span th:text="#{msg.appointment-form.workshop}">Taller</span></label>
                     <select id="workshopId" th:field="*{workshopId}" required
                             th:classappend="${#fields.hasErrors('workshopId')} ? 'is-invalid'">
-                        <option value="" disabled selected>Selecciona un taller...</option>
+                        <option value="" disabled selected th:text="#{msg.appointment-form.workshop.option}">Selecciona un taller...</option>
                         <option th:each="w : ${workshops}"
                                 th:value="${w.id}"
                                 th:text="${w.name + ' — ' + w.location}"></option>
@@ -54,10 +54,10 @@
                 </div>
 
                 <div class="field-group">
-                    <label for="vehicleId"><i class="bi bi-car-front-fill"></i> Vehículo</label>
+                    <label for="vehicleId"><i class="bi bi-car-front-fill"></i> <span th:text="#{msg.appointment-form.vehicle}">Vehículo</span></label>
                     <select id="vehicleId" th:field="*{vehicleId}" required
                             th:classappend="${#fields.hasErrors('vehicleId')} ? 'is-invalid'">
-                        <option value="" disabled selected>Selecciona un vehículo...</option>
+                        <option value="" disabled selected th:text="#{msg.appointment-form.vehicle.option}">Selecciona un vehículo...</option>
                         <option th:each="v : ${vehicles}"
                                 th:value="${v.id}"
                                 th:text="${v.matricula + ' — ' + v.brandName + ' ' + v.model}"></option>
@@ -72,7 +72,7 @@
                 </div>
 
                 <div class="field-group">
-                    <label for="startDate"><i class="bi bi-calendar-event"></i> Fecha y hora</label>
+                    <label for="startDate"><i class="bi bi-calendar-event"></i> <span th:text="#{msg.appointment-form.startDate}">Fecha y hora</span></label>
                     <input type="datetime-local" th:field="*{startDate}" id="startDate" required
                            th:classappend="${#fields.hasErrors('startDate')} ? 'is-invalid'" />
                     <div class="invalid-feedback-custom">
@@ -85,9 +85,9 @@
                 </div>
 
                 <div class="field-group">
-                    <label for="notes"><i class="bi bi-chat-left-text"></i> Notas (opcional)</label>
+                    <label for="notes"><i class="bi bi-chat-left-text"></i> <span th:text="#{msg.appointment-form.notes}">Notas (opcional)</span></label>
                     <textarea th:field="*{notes}" id="notes"
-                              placeholder="Describe el problema o cualquier información útil para el taller..."></textarea>
+                              th:placeholder="#{msg.appointment-form.notes.placeholder}"></textarea>
                     <div class="field-error" th:if="${#fields.hasErrors('notes')}">
                         <i class="bi bi-exclamation-circle"></i>
                         <span th:errors="*{notes}"></span>
@@ -110,10 +110,10 @@
 
                 <div class="form-card-footer" style="padding: 1.2rem 0 0; border-top: 1.5px solid #f0f0f0; margin-top: 0.5rem;">
                     <button type="submit" class="btn-submit">
-                        <i class="bi bi-calendar-check"></i> Solicitar cita
+                        <i class="bi bi-calendar-check"></i> <span th:text="#{msg.appointment-form.create}">Solicitar cita</span>
                     </button>
                     <a th:href="@{/appointments}" class="btn-back">
-                        <i class="bi bi-arrow-left"></i> Cancelar
+                        <i class="bi bi-arrow-left"></i> <span th:text="#{msg.appointment-form.returnback}">Cancelar</span>
                     </a>
                 </div>
 
