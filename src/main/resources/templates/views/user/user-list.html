@@ -18,7 +18,7 @@
 <div class="page-hero">
     <div class="page-hero-inner" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.5rem;">
         <div class="page-hero-text">
-            <div class="page-label">Administración</div>
+            <div class="page-label" th:text="#{msg.user-list.directory}">Administración</div>
             <h1 th:text="#{msg.user-list.title}">Usuarios</h1>
             <p th:text="#{msg.user-list.subtitle}">Gestiona las cuentas y permisos de los usuarios del sistema.</p>
         </div>
@@ -92,14 +92,14 @@
                 </td>
                 <td>
                     <div class="td-actions">
-                        <a th:href="@{/users/detail(id=${u.id})}" class="btn-view-sm"><i class="bi bi-eye"></i> Ver</a>
-                        <a th:href="@{/users/edit(id=${u.id})}" class="btn-edit-sm"><i class="bi bi-pencil"></i> Editar</a>
+                        <a th:href="@{/users/detail(id=${u.id})}" class="btn-view-sm"><i class="bi bi-eye"></i> <span th:text="#{msg.user-list.btn.view}">Ver</span></a>
+                        <a th:href="@{/users/edit(id=${u.id})}" class="btn-edit-sm"><i class="bi bi-pencil"></i> <span th:text="#{msg.user-list.btn.edit}">Editar</span></a>
                         <form th:action="@{/users/delete}" method="post" style="display:inline;"
-                              onsubmit="return confirm('¿Seguro que quieres eliminar este usuario?');"
+                              th:attr="onsubmit='return confirm(\'' + #{msg.user-list.delete.confirm} + '\')'" 
                               sec:authorize="hasRole('ADMIN')">
                             <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
                             <input type="hidden" name="id" th:value="${u.id}"/>
-                            <button type="submit" class="btn-delete-sm"><i class="bi bi-trash"></i> Eliminar</button>
+                            <button type="submit" class="btn-delete-sm"><i class="bi bi-trash"></i> <span th:text="#{msg.user-list.btn.delete}">Eliminar</span></button>
                         </form>
                     </div>
                 </td>

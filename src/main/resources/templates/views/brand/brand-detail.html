@@ -69,7 +69,7 @@
 
         <div class="empty-vehicles" th:if="${brand.vehicles == null or brand.vehicles.isEmpty()}">
             <i class="bi bi-car-front" style="font-size:2rem; display:block; margin-bottom:0.5rem;"></i>
-            No hay vehículos registrados para esta marca.
+            <span th:text="#{msg.brand-detail.no.vehicles}">No hay vehículos registrados para esta marca.</span>
         </div>
 
         <div class="table-scroll">

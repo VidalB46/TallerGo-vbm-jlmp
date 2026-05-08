@@ -45,7 +45,7 @@
                                 th:text="${w.name + ' — ' + w.location}"></option>
                     </select>
                     <div class="invalid-feedback-custom">
-                        <i class="bi bi-exclamation-circle"></i> Por favor, selecciona un taller.
+                        <i class="bi bi-exclamation-circle"></i> <span th:text="#{msg.appointment-form.workshop.validation}">Por favor, selecciona un taller.</span>
                     </div>
                     <div class="field-error" th:if="${#fields.hasErrors('workshopId')}">
                         <i class="bi bi-exclamation-circle"></i>
@@ -63,7 +63,7 @@
                                 th:text="${v.matricula + ' — ' + v.brandName + ' ' + v.model}"></option>
                     </select>
                     <div class="invalid-feedback-custom">
-                        <i class="bi bi-exclamation-circle"></i> Por favor, selecciona tu vehículo.
+                        <i class="bi bi-exclamation-circle"></i> <span th:text="#{msg.appointment-form.vehicle.validation}">Por favor, selecciona tu vehículo.</span>
                     </div>
                     <div class="field-error" th:if="${#fields.hasErrors('vehicleId')}">
                         <i class="bi bi-exclamation-circle"></i>
@@ -76,7 +76,7 @@
                     <input type="datetime-local" th:field="*{startDate}" id="startDate" required
                            th:classappend="${#fields.hasErrors('startDate')} ? 'is-invalid'" />
                     <div class="invalid-feedback-custom">
-                        <i class="bi bi-exclamation-circle"></i> Por favor, indica una fecha válida.
+                        <i class="bi bi-exclamation-circle"></i> <span th:text="#{msg.appointment-form.date.validation}">Por favor, indica una fecha válida.</span>
                     </div>
                     <div class="field-error" th:if="${#fields.hasErrors('startDate')}">
                         <i class="bi bi-exclamation-circle"></i>
@@ -95,11 +95,11 @@
                 </div>
 
                 <div class="field-group">
-                    <label for="mediaFile"><i class="bi bi-camera-video"></i> Foto o Vídeo de la avería (Opcional)</label>
+                    <label for="mediaFile"><i class="bi bi-camera-video"></i> <span th:text="#{msg.appointment-form.media.label}">Foto o Vídeo de la avería (Opcional)</span></label>
                     <input type="file" id="mediaFile" th:field="*{mediaFile}" accept="image/*, video/*"
                            th:classappend="${#fields.hasErrors('mediaFile')} ? 'is-invalid'"
                            style="padding: 0.5rem 1rem; background: #fff; cursor: pointer;" />
-                    <small style="font-size: 0.78rem; color: #888; margin-top: 0.4rem; display: block;">
+                    <small style="font-size: 0.78rem; color: #888; margin-top: 0.4rem; display: block;" th:text="#{msg.appointment-form.media.hint}">
                         Sube una foto clara del daño o un vídeo corto si hace un ruido extraño (Máx. 50MB).
                     </small>
                     <div class="field-error" th:if="${#fields.hasErrors('mediaFile')}">

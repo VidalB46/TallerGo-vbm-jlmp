@@ -31,7 +31,7 @@
                     <td>
                         <span class="badge px-2 py-2 text-white"
                               th:classappend="${#strings.toString(repair.status) == 'STANDBY' ? 'bg-secondary' : (#strings.toString(repair.status) == 'ACTIVO' ? 'bg-info text-dark' : 'bg-success')}"
-                              th:text="${repair.status.displayName}">
+                              th:text="${#messages.msgOrNull('msg.status.' + repair.status)}">
                         </span>
                     </td>
                     <td>

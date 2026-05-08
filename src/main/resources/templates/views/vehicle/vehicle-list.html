@@ -46,21 +46,21 @@
 
     <!-- Botones de ordenación por KM -->
     <div class="vehicle-sort-bar">
-        <span class="vehicle-sort-label"><i class="bi bi-sliders"></i> Ordenar por km:</span>
+        <span class="vehicle-sort-label"><i class="bi bi-sliders"></i> <span th:text="#{msg.vehicle-list.sort.label}"></span>Ordenar por km:</span></span>
         <a th:href="@{/vehicles(sort='km,asc', q=${q})}"
            th:classappend="${sortParam == 'km,asc'} ? ' active'"
            class="vehicle-sort-btn">
-            <i class="bi bi-arrow-up"></i> Menor a mayor
+            <i class="bi bi-arrow-up"></i> <span th:text="#{msg.vehicle-list.sort.asc}">Menor a mayor</span>
         </a>
         <a th:href="@{/vehicles(sort='km,desc', q=${q})}"
            th:classappend="${sortParam == 'km,desc'} ? ' active'"
            class="vehicle-sort-btn">
-            <i class="bi bi-arrow-down"></i> Mayor a menor
+            <i class="bi bi-arrow-down"></i> <span th:text="#{msg.vehicle-list.sort.desc}">Mayor a menor</span>
         </a>
         <a th:href="@{/vehicles(sort='model,asc', q=${q})}"
            th:classappend="${sortParam == 'model,asc'} ? ' active'"
            class="vehicle-sort-btn">
-            <i class="bi bi-sort-alpha-down"></i> Modelo A-Z
+            <i class="bi bi-sort-alpha-down"></i> <span th:text="#{msg.vehicle-list.sort.model}">Modelo A-Z</span>
         </a>
     </div>
 </div>
@@ -75,20 +75,20 @@
     <!-- Info resultados búsqueda -->
     <div th:if="${q != null and !#strings.isEmpty(q)}" class="search-results-info">
         <i class="bi bi-funnel"></i>
-        Resultados para: <strong th:text="${q}"></strong>
-        &nbsp;·&nbsp; <span th:text="${page.totalElements}"></span> vehículo(s)
+        <span th:text="#{msg.vehicle-list.results.for}">Resultados para:</span> <strong th:text="${q}"></strong>
+        &nbsp;·&nbsp; <span th:text="${page.totalElements}"></span> <span th:text="#{msg.vehicle-list.results.found}">vehículo(s)</span>
     </div>
 
     <div class="vehicles-grid">
 
         <div class="vehicles-empty" th:if="${page.empty}">
             <i class="bi bi-car-front"></i>
-            <p th:if="${q == null or #strings.isEmpty(q)}">No tienes vehículos registrados todavía.</p>
-            <p th:if="${q != null and !#strings.isEmpty(q)}">No se encontraron vehículos para "<strong th:text="${q}"></strong>".</p>
+            <p th:if="${q == null or #strings.isEmpty(q)}" th:text="#{msg.vehicle-list.empty.no-vehicles}">No tienes vehículos registrados todavía.</p>
+            <p th:if="${q != null and !#strings.isEmpty(q)}"><span th:text="#{msg.vehicle-list.empty.no-results}">No se encontraron vehículos para</span> "<strong th:text="${q}"></strong>".</p>
             <a th:if="${q == null or #strings.isEmpty(q)}" th:href="@{/vehicles/new}" class="btn-new">
-                <i class="bi bi-plus-lg"></i> Añadir vehículo
+                <i class="bi bi-plus-lg"></i> <span th:text="#{msg.vehicle-list.add}">Añadir vehículo</span>
             </a>
-            <a th:if="${q != null and !#strings.isEmpty(q)}" th:href="@{/vehicles}" class="btn-new" style="margin-top:.5rem;">
+            <a th:if="${q != null and !#strings.isEmpty(q)}" th:href="@{/vehicles}" class="btn-new" style="margin-top:.5rem;" th:text="#{msg.vehicle-list.view.all}">
                 Ver todos los vehículos
             </a>
         </div>
@@ -103,7 +103,7 @@
             </div>
 
             <div class="vehicle-card-body">
-                <div class="vehicle-brand" th:text="${vehicle.brandName != null ? vehicle.brandName : 'Sin marca'}"></div>
+                <div class="vehicle-brand" th:text="${vehicle.brandName != null ? vehicle.brandName : #messages.msgOrNull('msg.vehicle-list.no.brand')}"></div>
                 <div class="vehicle-model" th:text="${vehicle.model}"></div>
                 <div class="vehicle-meta" th:if="${vehicle.year != null}">
                     <i class="bi bi-calendar3"></i>
@@ -121,15 +121,15 @@
 
             <div class="vehicle-card-footer">
                 <a th:href="@{/vehicles/detail(id=${vehicle.id})}" class="btn-detail-v">
-                    <i class="bi bi-eye"></i> Ver
+                    <i class="bi bi-eye"></i> <span th:text="#{msg.vehicle-list.btn.view}">Ver</span>
                 </a>
                 <a th:href="@{/vehicles/edit(id=${vehicle.id})}" class="btn-edit-v">
-                    <i class="bi bi-pencil"></i> Editar
+                    <i class="bi bi-pencil"></i> <span th:text="#{msg.vehicle-list.btn.edit}">Editar</span>
                 </a>
                 <form th:action="@{/vehicles/delete}" method="post" style="display:flex;">
                     <input type="hidden" name="id" th:value="${vehicle.id}"/>
                     <button type="submit" class="btn-delete-v"
-                            onclick="return confirm('¿Eliminar este vehículo?')">
+>
                         <i class="bi bi-trash3"></i>
                     </button>
                 </form>

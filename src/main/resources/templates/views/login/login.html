@@ -390,8 +390,8 @@
 <header class="login-topbar">
     <a th:href="@{/}" class="brand-name">TallerGO<span class="brand-dot"></span></a>
     <ul class="topbar-nav">
-        <li><a th:href="@{/}">Inicio</a></li>
-        <li><a th:href="@{/register}">Registrarse</a></li>
+        <li><a th:href="@{/}" th:text="#{msg.nav.home}">Inicio</a></li>
+        <li><a th:href="@{/register}" th:text="#{msg.nav.register}">Registrarse</a></li>
     </ul>
 </header>
 

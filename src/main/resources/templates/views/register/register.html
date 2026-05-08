@@ -78,8 +78,8 @@
 <header class="register-topbar">
     <a th:href="@{/}" class="brand-name">TallerGO<span class="brand-dot"></span></a>
     <ul class="topbar-nav">
-        <li><a th:href="@{/}">Inicio</a></li>
-        <li><a th:href="@{/login}">Iniciar Sesión</a></li>
+        <li><a th:href="@{/}" th:text="#{msg.nav.home}">Inicio</a></li>
+        <li><a th:href="@{/login}" th:text="#{msg.nav.login}">Iniciar Sesión</a></li>
     </ul>
 </header>
 

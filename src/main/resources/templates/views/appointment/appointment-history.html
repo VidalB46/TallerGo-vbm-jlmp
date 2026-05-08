@@ -67,7 +67,7 @@
 
                         <i th:class="${#strings.toString(appt.status) == 'SOLICITADO'} ? 'bi bi-hourglass-split' :
                                    (${#strings.toString(appt.status) == 'CANCELADO' or #strings.toString(appt.status) == 'RECHAZADA'} ? 'bi bi-x-circle-fill' : 'bi bi-gear-fill')"></i>
-                        <span th:text="${appt.status.displayName}"></span>
+                        <span th:text="${#messages.msgOrNull('msg.status.' + appt.status)}"></span>
                     </span>
                 </div>
 

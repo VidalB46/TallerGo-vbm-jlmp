@@ -16,7 +16,7 @@
 
 <div class="page-hero text-center">
     <div class="page-hero-inner">
-        <div class="page-label" style="color: #0d6efd;">Recepción</div>
+        <div class="page-label" style="color: #0d6efd;" th:text="#{msg.repair-form.label}">Recepción</div>
         <h1><i class="bi bi-tools"></i> <span th:text="#{msg.repair-form.add}">Iniciar Reparación</span></h1>
     </div>
 </div>
@@ -30,21 +30,21 @@
             <input type="hidden" th:field="*{vehicleId}" />
 
             <div class="mb-4">
-                <label for="entryDate" class="form-label"><i class="bi bi-calendar-event"></i> Fecha de Entrada al Taller</label>
+                <label for="entryDate" class="form-label"><i class="bi bi-calendar-event"></i> <span th:text="#{msg.repair-form.field.entryDate}">Fecha de Entrada al Taller</span></label>
                 <input type="date" th:field="*{entryDate}" id="entryDate" class="form-control-custom" th:classappend="${#fields.hasErrors('entryDate')} ? 'is-invalid'" />
                 <div class="invalid-feedback" th:if="${#fields.hasErrors('entryDate')}" th:errors="*{entryDate}"></div>
             </div>
 
             <div class="mb-4">
-                <label for="notes" class="form-label"><i class="bi bi-clipboard-data"></i> Notas iniciales del mecánico</label>
+                <label for="notes" class="form-label"><i class="bi bi-clipboard-data"></i> <span th:text="#{msg.repair-form.field.notes}">Notas iniciales del mecánico</span></label>
                 <textarea th:field="*{notes}" id="notes" class="form-control-custom" rows="4" placeholder="Ej: Vehículo ingresa con parachoques dañado..."></textarea>
                 <div class="invalid-feedback" th:if="${#fields.hasErrors('notes')}" th:errors="*{notes}"></div>
             </div>
 
             <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
-                <a th:href="@{/appointments}" class="btn-modern btn-outline">Cancelar</a>
+                <a th:href="@{/appointments}" class="btn-modern btn-outline" th:text="#{msg.repair-form.btn.cancel}">Cancelar</a>
                 <button type="submit" class="btn-modern btn-primary-modern">
-                    <i class="bi bi-check2-circle"></i> Registrar Entrada
+                    <i class="bi bi-check2-circle"></i> <span th:text="#{msg.repair-form.btn.submit}">Registrar Entrada</span>
                 </button>
             </div>
         </form>

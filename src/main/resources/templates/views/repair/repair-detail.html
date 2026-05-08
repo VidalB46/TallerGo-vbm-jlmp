@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/e                <div class="text-muted small fst-italic">
+                    <i class="bi bi-clock-history"></i> <span th:text="#{msg.repair-detail.waiting.client}">Esperando aprobación del cliente...</span>
+                </div>as/spring-security">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -28,13 +30,13 @@
 
     <div sec:authorize="hasRole('CLIENT')" class="mb-4">
         <div th:if="${#strings.toString(repair.status) == 'STANDBY' and repair.budget != null and repair.budget.accepted}" class="alert alert-warning alert-custom shadow-sm">
-            <i class="bi bi-hourglass-split"></i> <div><strong>Presupuesto aceptado.</strong> Estamos organizando el taller para empezar.</div>
+            <i class="bi bi-hourglass-split"></i> <div th:utext="'<strong>' + #{msg.repair-detail.status.budget.accepted} + '</strong>'">Presupuesto aceptado.</div>
         </div>
         <div th:if="${#strings.toString(repair.status) == 'ACTIVO'}" class="alert alert-info alert-custom shadow-sm text-dark">
-            <i class="bi bi-tools text-primary"></i> <div><strong>¡Manos a la obra!</strong> Nuestros mecánicos ya están trabajando en tu vehículo.</div>
+            <i class="bi bi-tools text-primary"></i> <div th:utext="'<strong>' + #{msg.repair-detail.status.active} + '</strong>'">¡Manos a la obra!</div>
         </div>
         <div th:if="${#strings.toString(repair.status) == 'FINALIZADO'}" class="alert alert-success alert-custom shadow-sm">
-            <i class="bi bi-check-circle-fill"></i> <div><strong>¡Vehículo listo!</strong> La reparación ha concluido. Ya puedes pasar a recogerlo.</div>
+            <i class="bi bi-check-circle-fill"></i> <div th:utext="'<strong>' + #{msg.repair-detail.status.done} + '</strong>'">¡Vehículo listo!</div>
         </div>
     </div>
 
@@ -45,12 +47,12 @@
 
         <div class="detail-card-body">
             <div class="detail-header">
-                <div class="detail-id">Reparación #<span th:text="${repair.id}"></span></div>
+                <div class="detail-id"><span th:text="#{msg.repair-detail.id}">Reparación #</span><span th:text="${repair.id}"></span></div>
 
                 <span class="status-badge"
                       th:classappend="${#strings.toString(repair.status) == 'STANDBY'} ? 'status-standby' : (${#strings.toString(repair.status) == 'ACTIVO'} ? 'status-activo' : 'status-finalizado')">
                     <i th:class="${#strings.toString(repair.status) == 'STANDBY'} ? 'bi bi-pause-circle' : (${#strings.toString(repair.status) == 'ACTIVO'} ? 'bi bi-gear-fill' : 'bi bi-check-circle-fill')"></i>
-                    <span th:text="${repair.status.displayName}"></span>
+                    <span th:text="${#messages.msgOrNull('msg.status.' + repair.status)}"></span>
                 </span>
             </div>
 
@@ -120,14 +122,14 @@
                 <div sec:authorize="hasRole('ADMIN')"
                      th:if="${#strings.toString(repair.status) == 'ACTIVO' and repair.budget != null and !repair.budget.accepted}"
                      class="text-muted small fw-bold ms-2 d-flex align-items-center gap-1">
-                    <i class="bi bi-clock-history text-warning"></i> Modificación pendiente aprobación
+                    <i class="bi bi-clock-history text-warning"></i> <span th:text="#{msg.repair-detail.mod.pending}">Modificación pendiente aprobación</span>
                 </div>
 
                 <form sec:authorize="hasRole('ADMIN')"
                       th:if="${#strings.toString(repair.status) == 'FINALIZADO' and repair.appointment != null and #strings.toString(repair.appointment.status) != 'RECOGIDO'}"
                       th:action="@{/repairs/{id}/deliver(id=${repair.id})}" method="post" class="m-0">
                     <button type="submit" class="btn-modern btn-dark-modern">
-                        <i class="bi bi-key"></i> Entregar Vehículo
+                        <i class="bi bi-key"></i> <span th:text="#{msg.repair-detail.btn.deliver}">Entregar Vehículo</span>
                     </button>
                 </form>
             </div>

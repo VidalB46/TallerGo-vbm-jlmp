@@ -544,30 +544,30 @@
     <div class="hero-content">
         <div class="hero-badge">
             <i class="bi bi-geo-alt-fill"></i>
-            Tu taller más cercano
+            <span th:text="#{msg.index.hero.badge}">Tu taller más cercano</span>
         </div>
-        <h1>Encuentra tu taller<br>de <span class="highlight">confianza.</span></h1>
-        <p>Describe tu problema, sube fotos y pide presupuesto sin moverte de casa.</p>
+        <h1><span th:text="#{msg.index.hero.title}">Encuentra tu taller de confianza.</span></h1>
+        <p th:text="#{msg.index.hero.subtitle}">Describe tu problema, sube fotos y pide presupuesto sin moverte de casa.</p>
         <div class="hero-actions">
             <a th:href="@{/appointments}" class="btn-hero-primary"
                sec:authorize="isAuthenticated()">
                 <i class="bi bi-calendar-check-fill"></i>
-                Arregla Tu Vehículo AHORA
+                <span th:text="#{msg.index.hero.cta.fix}">Arregla Tu Vehículo AHORA</span>
             </a>
             <a th:href="@{/login}" class="btn-hero-primary"
                sec:authorize="!isAuthenticated()">
                 <i class="bi bi-lightning-charge-fill"></i>
-                Arregla Tu Vehículo AHORA
+                <span th:text="#{msg.index.hero.cta.fix}">Arregla Tu Vehículo AHORA</span>
             </a>
             <a th:href="@{/workshops}" class="btn-hero-secondary">
                 <i class="bi bi-search"></i>
-                Ver talleres
+                <span th:text="#{msg.index.hero.cta.workshops}">Ver talleres</span>
             </a>
         </div>
     </div>
     <div class="scroll-indicator">
         <div class="scroll-line"></div>
-        <span>Scroll</span>
+        <span th:text="#{msg.index.hero.scroll}">Scroll</span>
     </div>
 </section>
 
@@ -577,19 +577,19 @@
 <div class="stats-bar">
     <div class="stat-item">
         <div class="stat-num">+<span th:text="${workshops != null ? workshops.size() : 0}">0</span></div>
-        <div class="stat-label">Talleres activos</div>
+        <div class="stat-label" th:text="#{msg.index.stats.workshops}">Talleres activos</div>
     </div>
     <div class="stat-item">
         <div class="stat-num">100<span>%</span></div>
-        <div class="stat-label">Presupuestos gratis</div>
+        <div class="stat-label" th:text="#{msg.index.stats.budgets}">Presupuestos gratis</div>
     </div>
     <div class="stat-item">
         <div class="stat-num">24<span>h</span></div>
-        <div class="stat-label">Respuesta rápida</div>
+        <div class="stat-label" th:text="#{msg.index.stats.response}">Respuesta rápida</div>
     </div>
     <div class="stat-item">
         <div class="stat-num">5<span>★</span></div>
-        <div class="stat-label">Valoración media</div>
+        <div class="stat-label" th:text="#{msg.index.stats.rating}">Valoración media</div>
     </div>
 </div>
 
@@ -597,28 +597,28 @@
      CÓMO FUNCIONA
 ══════════════════════════════════════════ -->
 <section class="section-how" id="howitworks">
-    <div class="section-label">Simple y rápido</div>
-    <h2 class="section-title">¿Cómo Funciona?</h2>
-    <p class="section-subtitle">Tres pasos para dejar tu coche en buenas manos sin complicaciones.</p>
+    <div class="section-label" th:text="#{msg.index.how.label}">Simple y rápido</div>
+    <h2 class="section-title" th:text="#{msg.index.how.title}">¿Cómo Funciona?</h2>
+    <p class="section-subtitle" th:text="#{msg.index.how.subtitle}">Tres pasos para dejar tu coche en buenas manos sin complicaciones.</p>
 
     <div class="steps-grid">
         <div class="step-card">
             <div class="step-number">1</div>
             <span class="step-icon">🔧</span>
-            <h3>Describe tu problema</h3>
-            <p>Agrega tu coche en "Mis Vehículos" y pide una cita eligiendo tu vehículo.</p>
+            <h3 th:text="#{msg.index.how.step1.title}">Describe tu problema</h3>
+            <p th:text="#{msg.index.how.step1.text}">Agrega tu coche en "Mis Vehículos" y pide una cita eligiendo tu vehículo.</p>
         </div>
         <div class="step-card">
             <div class="step-number">2</div>
             <span class="step-icon">🏪</span>
-            <h3>Elige un taller</h3>
-            <p>Elige el taller que más confianza te transmita y crea una cita adjuntando tu vehículo.</p>
+            <h3 th:text="#{msg.index.how.step2.title}">Elige un taller</h3>
+            <p th:text="#{msg.index.how.step2.text}">Elige el taller que más confianza te transmita y crea una cita adjuntando tu vehículo.</p>
         </div>
         <div class="step-card">
             <div class="step-number">3</div>
             <span class="step-icon">💰</span>
-            <h3>Recibe tu presupuesto</h3>
-            <p>Una vez el taller vea tu cita y tu problema, te proporcionará un presupuesto aproximado.</p>
+            <h3 th:text="#{msg.index.how.step3.title}">Recibe tu presupuesto</h3>
+            <p th:text="#{msg.index.how.step3.text}">Una vez el taller vea tu cita y tu problema, te proporcionará un presupuesto aproximado.</p>
         </div>
     </div>
 </section>
@@ -628,9 +628,9 @@
 ══════════════════════════════════════════ -->
 <section class="section-workshops" th:if="${workshops != null and !workshops.isEmpty()}">
     <div style="text-align:center; margin-bottom:3rem;">
-        <div class="section-label">Directorio</div>
-        <h2 class="section-title">Talleres Recomendados</h2>
-        <p class="section-subtitle">Profesionales verificados listos para ayudarte.</p>
+        <div class="section-label" th:text="#{msg.index.workshops.label}">Directorio</div>
+        <h2 class="section-title" th:text="#{msg.index.workshops.title}">Talleres Recomendados</h2>
+        <p class="section-subtitle" th:text="#{msg.index.workshops.subtitle}">Profesionales verificados listos para ayudarte.</p>
     </div>
 
     <div class="workshops-grid">
@@ -665,7 +665,7 @@
     <div style="text-align:center; margin-top:2.5rem;">
         <a th:href="@{/workshops}" class="btn-hero-primary" style="display:inline-flex;">
             <i class="bi bi-grid-3x3-gap-fill"></i>
-            Ver todos los talleres
+            <span th:text="#{msg.index.workshops.viewAll}">Ver todos los talleres</span>
         </a>
     </div>
 </section>
@@ -674,15 +674,15 @@
      CTA BANNER
 ══════════════════════════════════════════ -->
 <section class="section-cta">
-    <h2>¿Listo para empezar?</h2>
-    <p>Registrate gratis y gestiona tus citas y vehículos en un solo lugar.</p>
+    <h2 th:text="#{msg.index.cta.title}">¿Listo para empezar?</h2>
+    <p th:text="#{msg.index.cta.subtitle}">Registrate gratis y gestiona tus citas y vehículos en un solo lugar.</p>
     <a th:href="@{/register}" class="btn-cta" sec:authorize="!isAuthenticated()">
         <i class="bi bi-person-plus-fill"></i>
-        Crear cuenta gratis
+        <span th:text="#{msg.index.cta.register}">Crear cuenta gratis</span>
     </a>
     <a th:href="@{/appointments}" class="btn-cta" sec:authorize="isAuthenticated()">
         <i class="bi bi-calendar-plus-fill"></i>
-        Pedir una cita ahora
+        <span th:text="#{msg.index.cta.appointment}">Pedir una cita ahora</span>
     </a>
 </section>
 

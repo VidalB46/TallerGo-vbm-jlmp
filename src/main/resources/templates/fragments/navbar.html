@@ -38,7 +38,7 @@
         <li class="tgo-dd-wrap" id="ddPersonal" sec:authorize="hasAnyRole('ADMIN','JEFE_TALLER')">
             <button class="tgo-dd-btn"
                     th:classappend="${activeLink == 'mechanics' or activeLink == 'users'} ? ' tgo-active'">
-                Personal <i class="bi bi-chevron-down tgo-chev"></i>
+                <span th:text="#{msg.nav.personal}">Personal</span> <i class="bi bi-chevron-down tgo-chev"></i>
             </button>
             <ul class="tgo-dd-menu">
                 <li>
@@ -78,7 +78,7 @@
             <li>
                 <form th:action="@{/logout}" method="post" style="margin:0;padding:0;">
                     <button type="submit" class="tgo-dd-logout">
-                        <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                        <i class="bi bi-box-arrow-right"></i> <span th:text="#{msg.nav.logout}">Cerrar sesión</span>
                     </button>
                 </form>
             </li>
