@@ -28,7 +28,6 @@
         </a>
     </div>
 
-    <!-- Buscador -->
     <form th:action="@{/workshops}" method="get" class="workshop-search-form">
         <div class="workshop-search-wrap">
             <i class="bi bi-search workshop-search-icon"></i>
@@ -51,7 +50,6 @@
         <span th:text="${successMessage}"></span>
     </div>
 
-    <!-- Resultados de búsqueda -->
     <div th:if="${q != null and !#strings.isEmpty(q)}" class="search-results-info">
         <i class="bi bi-funnel"></i>
         Mostrando resultados para: <strong th:text="${q}"></strong>
@@ -73,8 +71,17 @@
             </div>
 
             <div class="ws-card-body">
-                <div class="ws-card-id"># <span th:text="${w.id}"></span></div>
-                <div class="ws-card-name" th:text="${w.name}">Nombre Taller</div>
+                <div class="d-flex justify-content-end align-items-start">
+                    <a th:href="@{/reviews/workshop/{id}(id=${w.id})}"
+                       class="text-decoration-none"
+                       style="background: rgba(245, 158, 11, 0.15); color: #b45309; padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem; transition: background 0.2s;" title="Ver opiniones">
+                        <i class="bi bi-star-fill" style="color: #f59e0b;"></i>
+                        <span th:if="${w.averageRating != null}" th:text="${#numbers.formatDecimal(w.averageRating, 1, 1)}"></span>
+                        <span th:if="${w.averageRating == null}">Nuevo</span>
+                    </a>
+                </div>
+
+                <div class="ws-card-name mt-2" th:text="${w.name}">Nombre Taller</div>
                 <div class="ws-card-nif">
                     <i class="bi bi-building"></i>
                     <span th:text="${w.nif}">B12345678</span>
@@ -84,16 +91,16 @@
                     <span th:text="${w.location}">Ubicación</span>
                 </div>
 
-                <div class="ws-card-footer">
-                    <a th:href="@{/workshops/detail(id=${w.id})}" class="btn-detail">
+                <div class="ws-card-footer mt-auto pt-3">
+                    <a th:href="@{/workshops/detail(id=${w.id})}" class="btn-detail w-100">
                         <i class="bi bi-eye"></i> Ver detalle
                     </a>
 
                     <form th:action="@{/workshops/delete/{id}(id=${w.id})}" method="post"
                           sec:authorize="hasRole('ADMIN')"
-                          onsubmit="openDeleteModal(event, this)">
-                        <button type="submit" class="btn-delete" title="Eliminar taller">
-                            <i class="bi bi-trash3"></i>
+                          onsubmit="openDeleteModal(event, this)" class="w-100 mt-2">
+                        <button type="submit" class="btn-delete w-100 justify-content-center" title="Eliminar taller">
+                            <i class="bi bi-trash3"></i> Eliminar
                         </button>
                     </form>
 
@@ -213,19 +220,19 @@
     let formToDelete = null;
 
     function openDeleteModal(event, formElement) {
-        event.preventDefault(); // Detiene el envío del formulario inmediatamente
-        formToDelete = formElement; // Guarda la referencia del formulario concreto
-        document.getElementById('customDeleteModal').classList.add('active'); // Muestra la ventana
+        event.preventDefault();
+        formToDelete = formElement;
+        document.getElementById('customDeleteModal').classList.add('active');
     }
 
     function closeDeleteModal() {
-        document.getElementById('customDeleteModal').classList.remove('active'); // Oculta la ventana
-        formToDelete = null; // Limpia la variable
+        document.getElementById('customDeleteModal').classList.remove('active');
+        formToDelete = null;
     }
 
     document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
         if (formToDelete) {
-            formToDelete.submit(); // Envía el formulario si se confirma la acción
+            formToDelete.submit();
         }
     });
 </script>

@@ -4,16 +4,25 @@
 document.addEventListener("DOMContentLoaded", function() {
 
     // 1. VALIDACIÓN GENÉRICA DE FORMULARIOS
-    const forms = document.querySelectorAll('.needs-validation');
-    Array.from(forms).forEach(form => {
-        form.addEventListener('submit', event => {
-            if (!form.checkValidity()) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            form.classList.add('was-validated');
-        }, false);
-    });
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    // Buscar el primer campo con error y hacer scroll suave hacia él
+                    const firstInvalidField = form.querySelector(':invalid');
+                    if (firstInvalidField) {
+                        firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // Pequeño retardo para enfocarlo después del scroll
+                        setTimeout(() => firstInvalidField.focus(), 300);
+                    }
+                }
+                // Añade la clase que activa los estilos rojos en CSS
+                form.classList.add('was-validated');
+            }, false);
+        });
 
     // 2. VALIDACIÓN DE PESO DE ARCHIVOS
     const fileInputs = document.querySelectorAll('input[type="file"]');

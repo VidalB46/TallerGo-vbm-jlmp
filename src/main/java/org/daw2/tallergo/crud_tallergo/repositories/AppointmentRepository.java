@@ -56,4 +56,20 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
             "JOIN FETCH a.vehicle " +
             "WHERE a.id = :id")
     Optional<Appointment> findByIdWithDetails(@Param("id") Long id);
+
+    /**
+     * Citas activas: No archivadas por el cliente.
+     */
+    @Query(value = "SELECT a FROM Appointment a JOIN FETCH a.user JOIN FETCH a.workshop JOIN FETCH a.vehicle " +
+            "WHERE a.user.id = :userId AND a.archivedByClient = false",
+            countQuery = "SELECT COUNT(a) FROM Appointment a WHERE a.user.id = :userId AND a.archivedByClient = false")
+    Page<Appointment> findActiveByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    /**
+     * Historial completo: Incluye finalizadas, canceladas y archivadas.
+     */
+    @Query(value = "SELECT a FROM Appointment a JOIN FETCH a.user JOIN FETCH a.workshop JOIN FETCH a.vehicle " +
+            "WHERE a.user.id = :userId",
+            countQuery = "SELECT COUNT(a) FROM Appointment a WHERE a.user.id = :userId")
+    Page<Appointment> findFullHistoryByUserId(@Param("userId") Long userId, Pageable pageable);
 }

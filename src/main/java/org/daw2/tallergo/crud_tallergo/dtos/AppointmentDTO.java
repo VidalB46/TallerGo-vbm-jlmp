@@ -21,6 +21,11 @@ public class AppointmentDTO {
     private LocalDateTime startDate;
     private AppointmentStatus status;
     private String vehicleModel;     // Para mostrar el nombre del coche sin cargar toda la entidad
+    /**
+     * Identificador único del taller asociado a la cita.
+     * Necesario para generar enlaces de acción directa (ej: valorar taller).
+     */
+    private Integer workshopId;
     private String workshopName;     // Para mostrar el nombre del taller
     private String userEmail;        // Identificador del cliente
     private Boolean hasBudget;

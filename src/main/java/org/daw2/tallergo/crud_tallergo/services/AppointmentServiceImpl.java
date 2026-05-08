@@ -78,6 +78,13 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .map(AppointmentMapper::toDTO);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<AppointmentDTO> getActiveAppointmentsByUser(Long userId, Pageable pageable) {
+        return appointmentRepository.findActiveByUserId(userId, pageable)
+                .map(AppointmentMapper::toDTO);
+    }
+
     /**
      * Devuelve las citas de un taller concreto con paginación.
      *
@@ -208,5 +215,12 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointment.setStatus(AppointmentStatus.CONFIRMADO);
 
         appointmentRepository.save(appointment);
+    }
+
+    @Transactional
+    public void archiveAppointment(Long id) {
+        Appointment appt = appointmentRepository.findById(id).orElseThrow();
+        appt.setArchivedByClient(true);
+        appointmentRepository.save(appt);
     }
 }

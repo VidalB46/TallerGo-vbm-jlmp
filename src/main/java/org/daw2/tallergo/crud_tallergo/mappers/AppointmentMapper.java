@@ -30,6 +30,7 @@ public class AppointmentMapper {
                 .startDate(entity.getStartDate())
                 .status(entity.getStatus())
                 .vehicleModel(entity.getVehicle() != null ? entity.getVehicle().getMatricula() + " - " + entity.getVehicle().getModel() : "Desconocido")
+                .workshopId(entity.getWorkshop() != null ? entity.getWorkshop().getId() : null)
                 .workshopName(entity.getWorkshop() != null ? entity.getWorkshop().getName() : "Desconocido")
                 .userEmail(entity.getUser() != null ? entity.getUser().getEmail() : "Desconocido")
                 .build();

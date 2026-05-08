@@ -1,49 +1,69 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="~{fragments/head :: head(#{msg.review-list.title})}"></head>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>TallerGO — Opiniones</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+    <th:block th:replace="~{fragments/navbar :: navbarCss}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/views.css}"/>
+</head>
 
-<body class="d-flex flex-column h-100">
-<header th:replace="~{fragments/header :: header}"></header>
+<body>
+<nav th:replace="~{fragments/navbar :: navbar('workshops')}"></nav>
 
-<main class="list-page">
-    <div class="list-card">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h1 th:text="#{msg.review-list.title}">Opiniones de los clientes</h1>
-                <h4 class="text-muted" th:text="${workshop.name}">Nombre Taller</h4>
-            </div>
-            <a sec:authorize="hasRole('CLIENT')" th:href="@{/reviews/new(workshopId=${workshop.id})}" class="btn btn-success">
-                <i class="bi bi-pencil-square"></i> Escribir Reseña
-            </a>
+<div class="page-hero">
+    <div class="page-hero-inner flex">
+        <div>
+            <div class="page-label">Valoraciones</div>
+            <h1>Opiniones de Clientes</h1>
+            <p style="font-size: 1.1rem; color: #fff; font-weight: 600;" th:text="${workshop.name}">Nombre Taller</p>
         </div>
+        <a sec:authorize="hasRole('CLIENT')" th:href="@{/reviews/new(workshopId=${workshop.id})}" class="btn-new">
+            <i class="bi bi-star-fill"></i> Escribir Reseña
+        </a>
+    </div>
+</div>
 
-        <div th:if="${success}" class="alert alert-success mt-3" th:text="${success}"></div>
+<main class="list-main">
+    <div th:if="${success}" class="alert-success-custom mb-4 shadow-sm">
+        <i class="bi bi-check-circle-fill"></i> <span th:text="${success}"></span>
+    </div>
 
-        <div th:if="${#lists.isEmpty(reviews)}" class="alert alert-info text-center">
-            Este taller aún no tiene valoraciones. ¡Sé el primero en opinar!
-        </div>
+    <div class="empty-state" th:if="${#lists.isEmpty(reviews)}">
+        <i class="bi bi-chat-square-heart" style="font-size: 3.5rem; opacity: 0.2; margin-bottom: 1rem;"></i>
+        <h4 style="color: #555;">Sin valoraciones</h4>
+        <p>Este taller aún no tiene opiniones. ¡Sé el primero en contar tu experiencia!</p>
+    </div>
 
-        <div th:unless="${#lists.isEmpty(reviews)}" class="row row-cols-1 gap-3">
-            <div class="col" th:each="rev : ${reviews}">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h5 class="card-title mb-0 text-primary">
-                                <i class="bi bi-person-circle"></i> <span th:text="${rev.userEmail}">Usuario</span>
-                            </h5>
-                            <span class="badge bg-warning text-dark fs-6">
-                                <span th:text="${rev.rating}"></span> ⭐
-                            </span>
-                        </div>
-                        <p class="card-text text-secondary mt-3" th:text="${rev.comment}">Comentario del usuario...</p>
+    <div class="appt-grid" th:unless="${#lists.isEmpty(reviews)}">
+        <div class="detail-card" th:each="rev : ${reviews}">
+            <div class="detail-card-body">
+                <div class="detail-header" style="margin-bottom: 1rem; padding-bottom: 1rem;">
+                    <div style="font-weight: 700; color: #111;">
+                        <i class="bi bi-person-circle text-muted"></i>
+                        <span th:text="${rev.userFullName}">Usuario</span>
                     </div>
+                    <div style="color: #f59e0b; font-size: 1.1rem;">
+                        <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                            <i class="bi" th:classappend="${i <= rev.rating} ? 'bi-star-fill' : 'bi-star'"></i>
+                        </th:block>
+                    </div>
+                </div>
+                <div class="notes-box" style="background: transparent; border: none; padding: 0; color: #444; font-style: italic;">
+                    "<span th:text="${rev.comment}">Comentario...</span>"
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="mt-4 text-center">
-            <a th:href="@{/workshops}" class="btn btn-outline-secondary">Volver a Talleres</a>
-        </div>
+    <div style="margin-top: 3rem; text-align: center;">
+        <a th:href="@{/workshops}" class="btn-modern btn-outline">
+            <i class="bi bi-arrow-left"></i> Volver a Talleres
+        </a>
     </div>
 </main>
 
