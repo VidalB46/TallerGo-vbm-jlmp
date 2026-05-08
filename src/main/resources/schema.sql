@@ -11,8 +11,13 @@ CREATE TABLE IF NOT EXISTS users (
    password_expires_at DATETIME NULL,
    failed_login_attempts INT DEFAULT 0,
    email_verified BOOLEAN NOT NULL DEFAULT FALSE,
-   must_change_password BOOLEAN NOT NULL DEFAULT FALSE
+   must_change_password BOOLEAN NOT NULL DEFAULT FALSE,
+   workshop_id INT NULL,
+   CONSTRAINT fk_user_workshop FOREIGN KEY (workshop_id) REFERENCES workshops(id) ON DELETE SET NULL
 );
+
+-- Migración: añadir workshop_id si la tabla ya existía sin esa columna
+ALTER TABLE users ADD COLUMN IF NOT EXISTS workshop_id INT NULL REFERENCES workshops(id);
 
 CREATE TABLE IF NOT EXISTS user_profiles (
    user_id BIGINT PRIMARY KEY,

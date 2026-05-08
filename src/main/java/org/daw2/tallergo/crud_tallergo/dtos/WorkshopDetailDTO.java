@@ -35,6 +35,16 @@ public class WorkshopDetailDTO {
     private String schedule;
 
     /**
+     * Correo electrónico de contacto del taller.
+     */
+    private String email;
+
+    /**
+     * Teléfono de contacto del taller.
+     */
+    private String phone;
+
+    /**
      * Lista de mecánicos asociados al taller.
      */
     private List<MechanicDTO> mechanics;

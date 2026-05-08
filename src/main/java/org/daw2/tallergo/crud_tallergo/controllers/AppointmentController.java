@@ -29,14 +29,33 @@ public class AppointmentController {
     private final FileStorageService fileStorageService;
     private final RepairService repairService;
 
+    /**
+     * Lista las citas según el rol del usuario:
+     * - ADMIN: todas las citas del sistema.
+     * - WORKSHOP_ADMIN: solo las citas de su taller.
+     * - CLIENT: solo sus propias citas activas (no archivadas).
+     */
     @GetMapping
     public String listAppointments(@RequestParam(defaultValue = "0") int page, Model model, Authentication auth) {
-        User user = userRepository.findByEmail(auth.getName()).orElseThrow();
-        Pageable pageable = PageRequest.of(page, 10, Sort.by("startDate").ascending());
+        
+        User user = userRepository.findByEmailWithRolesAndWorkshop(auth.getName()).orElseThrow();
+        
+       
+        Pageable pageable = PageRequest.of(page, 6, Sort.by("startDate").ascending());
 
         boolean isAdmin = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-        // El servicio getAllAppointments devolverá las activas para el cliente
-        Page<AppointmentDTO> appointments = isAdmin ? appointmentService.getAllAppointments(pageable) : appointmentService.getActiveAppointmentsByUser(user.getId(), pageable);
+        boolean isWorkshopAdmin = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_WORKSHOP_ADMIN"));
+
+        Page<AppointmentDTO> appointments;
+        if (isAdmin) {
+            appointments = appointmentService.getAllAppointments(pageable);
+        } else if (isWorkshopAdmin && user.getWorkshop() != null) {
+            // [COMPAÑERO] Filtro exclusivo para el administrador del taller
+            appointments = appointmentService.getAppointmentsByWorkshop(user.getWorkshop().getId(), pageable);
+        } else {
+            // [TUYO] Filtramos las ocultas usando tu método de la semana pasada
+            appointments = appointmentService.getActiveAppointmentsByUser(user.getId(), pageable);
+        }
 
         model.addAttribute("appointmentsPage", appointments);
         return "views/appointment/appointment-list";

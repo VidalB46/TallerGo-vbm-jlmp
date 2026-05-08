@@ -94,6 +94,31 @@ public class MailServiceImpl implements MailService {
     }
 
     /**
+     * Igual que {@link #sendTemplate} pero añade el header {@code Reply-To} con el email del taller.
+     *
+     * @param to           Destinatario del correo.
+     * @param replyTo      Email del taller para el Reply-To (puede ser {@code null} o vacío).
+     * @param subjectKey   Clave i18n del asunto.
+     * @param templateName Nombre de la plantilla Thymeleaf.
+     * @param variables    Variables dinámicas para la plantilla.
+     * @param locale       Idioma del destinatario.
+     */
+    @Override
+    public void sendTemplateWithReplyTo(String to, String replyTo, String subjectKey,
+                                        String templateName, Map<String, Object> variables, Locale locale) {
+        String subject = messageSource.getMessage(subjectKey, null, locale);
+
+        Context ctx = new Context(locale);
+        ctx.setVariables(variables);
+        ctx.setVariable("subject", subject);
+        ctx.setVariable("lang", locale.getLanguage());
+
+        String html = templateEngine.process(templateName, ctx);
+
+        sendWithReplyTo(to, replyTo, subject, html);
+    }
+
+    /**
      * Método privado de bajo nivel para la construcción y envío del {@link MimeMessage}.
      *
      * @param to     Dirección de correo del destinatario.
@@ -105,7 +130,6 @@ public class MailServiceImpl implements MailService {
     private void send(String to, String subject, String body, boolean isHtml) {
         try {
             MimeMessage msg = mailSender.createMimeMessage();
-            // MimeMessageHelper facilita la configuración de adjuntos, HTML y codificación
             MimeMessageHelper helper = new MimeMessageHelper(msg, true, StandardCharsets.UTF_8.name());
 
             helper.setFrom(defaultFrom);
@@ -115,6 +139,39 @@ public class MailServiceImpl implements MailService {
 
             mailSender.send(msg);
             log.info("Correo enviado con éxito a: {} | Asunto: {}", to, subject);
+
+        } catch (MessagingException e) {
+            log.error("Error al construir o enviar el correo a {}: {}", to, e.getMessage());
+            throw new IllegalStateException("No se pudo enviar el correo electrónico.", e);
+        }
+    }
+
+    /**
+     * Método privado que envía un correo HTML añadiendo Reply-To si se facilita.
+     *
+     * @param to      Destinatario.
+     * @param replyTo Email Reply-To del taller (puede ser {@code null}).
+     * @param subject Asunto del mensaje.
+     * @param html    Cuerpo HTML del mensaje.
+     */
+    private void sendWithReplyTo(String to, String replyTo, String subject, String html) {
+        try {
+            MimeMessage msg = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(msg, true, StandardCharsets.UTF_8.name());
+
+            helper.setFrom(defaultFrom);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(html, true);
+
+            // Añadir Reply-To del taller si está disponible
+            if (replyTo != null && !replyTo.isBlank()) {
+                helper.setReplyTo(replyTo);
+                log.debug("Reply-To configurado: {}", replyTo);
+            }
+
+            mailSender.send(msg);
+            log.info("Correo enviado con éxito a: {} | Reply-To: {} | Asunto: {}", to, replyTo, subject);
 
         } catch (MessagingException e) {
             log.error("Error al construir o enviar el correo a {}: {}", to, e.getMessage());

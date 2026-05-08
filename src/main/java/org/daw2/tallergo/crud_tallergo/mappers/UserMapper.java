@@ -137,6 +137,10 @@ public class UserMapper {
             dto.setRoleIds(roleIds);
         }
 
+        if (entity.getWorkshop() != null) {
+            dto.setWorkshopId(entity.getWorkshop().getId());
+        }
+
         return dto;
     }
 

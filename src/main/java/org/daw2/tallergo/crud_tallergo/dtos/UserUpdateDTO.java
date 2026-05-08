@@ -82,4 +82,9 @@ public class UserUpdateDTO {
      */
     @NotEmpty(message = "{msg.user.roles.notempty}")
     private Set<Long> roleIds = new HashSet<>();
+
+    /**
+     * Identificador del taller asignado. Solo aplica para usuarios con rol {@code ROLE_WORKSHOP_ADMIN}.
+     */
+    private Integer workshopId;
 }

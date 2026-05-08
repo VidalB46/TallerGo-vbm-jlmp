@@ -7,11 +7,13 @@ import org.daw2.tallergo.crud_tallergo.dtos.UserUpdateDTO;
 import org.daw2.tallergo.crud_tallergo.dtos.UserRegisterDTO;
 import org.daw2.tallergo.crud_tallergo.entities.Role;
 import org.daw2.tallergo.crud_tallergo.entities.User;
+import org.daw2.tallergo.crud_tallergo.entities.Workshop;
 import org.daw2.tallergo.crud_tallergo.exceptions.DuplicateResourceException;
 import org.daw2.tallergo.crud_tallergo.exceptions.ResourceNotFoundException;
 import org.daw2.tallergo.crud_tallergo.mappers.UserMapper;
 import org.daw2.tallergo.crud_tallergo.repositories.RoleRepository;
 import org.daw2.tallergo.crud_tallergo.repositories.UserRepository;
+import org.daw2.tallergo.crud_tallergo.repositories.WorkshopRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private WorkshopRepository workshopRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -116,6 +121,14 @@ public class UserServiceImpl implements UserService {
         User user = UserMapper.toEntity(dto, roles);
         user.setPasswordHash(hashedPassword);
         user.setMustChangePassword(true);
+
+        // Si es WORKSHOP_ADMIN y se ha proporcionado un taller, asignarlo
+        if (dto.getWorkshopId() != null) {
+            Workshop workshop = workshopRepository.findById(dto.getWorkshopId())
+                    .orElseThrow(() -> new ResourceNotFoundException("workshop", "id", dto.getWorkshopId()));
+            user.setWorkshop(workshop);
+        }
+
         userRepository.save(user);
         logger.info("Usuario creado por administrador: {} (contraseña temporal generada)", user.getEmail());
     }
@@ -145,6 +158,16 @@ public class UserServiceImpl implements UserService {
         }
 
         UserMapper.copyToExistingEntity(dto, existingUser);
+
+        // Actualizar taller asignado
+        if (dto.getWorkshopId() != null) {
+            Workshop workshop = workshopRepository.findById(dto.getWorkshopId())
+                    .orElseThrow(() -> new ResourceNotFoundException("workshop", "id", dto.getWorkshopId()));
+            existingUser.setWorkshop(workshop);
+        } else {
+            existingUser.setWorkshop(null);
+        }
+
         userRepository.save(existingUser);
         logger.info("Usuario actualizado: {}", existingUser.getEmail());
     }

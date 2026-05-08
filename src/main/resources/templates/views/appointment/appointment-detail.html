@@ -34,8 +34,8 @@
 
         <div class="detail-stripe"
              th:classappend="${#strings.toString(appointment.status) == 'SOLICITADO'} ? 'stripe-solicitado' :
-                           (${#strings.toString(appointment.status) == 'CONFIRMADO'} ? 'stripe-confirmado' :
-                           (${#strings.toString(appointment.status) == 'EN_TALLER'} ? 'stripe-taller' : 'stripe-reparacion'))">
+                            (${#strings.toString(appointment.status) == 'CONFIRMADO'} ? 'stripe-confirmado' :
+                            (${#strings.toString(appointment.status) == 'EN_TALLER'} ? 'stripe-taller' : 'stripe-reparacion'))">
         </div>
 
         <div class="detail-card-body">
@@ -53,8 +53,8 @@
                 </div>
 
                 <span class="status-badge" th:classappend="${#strings.toString(appointment.status) == 'SOLICITADO'} ? 'status-solicitado' :
-                                                        (${#strings.toString(appointment.status) == 'CONFIRMADO' and !appointment.hasBudget} ? 'status-solicitado' :
-                                                        (${#strings.toString(appointment.status) == 'CONFIRMADO' and appointment.hasBudget and !appointment.isBudgetAccepted} ? 'status-reparacion' : 'status-confirmado'))">
+                                                                (${#strings.toString(appointment.status) == 'CONFIRMADO' and !appointment.hasBudget} ? 'status-solicitado' :
+                                                                (${#strings.toString(appointment.status) == 'CONFIRMADO' and appointment.hasBudget and !appointment.isBudgetAccepted} ? 'status-reparacion' : 'status-confirmado'))">
                     <i class="bi" th:classappend="${#strings.toString(appointment.status) == 'CONFIRMADO' and !appointment.hasBudget} ? 'bi-calculator' : 'bi-check-circle-fill'"></i>
 
                     <span th:if="${#strings.toString(appointment.status) == 'CONFIRMADO' and !appointment.hasBudget}">PRESUPUESTANDO</span>
@@ -155,18 +155,33 @@
                 </a>
             </div>
 
-            <div sec:authorize="hasRole('ADMIN')" class="d-flex flex-wrap gap-2 align-items-center">
+            <div sec:authorize="hasAnyRole('ADMIN', 'WORKSHOP_ADMIN')" class="d-flex flex-wrap gap-2 align-items-center">
 
                 <th:block th:if="${#strings.toString(appointment.status) == 'SOLICITADO'}">
                     <button type="button" class="btn-modern btn-outline" onclick="openRescheduleModal()"><i class="bi bi-calendar-x"></i> Reprogramar</button>
-                    <form th:if="${appointment.isDateAcceptedByClient}" th:action="@{/appointments/{id}/confirm(id=${appointment.id})}" method="post" class="m-0">
+                    <form th:action="@{/appointments/{id}/confirm(id=${appointment.id})}" method="post" class="m-0">
                         <button type="submit" class="btn-modern btn-success-modern"><i class="bi bi-check-lg"></i> Confirmar Cita</button>
+                    </form>
+                    <form th:action="@{/appointments/{id}/cancel(id=${appointment.id})}" method="post" class="m-0">
+                        <button type="submit" class="btn-modern btn-danger-modern"
+                                onclick="return confirm('¿Seguro que deseas cancelar esta cita?')">
+                            <i class="bi bi-x-circle"></i> Cancelar Cita
+                        </button>
                     </form>
                 </th:block>
 
                 <th:block th:if="${#strings.toString(appointment.status) == 'CONFIRMADO'}">
                     <form th:if="${appointment.isBudgetAccepted}" th:action="@{/repairs/{id}/receive(id=${appointment.repairId})}" method="post" class="m-0">
                         <button type="submit" class="btn-modern btn-primary-modern"><i class="bi bi-box-arrow-in-right"></i> Recepcionar Vehículo</button>
+                    </form>
+                    <div th:unless="${appointment.isBudgetAccepted}" class="text-muted small fw-bold ms-2 d-flex align-items-center gap-1">
+                        <i class="bi bi-lock-fill" style="color: #c0392b;"></i> Recepción bloqueada hasta aprobación
+                    </div>
+                    <form th:action="@{/appointments/{id}/cancel(id=${appointment.id})}" method="post" class="m-0">
+                        <button type="submit" class="btn-modern btn-danger-modern"
+                                onclick="return confirm('¿Seguro que deseas cancelar esta cita?')">
+                            <i class="bi bi-x-circle"></i> Cancelar Cita
+                        </button>
                     </form>
                 </th:block>
 
@@ -184,7 +199,7 @@
                     </form>
                 </th:block>
 
-                <th:block th:if="${#strings.toString(appointment.status) == 'EN_REPARACION'}" sec:authorize="hasRole('ADMIN')">
+                <th:block th:if="${#strings.toString(appointment.status) == 'EN_REPARACION'}" sec:authorize="hasAnyRole('ADMIN', 'WORKSHOP_ADMIN')">
                     <a th:if="${appointment.isBudgetAccepted}" th:href="@{/budgets/new(repairId=${appointment.repairId})}" class="btn-modern btn-warning-modern">
                         <i class="bi bi-pencil-square"></i> Modificar
                     </a>
@@ -218,7 +233,7 @@
             </div>
             <div class="tgo-modal-footer">
                 <button type="button" class="btn-modern btn-outline" onclick="closeRescheduleModal()">Cancelar</button>
-                <button type="submit" class="btn-modern btn-primary-modern">Enviar Propuesta</button>
+                <button type="submit" class="btn-modern btn-primary-modern">Reprogramar Cita</button>
             </div>
         </form>
     </div>

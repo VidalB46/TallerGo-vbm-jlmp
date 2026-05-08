@@ -58,6 +58,19 @@
                     <div class="form-hint">Mantén Ctrl (o Cmd) para seleccionar varios roles.</div>
                 </div>
 
+                <div class="form-group" id="workshopSelector" style="display:none;">
+                    <label for="workshopId"><i class="bi bi-building"></i> Taller asignado</label>
+                    <select id="workshopId" name="workshopId" class="form-control">
+                        <option value="">— Sin taller —</option>
+                        <option th:each="ws : ${allWorkshops}"
+                                th:value="${ws.id}"
+                                th:text="${ws.name}"
+                                th:selected="${user.workshopId != null and user.workshopId == ws.id}">
+                        </option>
+                    </select>
+                    <div class="form-hint">Taller que gestionará este usuario.</div>
+                </div>
+
                 <div class="form-group">
                     <label>Opciones de cuenta</label>
                     <div class="checks-grid">
@@ -95,5 +108,34 @@
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script th:inline="none">
+    (function () {
+        const roleSelect    = document.getElementById('roleIds');
+        const workshopBlock = document.getElementById('workshopSelector');
+        const workshopSel   = document.getElementById('workshopId');
+
+        function isWorkshopAdminSelected() {
+            return Array.from(roleSelect.options).some(
+                o => o.selected && o.text.toLowerCase().includes('taller')
+            );
+        }
+
+        function toggle() {
+            const show = isWorkshopAdminSelected();
+            workshopBlock.style.display = show ? '' : 'none';
+            if (!show) workshopSel.value = '';
+        }
+
+        // Al cambiar los roles
+        roleSelect.addEventListener('change', toggle);
+
+        // Al cargar: mostrar si ya hay taller asignado o rol Workshop Admin seleccionado
+        const hasWorkshop = workshopSel.value !== '';
+        if (hasWorkshop || isWorkshopAdminSelected()) {
+            workshopBlock.style.display = '';
+        }
+    })();
+</script>
 </body>
 </html>
