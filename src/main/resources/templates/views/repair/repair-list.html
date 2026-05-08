@@ -16,7 +16,7 @@
             <table class="table table-bordered table-striped mt-3 align-middle">
                 <thead class="table-dark">
                 <tr>
-                    <th>ID</th>
+                    <th th:text="#{msg.repair-list.id}">ID</th>
                     <th th:text="#{msg.repair-list.vehicle}">Vehículo</th>
                     <th th:text="#{msg.repair-list.entryDate}">Fecha Entrada</th>
                     <th th:text="#{msg.repair-list.status}">Estado</th>
@@ -42,7 +42,7 @@
                 </tr>
                 <tr th:if="${repairsPage.empty}">
                     <td colspan="5" class="text-center text-muted py-4">
-                        <i class="bi bi-tools fs-4 d-block mb-2"></i> No hay reparaciones registradas.
+                        <i class="bi bi-tools fs-4 d-block mb-2"></i> <span th:text="#{msg.repair-list.empty}">No hay reparaciones registradas.</span>
                     </td>
                 </tr>
                 </tbody>

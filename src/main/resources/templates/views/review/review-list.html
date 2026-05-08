@@ -18,12 +18,12 @@
 <div class="page-hero">
     <div class="page-hero-inner flex">
         <div>
-            <div class="page-label">Valoraciones</div>
-            <h1>Opiniones de Clientes</h1>
+            <div class="page-label" th:text="#{msg.review-list.label}">Valoraciones</div>
+            <h1 th:text="#{msg.review-list.title}">Opiniones de Clientes</h1>
             <p style="font-size: 1.1rem; color: #fff; font-weight: 600;" th:text="${workshop.name}">Nombre Taller</p>
         </div>
         <a sec:authorize="hasRole('CLIENT')" th:href="@{/reviews/new(workshopId=${workshop.id})}" class="btn-new">
-            <i class="bi bi-star-fill"></i> Escribir Reseña
+            <i class="bi bi-star-fill"></i> <span th:text="#{msg.review-list.write}">Escribir Reseña</span>
         </a>
     </div>
 </div>
@@ -35,8 +35,8 @@
 
     <div class="empty-state" th:if="${#lists.isEmpty(reviews)}">
         <i class="bi bi-chat-square-heart" style="font-size: 3.5rem; opacity: 0.2; margin-bottom: 1rem;"></i>
-        <h4 style="color: #555;">Sin valoraciones</h4>
-        <p>Este taller aún no tiene opiniones. ¡Sé el primero en contar tu experiencia!</p>
+        <h4 style="color: #555;" th:text="#{msg.review-list.empty.title}">Sin valoraciones</h4>
+        <p th:text="#{msg.review-list.empty.text}">Este taller aún no tiene opiniones. ¡Sé el primero en contar tu experiencia!</p>
     </div>
 
     <div class="appt-grid" th:unless="${#lists.isEmpty(reviews)}">
@@ -62,7 +62,7 @@
 
     <div style="margin-top: 3rem; text-align: center;">
         <a th:href="@{/workshops}" class="btn-modern btn-outline">
-            <i class="bi bi-arrow-left"></i> Volver a Talleres
+            <i class="bi bi-arrow-left"></i> <span th:text="#{msg.review-list.back}">Volver a Talleres</span>
         </a>
     </div>
 </main>

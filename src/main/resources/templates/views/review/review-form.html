@@ -17,9 +17,9 @@
 
 <div class="page-hero text-center">
     <div class="page-hero-inner">
-        <div class="page-label">Feedback</div>
-        <h1>Cuéntanos tu experiencia</h1>
-        <p>Valorando a: <strong th:text="${workshop.name}" style="color: #fff;">Taller</strong></p>
+        <div class="page-label" th:text="#{msg.review-form.label}">Feedback</div>
+        <h1 th:text="#{msg.review-form.title}">Cuéntanos tu experiencia</h1>
+        <p><span th:text="#{msg.review-form.valuating}">Valorando a:</span> <strong th:text="${workshop.name}" style="color: #fff;">Taller</strong></p>
     </div>
 </div>
 
@@ -36,36 +36,36 @@
 
                 <div>
                     <label for="rating" style="display: block; font-size: 0.78rem; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">
-                        <i class="bi bi-star-fill" style="color: #f59e0b;"></i> Puntuación
+                        <i class="bi bi-star-fill" style="color: #f59e0b;"></i> <span th:text="#{msg.review-form.rating.label}">Puntuación</span>
                     </label>
                     <select th:field="*{rating}" id="rating" class="form-control" required
                             th:classappend="${#fields.hasErrors('rating')} ? 'is-invalid'"
                             style="cursor: pointer;">
-                        <option value="5">⭐⭐⭐⭐⭐ (5 - Excelente)</option>
-                        <option value="4">⭐⭐⭐⭐ (4 - Muy bueno)</option>
-                        <option value="3">⭐⭐⭐ (3 - Normal)</option>
-                        <option value="2">⭐⭐ (2 - Regular)</option>
-                        <option value="1">⭐ (1 - Malo)</option>
+                        <option value="5" th:text="#{msg.review-form.rating.5}">⭐⭐⭐⭐⭐ (5 - Excelente)</option>
+                        <option value="4" th:text="#{msg.review-form.rating.4}">⭐⭐⭐⭐ (4 - Muy bueno)</option>
+                        <option value="3" th:text="#{msg.review-form.rating.3}">⭐⭐⭐ (3 - Normal)</option>
+                        <option value="2" th:text="#{msg.review-form.rating.2}">⭐⭐ (2 - Regular)</option>
+                        <option value="1" th:text="#{msg.review-form.rating.1}">⭐ (1 - Malo)</option>
                     </select>
                     <div class="field-error" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></div>
                 </div>
 
                 <div>
                     <label for="comment" style="display: block; font-size: 0.78rem; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">
-                        <i class="bi bi-chat-quote" style="color: #c0392b;"></i> Tu comentario
+                        <i class="bi bi-chat-quote" style="color: #c0392b;"></i> <span th:text="#{msg.review-form.comment.label}">Tu comentario</span>
                     </label>
                     <textarea th:field="*{comment}" id="comment" class="form-control" rows="5" required
                               th:classappend="${#fields.hasErrors('comment')} ? 'is-invalid'"
-                              placeholder="¿Qué tal fue el servicio? ¿Lo recomiendas?"></textarea>
+                              th:placeholder="#{msg.review-form.comment.placeholder}"></textarea>
                     <div class="field-error" th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}"></div>
                 </div>
 
             </div>
 
             <div class="form-card-footer spread">
-                <a th:href="@{/workshops}" class="btn-modern btn-outline">Cancelar</a>
+                <a th:href="@{/workshops}" class="btn-modern btn-outline" th:text="#{msg.review-form.cancel}">Cancelar</a>
                 <button type="submit" class="btn-modern btn-primary-modern">
-                    <i class="bi bi-send"></i> Enviar Reseña
+                    <i class="bi bi-send"></i> <span th:text="#{msg.review-form.submit}">Enviar Reseña</span>
                 </button>
             </div>
         </form>

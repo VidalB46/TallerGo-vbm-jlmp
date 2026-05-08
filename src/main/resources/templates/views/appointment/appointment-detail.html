@@ -24,7 +24,7 @@
     <div class="page-hero-inner">
         <div class="page-label" th:text="#{msg.appointment-detail.label}">Agenda</div>
         <h1>Detalle de Cita <span style="color:#c0392b;">#<span th:text="${appointment.id}"></span></span></h1>
-        <p>Información completa sobre la gestión y estado del vehículo.</p>
+        <p th:text="#{msg.appointment-detail.subtitle}">Información completa sobre la gestión y estado del vehículo.</p>
     </div>
 </div>
 

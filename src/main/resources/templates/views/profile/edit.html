@@ -17,9 +17,9 @@
 
 <div class="page-hero">
     <div class="page-hero-inner">
-        <div class="page-label">Cuenta</div>
-        <h1>Editar Perfil</h1>
-        <p>Actualiza tu información personal, contacto y foto.</p>
+        <div class="page-label" th:text="#{msg.label.account}">Cuenta</div>
+        <h1 th:text="#{msg.profile.edit.title}">Editar Perfil</h1>
+        <p th:text="#{msg.profile.edit.subtitle}">Actualiza tu información personal, contacto y foto.</p>
     </div>
 </div>
 
@@ -41,20 +41,20 @@
         <div class="form-card">
             <div class="form-card-header">
                 <i class="bi bi-person-badge"></i>
-                <h2>Identidad</h2>
+                <h2 th:text="#{msg.profile.section.identity}">Identidad</h2>
             </div>
             <div class="form-card-body">
                 <div class="form-group">
-                    <label>Email</label>
+                    <label th:text="#{msg.profile.field.email}">Email</label>
                     <input type="email" class="form-control" th:field="*{email}" readonly/>
                 </div>
                 <div class="form-cols">
                     <div class="form-group">
-                        <label for="firstName">Nombre</label>
+                        <label for="firstName" th:text="#{msg.profile.field.firstName}">Nombre</label>
                         <input type="text" id="firstName" class="form-control" th:field="*{firstName}" placeholder="Tu nombre"/>
                     </div>
                     <div class="form-group">
-                        <label for="lastName">Apellidos</label>
+                        <label for="lastName" th:text="#{msg.profile.field.lastName}">Apellidos</label>
                         <input type="text" id="lastName" class="form-control" th:field="*{lastName}" placeholder="Tus apellidos"/>
                     </div>
                 </div>
@@ -64,19 +64,19 @@
         <div class="form-card">
             <div class="form-card-header">
                 <i class="bi bi-telephone"></i>
-                <h2>Contacto e idioma</h2>
+                <h2 th:text="#{msg.profile.section.contact}">Contacto e idioma</h2>
             </div>
             <div class="form-card-body">
                 <div class="form-cols">
                     <div class="form-group">
-                        <label for="phoneNumber">Teléfono</label>
+                        <label for="phoneNumber" th:text="#{msg.profile.field.phone}">Teléfono</label>
                         <input type="tel" id="phoneNumber" class="form-control" th:field="*{phoneNumber}" placeholder="+34 600 000 000"/>
                     </div>
                     <div class="form-group">
-                        <label for="locale">Idioma preferido</label>
+                        <label for="locale" th:text="#{msg.profile.field.locale}">Idioma preferido</label>
                         <select id="locale" class="form-control" th:field="*{locale}">
-                            <option value="es" th:selected="${userProfileForm.locale == 'es'}">Español</option>
-                            <option value="en" th:selected="${userProfileForm.locale == 'en'}">English</option>
+                            <option value="es" th:selected="${userProfileForm.locale == 'es'}" th:text="#{msg.profile.locale.es}">Español</option>
+                            <option value="en" th:selected="${userProfileForm.locale == 'en'}" th:text="#{msg.profile.locale.en}">English</option>
                         </select>
                     </div>
                 </div>
@@ -86,11 +86,11 @@
         <div class="form-card">
             <div class="form-card-header">
                 <i class="bi bi-image"></i>
-                <h2>Foto y biografía</h2>
+                <h2 th:text="#{msg.profile.section.photo}">Foto y biografía</h2>
             </div>
             <div class="form-card-body">
                 <div class="form-group">
-                    <label>Foto de perfil</label>
+                    <label th:text="#{msg.profile.field.photo}">Foto de perfil</label>
                     <div class="avatar-preview-wrap" style="margin-bottom:0.8rem;">
                         <img th:if="${userProfileForm.profileImage != null and !userProfileForm.profileImage.isEmpty()}"
                              th:src="${userProfileForm.profileImage}" class="avatar-preview" alt="Avatar"/>
@@ -100,19 +100,19 @@
                         <input type="file" name="profileImageFile" class="form-control" accept="image/*" style="flex:1;"/>
                     </div>
                     <div class="form-group">
-                        <label for="profileImageUrl">O introduce URL de imagen</label>
+                        <label for="profileImageUrl" th:text="#{msg.profile.field.photoUrl}">O introduce URL de imagen</label>
                         <input type="url" id="profileImageUrl" class="form-control" th:field="*{profileImage}" placeholder="https://…"/>
                     </div>
                     <div class="form-hint">Sube un archivo o introduce una URL. El archivo tiene prioridad si se selecciona.</div>
                 </div>
                 <div class="form-group">
-                    <label for="bio">Biografía</label>
+                    <label for="bio" th:text="#{msg.profile.field.bio}">Biografía</label>
                     <textarea id="bio" class="form-control" th:field="*{bio}" placeholder="Cuéntanos algo sobre ti…"></textarea>
                 </div>
             </div>
             <div class="form-card-footer">
                 <button type="submit" class="btn-submit">
-                    <i class="bi bi-check2-circle"></i> Guardar cambios
+                    <i class="bi bi-check2-circle"></i> <span th:text="#{msg.profile.submit}">Guardar cambios</span>
                 </button>
             </div>
         </div>

@@ -69,7 +69,7 @@
                         Email <span th:if="${order != null}" th:text="${dir == 'asc' ? '▲' : '▼'}"></span>
                     </a>
                 </th>
-                <th>Roles</th>
+                <th th:text="#{msg.user-list.col.roles}">Roles</th>
                 <th th:text="#{msg.user-list.active}">Estado</th>
                 <th th:text="#{msg.user-list.actions}">Acciones</th>
             </tr>

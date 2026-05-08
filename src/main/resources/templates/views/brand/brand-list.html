@@ -69,7 +69,7 @@
         <div th:if="${page.isEmpty()}">
             <div class="empty-state">
                 <i class="bi bi-shield-x"></i>
-                <p>No hay marcas registradas todavía.</p>
+                <p th:text="#{msg.brand-list.empty}">No hay marcas registradas todavía.</p>
             </div>
         </div>
 

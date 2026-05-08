@@ -52,7 +52,7 @@
     <div class="mec-grid">
         <div class="mec-empty" th:if="${page.content.isEmpty()}">
             <i class="bi bi-person-x"></i>
-            <p>No hay mecánicos registrados todavía.</p>
+            <p th:text="#{msg.mechanic-list.empty}">No hay mecánicos registrados todavía.</p>
         </div>
 
         <div class="mec-card" th:each="m,iter : ${page.content}">

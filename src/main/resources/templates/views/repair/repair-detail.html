@@ -17,7 +17,7 @@
 
 <div class="page-hero">
     <div class="page-hero-inner">
-        <div class="page-label">Taller</div>
+        <div class="page-label" th:text="#{msg.repair-detail.label}">Taller</div>
         <h1>Detalle de Reparación <span style="color:#c0392b;">#<span th:text="${repair.id}"></span></span></h1>
     </div>
 </div>
@@ -54,19 +54,19 @@
                 </span>
             </div>
 
-            <div class="detail-section-title"><i class="bi bi-info-square-fill"></i> Datos Generales</div>
+            <div class="detail-section-title"><i class="bi bi-info-square-fill"></i> <span th:text="#{msg.repair-detail.section.general}">Datos Generales</span></div>
             <div class="detail-grid">
                 <div class="detail-field">
-                    <label>Fecha de Entrada</label>
+                    <label th:text="#{msg.repair-detail.field.entryDate}">Fecha de Entrada</label>
                     <span><i class="bi bi-calendar-event text-danger"></i> <span th:text="${#temporals.format(repair.entryDate, 'dd MMM yyyy')}"></span></span>
                 </div>
                 <div class="detail-field">
-                    <label>Vehículo</label>
+                    <label th:text="#{msg.repair-detail.field.vehicle}">Vehículo</label>
                     <span><i class="bi bi-car-front-fill text-danger"></i> <span th:text="${repair.vehicle.model + ' (' + repair.vehicle.matricula + ')'}"></span></span>
                 </div>
             </div>
 
-            <div class="detail-section-title"><i class="bi bi-clipboard-data-fill"></i> Notas del Mecánico</div>
+            <div class="detail-section-title"><i class="bi bi-clipboard-data-fill"></i> <span th:text="#{msg.repair-detail.section.notes}">Notas del Mecánico</span></div>
             <div class="notes-box">
                 <span th:text="${repair.notes != null and !#strings.isEmpty(repair.notes) ? repair.notes : 'Sin notas adicionales.'}"></span>
             </div>
@@ -74,7 +74,7 @@
 
         <div class="detail-card-footer">
             <a th:href="@{/appointments}" class="btn-modern btn-outline">
-                <i class="bi bi-arrow-left"></i> Volver al listado
+                <i class="bi bi-arrow-left"></i> <span th:text="#{msg.repair-detail.back}">Volver al listado</span>
             </a>
 
             <div class="d-flex flex-wrap gap-2 align-items-center">
@@ -93,7 +93,7 @@
                       th:if="${#strings.toString(repair.status) == 'STANDBY' and repair.budget != null and repair.budget.accepted}"
                       th:action="@{/repairs/{id}/start(id=${repair.id})}" method="post" class="m-0">
                     <button type="submit" class="btn-modern btn-primary-modern">
-                        <i class="bi bi-play-circle"></i> Comenzar Trabajo
+                        <i class="bi bi-play-circle"></i> <span th:text="#{msg.repair-detail.btn.start}">Comenzar Trabajo</span>
                     </button>
                 </form>
 
@@ -113,7 +113,7 @@
                       th:if="${#strings.toString(repair.status) == 'ACTIVO' and repair.budget != null and repair.budget.accepted}"
                       th:action="@{/repairs/{id}/finish(id=${repair.id})}" method="post" class="m-0">
                     <button type="submit" class="btn-modern btn-success-modern">
-                        <i class="bi bi-check2-all"></i> Finalizar Reparación
+                        <i class="bi bi-check2-all"></i> <span th:text="#{msg.repair-detail.btn.finish}">Finalizar Reparación</span>
                     </button>
                 </form>
 
