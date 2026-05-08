@@ -42,6 +42,11 @@ public interface AppointmentService {
     Page<AppointmentDTO> getAppointmentsByUser(Long userId, Pageable pageable);
 
     /**
+     * Devuelve SOLO las citas activas (no archivadas) de un usuario.
+     */
+    Page<AppointmentDTO> getActiveAppointmentsByUser(Long userId, Pageable pageable);
+
+    /**
      * Devuelve las citas de un taller concreto con paginación.
      *
      * @param workshopId Identificador del taller.
@@ -96,4 +101,6 @@ public interface AppointmentService {
      * @param id Identificador de la cita.
      */
     void acceptDate(Long id);
+
+    void archiveAppointment(Long id);
 }

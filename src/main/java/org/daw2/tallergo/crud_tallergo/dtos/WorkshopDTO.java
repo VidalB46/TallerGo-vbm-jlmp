@@ -43,4 +43,9 @@ public class WorkshopDTO {
      * Correo electrónico de contacto del taller.
      */
     private String email;
+
+    /**
+     * Valoración media del taller basada en las reseñas de los clientes.
+     */
+    private Double averageRating;
 }

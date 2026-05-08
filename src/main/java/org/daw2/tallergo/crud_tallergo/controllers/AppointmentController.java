@@ -17,9 +17,6 @@ import jakarta.validation.Valid;
 
 import java.time.LocalDateTime;
 
-/**
- * Controlador para la gestión del ciclo de vida de las citas y la orquestación con reparaciones.
- */
 @Controller
 @RequestMapping("/appointments")
 @RequiredArgsConstructor
@@ -36,12 +33,15 @@ public class AppointmentController {
      * Lista las citas según el rol del usuario:
      * - ADMIN: todas las citas del sistema.
      * - WORKSHOP_ADMIN: solo las citas de su taller.
-     * - CLIENT: solo sus propias citas.
+     * - CLIENT: solo sus propias citas activas (no archivadas).
      */
     @GetMapping
     public String listAppointments(@RequestParam(defaultValue = "0") int page, Model model, Authentication auth) {
+        
         User user = userRepository.findByEmailWithRolesAndWorkshop(auth.getName()).orElseThrow();
-        Pageable pageable = PageRequest.of(page, 6, Sort.by("startDate").descending());
+        
+       
+        Pageable pageable = PageRequest.of(page, 6, Sort.by("startDate").ascending());
 
         boolean isAdmin = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         boolean isWorkshopAdmin = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_WORKSHOP_ADMIN"));
@@ -50,42 +50,30 @@ public class AppointmentController {
         if (isAdmin) {
             appointments = appointmentService.getAllAppointments(pageable);
         } else if (isWorkshopAdmin && user.getWorkshop() != null) {
+            // [COMPAÑERO] Filtro exclusivo para el administrador del taller
             appointments = appointmentService.getAppointmentsByWorkshop(user.getWorkshop().getId(), pageable);
         } else {
-            appointments = appointmentService.getAppointmentsByUser(user.getId(), pageable);
+            // [TUYO] Filtramos las ocultas usando tu método de la semana pasada
+            appointments = appointmentService.getActiveAppointmentsByUser(user.getId(), pageable);
         }
 
         model.addAttribute("appointmentsPage", appointments);
         return "views/appointment/appointment-list";
     }
 
-    /**
-     * Muestra el formulario para solicitar una nueva cita.
-     */
+    // --- RUTAS DE CREACIÓN Y EDICIÓN  ---
     @GetMapping("/new")
     public String showCreateForm(Model model, Authentication authentication) {
-        User user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-
+        User user = userRepository.findByEmail(authentication.getName()).orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
         model.addAttribute("appointment", new AppointmentCreateDTO());
         model.addAttribute("vehicles", vehicleService.getVehiclesByUserId(user.getId()));
         model.addAttribute("workshops", workshopService.listAll());
-
         return "views/appointment/appointment-form";
     }
 
-    /**
-     * Procesa y valida el formulario de nueva cita.
-     */
     @PostMapping("/new")
-    public String createAppointment(@Valid @ModelAttribute("appointment") AppointmentCreateDTO dto,
-                                    BindingResult result,
-                                    Model model,
-                                    Authentication authentication,
-                                    RedirectAttributes redirectAttributes) {
-
-        User user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+    public String createAppointment(@Valid @ModelAttribute("appointment") AppointmentCreateDTO dto, BindingResult result, Model model, Authentication authentication, RedirectAttributes redirectAttributes) {
+        User user = userRepository.findByEmail(authentication.getName()).orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
         if (result.hasErrors()) {
             model.addAttribute("vehicles", vehicleService.getVehiclesByUserId(user.getId()));
@@ -113,11 +101,9 @@ public class AppointmentController {
                     return "views/appointment/appointment-form";
                 }
             }
-
             appointmentService.createAppointment(dto, authentication.getName());
             redirectAttributes.addFlashAttribute("success", "¡Tu cita ha sido solicitada correctamente!");
             return "redirect:/appointments";
-
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("vehicles", vehicleService.getVehiclesByUserId(user.getId()));
@@ -126,18 +112,12 @@ public class AppointmentController {
         }
     }
 
-    /**
-     * Visualiza los detalles completos de una cita.
-     */
     @GetMapping("/{id}")
     public String viewAppointment(@PathVariable Long id, Model model) {
         model.addAttribute("appointment", appointmentService.getAppointmentById(id));
         return "views/appointment/appointment-detail";
     }
 
-    /**
-     * Procesa la confirmación manual de una cita por parte del administrador.
-     */
     @PostMapping("/{id}/confirm")
     public String confirmAppointment(@PathVariable Long id, RedirectAttributes ra) {
         try {
@@ -150,9 +130,6 @@ public class AppointmentController {
         return "redirect:/appointments/" + id;
     }
 
-    /**
-     * Gestiona la aceptación de una propuesta de fecha por parte del cliente.
-     */
     @PostMapping("/{id}/accept-date")
     public String acceptDate(@PathVariable Long id, RedirectAttributes ra) {
         try {
@@ -165,9 +142,6 @@ public class AppointmentController {
         return "redirect:/appointments/" + id;
     }
 
-    /**
-     * Registra una nueva propuesta de fecha y hora para la cita.
-     */
     @PostMapping("/{id}/reschedule")
     public String reschedule(@PathVariable Long id, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime newDate, RedirectAttributes ra) {
         try {
@@ -179,9 +153,6 @@ public class AppointmentController {
         return "redirect:/appointments/" + id;
     }
 
-    /**
-     * Cancela la cita de forma definitiva (Taller o Cliente).
-     */
     @PostMapping("/{id}/cancel")
     public String cancelAppointment(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
@@ -191,5 +162,31 @@ public class AppointmentController {
             redirectAttributes.addFlashAttribute("error", "Error al cancelar: " + e.getMessage());
         }
         return "redirect:/appointments";
+    }
+
+    // --- RUTAS PARA EL HISTORIAL Y EL ARCHIVADO ---
+
+    @PostMapping("/{id}/archive")
+    public String archive(@PathVariable Long id, RedirectAttributes ra) {
+        try {
+            appointmentService.archiveAppointment(id);
+            ra.addFlashAttribute("success", "Cita ocultada de tu vista principal. Puedes consultarla en el Historial.");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Error al ocultar la cita.");
+        }
+        return "redirect:/appointments";
+    }
+
+    @GetMapping("/history")
+    public String showHistory(@RequestParam(defaultValue = "0") int page, Model model, Authentication auth) {
+        // Ordenamos por fecha descendente para ver lo más reciente primero
+        Pageable pageable = PageRequest.of(page, 9, Sort.by("startDate").descending());
+
+        User user = userRepository.findByEmail(auth.getName()).orElseThrow();
+        // Llamamos al servicio que ejecuta findFullHistoryByUserId
+        Page<AppointmentDTO> historyPage = appointmentService.getAppointmentsByUser(user.getId(), pageable);
+
+        model.addAttribute("appointmentsPage", historyPage);
+        return "views/appointment/appointment-history";
     }
 }

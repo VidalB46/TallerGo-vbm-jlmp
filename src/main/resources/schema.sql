@@ -107,6 +107,7 @@ CREATE TABLE IF NOT EXISTS appointments (
   notes TEXT,
   media_url VARCHAR(255),
   is_date_accepted_by_client BOOLEAN NOT NULL DEFAULT TRUE,
+  archived_by_client BOOLEAN NOT NULL DEFAULT FALSE,
   CONSTRAINT fk_appt_user FOREIGN KEY (user_id) REFERENCES users(id),
   CONSTRAINT fk_appt_workshop FOREIGN KEY (workshop_id) REFERENCES workshops(id),
   CONSTRAINT fk_appt_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(id)
@@ -123,19 +124,17 @@ CREATE TABLE IF NOT EXISTS repairs (
   CONSTRAINT fk_repair_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(id)
 );
 
--- Tabla BUDGETS unificada (Estructura de la rama + Lógica de master)
 CREATE TABLE IF NOT EXISTS budgets (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  repair_id BIGINT UNIQUE NOT NULL, -- UNIQUE para asegurar 1 presupuesto por reparación
+  repair_id BIGINT UNIQUE NOT NULL,
   total_gross DECIMAL(10, 2),
   total_net DECIMAL(10, 2),
   accepted BOOLEAN DEFAULT FALSE,
-  rejected BOOLEAN NOT NULL DEFAULT FALSE, -- Rescatado de master
-  notes TEXT, -- Rescatado de master
+  rejected BOOLEAN NOT NULL DEFAULT FALSE,
+  notes TEXT,
   CONSTRAINT fk_budget_repair FOREIGN KEY (repair_id) REFERENCES repairs(id)
 );
 
--- Tabla BUDGET_LINES (Incorporada de la rama)
 CREATE TABLE IF NOT EXISTS budget_lines (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   budget_id BIGINT NOT NULL,

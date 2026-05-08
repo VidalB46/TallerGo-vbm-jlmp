@@ -34,15 +34,15 @@
 
         <div class="detail-stripe"
              th:classappend="${#strings.toString(appointment.status) == 'SOLICITADO'} ? 'stripe-solicitado' :
-                           (${#strings.toString(appointment.status) == 'CONFIRMADO'} ? 'stripe-confirmado' :
-                           (${#strings.toString(appointment.status) == 'EN_TALLER'} ? 'stripe-taller' : 'stripe-reparacion'))">
+                            (${#strings.toString(appointment.status) == 'CONFIRMADO'} ? 'stripe-confirmado' :
+                            (${#strings.toString(appointment.status) == 'EN_TALLER'} ? 'stripe-taller' : 'stripe-reparacion'))">
         </div>
 
         <div class="detail-card-body">
 
             <div class="detail-header">
                 <div>
-                    <div class="detail-id">Gestión #<span th:text="${appointment.id}"></span></div>
+                    <div class="detail-id">Gestión de cita</div>
                     <div class="detail-date-big" th:text="${#temporals.format(appointment.startDate, 'dd MMM yyyy')}"></div>
                     <div class="detail-time-big">
                         <i class="bi bi-clock"></i>
@@ -53,8 +53,8 @@
                 </div>
 
                 <span class="status-badge" th:classappend="${#strings.toString(appointment.status) == 'SOLICITADO'} ? 'status-solicitado' :
-                                                        (${#strings.toString(appointment.status) == 'CONFIRMADO' and !appointment.hasBudget} ? 'status-solicitado' :
-                                                        (${#strings.toString(appointment.status) == 'CONFIRMADO' and appointment.hasBudget and !appointment.isBudgetAccepted} ? 'status-reparacion' : 'status-confirmado'))">
+                                                                (${#strings.toString(appointment.status) == 'CONFIRMADO' and !appointment.hasBudget} ? 'status-solicitado' :
+                                                                (${#strings.toString(appointment.status) == 'CONFIRMADO' and appointment.hasBudget and !appointment.isBudgetAccepted} ? 'status-reparacion' : 'status-confirmado'))">
                     <i class="bi" th:classappend="${#strings.toString(appointment.status) == 'CONFIRMADO' and !appointment.hasBudget} ? 'bi-calculator' : 'bi-check-circle-fill'"></i>
 
                     <span th:if="${#strings.toString(appointment.status) == 'CONFIRMADO' and !appointment.hasBudget}">PRESUPUESTANDO</span>

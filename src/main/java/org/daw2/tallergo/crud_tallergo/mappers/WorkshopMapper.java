@@ -17,7 +17,6 @@ public class WorkshopMapper {
 
     /**
      * Convierte una entidad Workshop a un DTO básico para listados o búsquedas.
-     * Utiliza el patrón Builder para una construcción limpia.
      */
     public static WorkshopDTO toDTO(Workshop entity) {
         if (entity == null) return null;
@@ -27,7 +26,8 @@ public class WorkshopMapper {
                 .name(entity.getName())
                 .location(entity.getLocation())
                 .phone(entity.getPhone())
-                .email(entity.getEmail())
+                .email(entity.getEmail()) 
+                .averageRating(entity.getAverageRating()) 
                 .build();
     }
 
@@ -51,8 +51,9 @@ public class WorkshopMapper {
         dto.setName(entity.getName());
         dto.setLocation(entity.getLocation());
         dto.setSchedule(entity.getSchedule());
-        dto.setEmail(entity.getEmail());
-        dto.setPhone(entity.getPhone());
+        dto.setEmail(entity.getEmail()); 
+        dto.setPhone(entity.getPhone()); 
+        dto.setAverageRating(entity.getAverageRating()); 
 
         // Mapeo de la relación 1:N con mecánicos
         if (entity.getMechanics() != null) {
