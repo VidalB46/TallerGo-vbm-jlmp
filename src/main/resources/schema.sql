@@ -1,5 +1,18 @@
 -- =======================================================
--- 1. TABLAS DE SEGURIDAD Y USUARIOS
+-- 1. TABLAS BASE (Sin dependencias)
+-- =======================================================
+CREATE TABLE IF NOT EXISTS workshops (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nif VARCHAR(20) UNIQUE NOT NULL,
+  name VARCHAR(150) NOT NULL,
+  phone VARCHAR(20),
+  location VARCHAR(255),
+  email VARCHAR(100),
+  schedule VARCHAR(100)
+);
+
+-- =======================================================
+-- 2. TABLAS DE SEGURIDAD Y USUARIOS
 -- =======================================================
 CREATE TABLE IF NOT EXISTS users (
    id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -49,18 +62,8 @@ CREATE TABLE IF NOT EXISTS user_roles (
 );
 
 -- =======================================================
--- 2. TABLAS ESPECÍFICAS DE TALLER GO
+-- 3. RESTO DE TABLAS ESPECÍFICAS DE TALLER GO
 -- =======================================================
-CREATE TABLE IF NOT EXISTS workshops (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  nif VARCHAR(20) UNIQUE NOT NULL,
-  name VARCHAR(150) NOT NULL,
-  phone VARCHAR(20),
-  location VARCHAR(255),
-  email VARCHAR(100),
-  schedule VARCHAR(100)
-);
-
 CREATE TABLE IF NOT EXISTS brands (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL UNIQUE,
