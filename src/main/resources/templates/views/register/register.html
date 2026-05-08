@@ -145,7 +145,7 @@
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 <div th:replace="~{fragments/scripts :: scripts}"></div>
 
-<script>
+<script th:inline="none">
     [['togglePassword','password'],['toggleConfirm','confirmPassword']].forEach(([btnId, inputId]) => {
         const btn = document.getElementById(btnId);
         const inp = document.getElementById(inputId);

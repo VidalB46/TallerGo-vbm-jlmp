@@ -7,6 +7,7 @@ import org.daw2.tallergo.crud_tallergo.dtos.UserDetailDTO;
 import org.daw2.tallergo.crud_tallergo.dtos.UserUpdateDTO;
 import org.daw2.tallergo.crud_tallergo.exceptions.DuplicateResourceException;
 import org.daw2.tallergo.crud_tallergo.services.UserService;
+import org.daw2.tallergo.crud_tallergo.services.WorkshopService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private WorkshopService workshopService;
 
     @Autowired
     private MessageSource messageSource;
@@ -82,6 +86,7 @@ public class UserController {
     public String showNewForm(Model model) {
         model.addAttribute("user", new UserCreateDTO());
         model.addAttribute("allRoles", userService.findAllRoles());
+        model.addAttribute("allWorkshops", workshopService.listAll());
         return "views/user/user-form";
     }
 
@@ -105,6 +110,7 @@ public class UserController {
 
         if (result.hasErrors()) {
             model.addAttribute("allRoles", userService.findAllRoles());
+            model.addAttribute("allWorkshops", workshopService.listAll());
             return "views/user/user-form";
         }
 
@@ -137,6 +143,7 @@ public class UserController {
             UserUpdateDTO userDTO = userService.getForEdit(id);
             model.addAttribute("user", userDTO);
             model.addAttribute("allRoles", userService.findAllRoles());
+            model.addAttribute("allWorkshops", workshopService.listAll());
             return "views/user/user-form";
         } catch (Exception e) {
             String msg = messageSource.getMessage("msg.user-controller.detail.error", null, locale);

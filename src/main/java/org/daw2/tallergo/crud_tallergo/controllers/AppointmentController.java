@@ -33,15 +33,27 @@ public class AppointmentController {
     private final RepairService repairService;
 
     /**
-     * Lista las citas del usuario actual o todas si es administrador.
+     * Lista las citas según el rol del usuario:
+     * - ADMIN: todas las citas del sistema.
+     * - WORKSHOP_ADMIN: solo las citas de su taller.
+     * - CLIENT: solo sus propias citas.
      */
     @GetMapping
     public String listAppointments(@RequestParam(defaultValue = "0") int page, Model model, Authentication auth) {
-        User user = userRepository.findByEmail(auth.getName()).orElseThrow();
-        Pageable pageable = PageRequest.of(page, 10, Sort.by("startDate").descending());
+        User user = userRepository.findByEmailWithRolesAndWorkshop(auth.getName()).orElseThrow();
+        Pageable pageable = PageRequest.of(page, 6, Sort.by("startDate").descending());
 
         boolean isAdmin = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-        Page<AppointmentDTO> appointments = isAdmin ? appointmentService.getAllAppointments(pageable) : appointmentService.getAppointmentsByUser(user.getId(), pageable);
+        boolean isWorkshopAdmin = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_WORKSHOP_ADMIN"));
+
+        Page<AppointmentDTO> appointments;
+        if (isAdmin) {
+            appointments = appointmentService.getAllAppointments(pageable);
+        } else if (isWorkshopAdmin && user.getWorkshop() != null) {
+            appointments = appointmentService.getAppointmentsByWorkshop(user.getWorkshop().getId(), pageable);
+        } else {
+            appointments = appointmentService.getAppointmentsByUser(user.getId(), pageable);
+        }
 
         model.addAttribute("appointmentsPage", appointments);
         return "views/appointment/appointment-list";

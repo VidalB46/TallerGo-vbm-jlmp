@@ -46,6 +46,22 @@
                 </span>
             </div>
             <div class="info-row">
+                <span class="info-label">Teléfono</span>
+                <span class="info-value">
+                    <i class="bi bi-telephone"></i>
+                    <span th:text="${workshop.phone} ?: 'No especificado'"></span>
+                </span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Email</span>
+                <span class="info-value">
+                    <i class="bi bi-envelope"></i>
+                    <a th:if="${workshop.email != null}" th:href="'mailto:' + ${workshop.email}"
+                       th:text="${workshop.email}" style="color: inherit;"></a>
+                    <span th:unless="${workshop.email != null}">No especificado</span>
+                </span>
+            </div>
+            <div class="info-row">
                 <span class="info-label">NIF / CIF</span>
                 <span class="info-value">
                     <i class="bi bi-building"></i>

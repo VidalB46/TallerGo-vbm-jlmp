@@ -58,19 +58,19 @@ public class SecurityConfig {
                             // 1. RUTAS PÚBLICAS
                             .requestMatchers("/", "/js/**", "/css/**", "/images/**", "/login", "/register", "/auth/**", "/error", "/error/**").permitAll()
 
-                            // 2. SOLO ADMINISTRADOR: Gestión de personal, usuarios y configuración global
+                            // 2. SOLO ADMINISTRADOR GLOBAL: Gestión de personal, usuarios y configuración global
                             .requestMatchers("/users/**").hasRole("ADMIN")
                             .requestMatchers("/mechanics/**").hasRole("ADMIN")
                             .requestMatchers("/workshops/new", "/workshops/edit/**", "/workshops/delete/**").hasRole("ADMIN")
 
                             // 3. RUTAS COMPARTIDAS Y TÉCNICAS (Reparaciones y Presupuestos)
-                            .requestMatchers("/repairs/**").hasAnyRole("MECHANIC", "ADMIN")
-                            .requestMatchers("/budgets/repair/**", "/budgets/*/accept", "/budgets/*/reject").hasAnyRole("CLIENT", "ADMIN", "MECHANIC")
-                            .requestMatchers("/budgets/**").hasAnyRole("MECHANIC", "ADMIN")
+                            .requestMatchers("/repairs/**").hasAnyRole("MECHANIC", "ADMIN", "WORKSHOP_ADMIN")
+                            .requestMatchers("/budgets/repair/**", "/budgets/*/accept", "/budgets/*/reject").hasAnyRole("CLIENT", "ADMIN", "MECHANIC", "WORKSHOP_ADMIN")
+                            .requestMatchers("/budgets/**").hasAnyRole("MECHANIC", "ADMIN", "WORKSHOP_ADMIN")
 
                             // 4. CLIENTES Y STAFF: Gestión de vehículos y citas
                             .requestMatchers("/vehicles/**").hasAnyRole("CLIENT", "ADMIN")
-                            .requestMatchers("/appointments/**").hasAnyRole("CLIENT", "MECHANIC", "ADMIN")
+                            .requestMatchers("/appointments/**").hasAnyRole("CLIENT", "MECHANIC", "ADMIN", "WORKSHOP_ADMIN")
 
                             // 5. PERFIL Y REVIEWS: Cualquier usuario autenticado
                             .requestMatchers("/profile/**").authenticated()

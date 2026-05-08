@@ -18,8 +18,8 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"roles", "profile", "vehicles", "appointments", "reviews"})
-@ToString(exclude = {"roles", "profile", "vehicles", "appointments", "reviews"})
+@EqualsAndHashCode(exclude = {"roles", "profile", "vehicles", "appointments", "reviews", "workshop"})
+@ToString(exclude = {"roles", "profile", "vehicles", "appointments", "reviews", "workshop"})
 @Entity
 @Table(name = "users")
 public class User {
@@ -120,6 +120,14 @@ public class User {
      */
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private Set<Review> reviews = new HashSet<>();
+
+    /**
+     * Taller asignado al usuario cuando tiene el rol {@code ROLE_WORKSHOP_ADMIN}.
+     * {@code null} para usuarios con rol {@code ROLE_ADMIN} o {@code ROLE_CLIENT}.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workshop_id", nullable = true)
+    private Workshop workshop;
 
     /**
      * Constructor para inicializar un usuario con sus parámetros de seguridad.

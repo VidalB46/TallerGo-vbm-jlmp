@@ -40,4 +40,22 @@ public interface MailService {
                       String templateName,
                       Map<String, Object> variables,
                       Locale locale);
+
+    /**
+     * Igual que {@link #sendTemplate} pero añade un header {@code Reply-To} con el email del taller.
+     * Así el cliente, al responder, escribe directamente al taller en lugar de a la dirección genérica de la app.
+     *
+     * @param to           Destinatario del correo.
+     * @param replyTo      Email del taller que aparecerá como Reply-To (puede ser {@code null}).
+     * @param subjectKey   Clave i18n del asunto.
+     * @param templateName Nombre de la plantilla Thymeleaf.
+     * @param variables    Variables dinámicas para la plantilla.
+     * @param locale       Idioma del destinatario.
+     */
+    void sendTemplateWithReplyTo(String to,
+                                 String replyTo,
+                                 String subjectKey,
+                                 String templateName,
+                                 Map<String, Object> variables,
+                                 Locale locale);
 }

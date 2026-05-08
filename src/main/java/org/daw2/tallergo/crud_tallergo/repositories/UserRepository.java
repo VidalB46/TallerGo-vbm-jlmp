@@ -25,6 +25,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
     /**
+     * Recupera un usuario por email cargando roles Y taller asignado.
+     * Necesario para que el WORKSHOP_ADMIN pueda filtrar sus citas correctamente.
+     *
+     * @param email Email del usuario.
+     * @return Optional con el usuario, sus roles y su taller cargados.
+     */
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.roles LEFT JOIN FETCH u.workshop WHERE u.email = :email")
+    Optional<User> findByEmailWithRolesAndWorkshop(@Param("email") String email);
+
+    /**
      * Verifica si un correo ya está registrado.
      * Crucial para el CustomOAuth2SuccessHandler y procesos de registro.
      */

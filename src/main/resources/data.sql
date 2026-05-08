@@ -7,7 +7,8 @@
 -- =======================================================
 INSERT IGNORE INTO roles (id, name, display_name, description) VALUES
 (1, 'ROLE_ADMIN', 'Administrador', 'Acceso total a la gestión del taller'),
-(2, 'ROLE_CLIENT', 'Cliente', 'Usuario cliente de Taller Go');
+(2, 'ROLE_CLIENT', 'Cliente', 'Usuario cliente de Taller Go'),
+(3, 'ROLE_WORKSHOP_ADMIN', 'Admin de Taller', 'Gestiona las citas y operaciones de un taller concreto');
 
 INSERT IGNORE INTO users (id, email, password_hash, active, account_non_locked, last_password_change, password_expires_at, failed_login_attempts, email_verified, must_change_password) VALUES
 (1, 'leo@email.com', '$2a$12$HnF3pSI.kpCNujmMgcQDA.fbGt2TFPbmMDH.rT4wUKLvOKEzsvlTC', TRUE, TRUE, NOW(), DATE_ADD(NOW(), INTERVAL 3 MONTH), 0, TRUE, FALSE),
