@@ -8,8 +8,8 @@ import java.util.List;
 
 /**
  * Interfaz de servicio para la gestión de reseñas de talleres.
- * Permite a los usuarios autenticados publicar valoraciones y a los administradores
- * eliminar contenido inapropiado.
+ * Permite a los usuarios autenticados publicar valoraciones y,
+ * en función de los permisos, eliminar contenido existente.
  */
 public interface ReviewService {
 
@@ -39,9 +39,13 @@ public interface ReviewService {
     ReviewDTO createReview(ReviewCreateDTO dto, String userEmail);
 
     /**
-     * Elimina una reseña por su ID.
+     * Elimina una reseña si el usuario autenticado es su propietario
+     * o si dispone de permisos de administrador global.
      *
-     * @param id Identificador único de la reseña a eliminar.
+     * @param id               Identificador único de la reseña a eliminar.
+     * @param currentUserEmail Email del usuario autenticado.
+     * @param isAdmin          Indica si el usuario autenticado tiene rol de administrador.
+     * @return Identificador del taller al que pertenecía la reseña, útil para redirigir.
      */
-    void deleteReview(Long id);
+    Integer deleteReview(Long id, String currentUserEmail, boolean isAdmin);
 }

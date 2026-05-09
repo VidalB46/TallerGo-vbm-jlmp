@@ -22,15 +22,26 @@
             <h1 th:text="#{msg.review-list.title}">Opiniones de Clientes</h1>
             <p style="font-size: 1.1rem; color: #fff; font-weight: 600;" th:text="${workshop.name}">Nombre Taller</p>
         </div>
-        <a sec:authorize="hasRole('CLIENT')" th:href="@{/reviews/new(workshopId=${workshop.id})}" class="btn-new">
-            <i class="bi bi-star-fill"></i> <span th:text="#{msg.review-list.write}">Escribir Reseña</span>
+
+        <a sec:authorize="hasRole('CLIENT')"
+           th:href="@{/reviews/new(workshopId=${workshop.id})}"
+           class="btn-new">
+            <i class="bi bi-star-fill"></i>
+            <span th:text="#{msg.review-list.write}">Escribir Reseña</span>
         </a>
     </div>
 </div>
 
 <main class="list-main">
+
     <div th:if="${success}" class="alert-success-custom mb-4 shadow-sm">
-        <i class="bi bi-check-circle-fill"></i> <span th:text="${success}"></span>
+        <i class="bi bi-check-circle-fill"></i>
+        <span th:text="${success}"></span>
+    </div>
+
+    <div th:if="${error}" class="alert-error-custom mb-4 shadow-sm">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span th:text="${error}"></span>
     </div>
 
     <div class="empty-state" th:if="${#lists.isEmpty(reviews)}">
@@ -42,32 +53,100 @@
     <div class="appt-grid" th:unless="${#lists.isEmpty(reviews)}">
         <div class="detail-card" th:each="rev : ${reviews}">
             <div class="detail-card-body">
+
                 <div class="detail-header" style="margin-bottom: 1rem; padding-bottom: 1rem;">
                     <div style="font-weight: 700; color: #111;">
                         <i class="bi bi-person-circle text-muted"></i>
                         <span th:text="${rev.userFullName}">Usuario</span>
                     </div>
+
                     <div style="color: #f59e0b; font-size: 1.1rem;">
                         <th:block th:each="i : ${#numbers.sequence(1, 5)}">
                             <i class="bi" th:classappend="${i <= rev.rating} ? 'bi-star-fill' : 'bi-star'"></i>
                         </th:block>
                     </div>
                 </div>
+
                 <div class="notes-box" style="background: transparent; border: none; padding: 0; color: #444; font-style: italic;">
                     "<span th:text="${rev.comment}">Comentario...</span>"
                 </div>
+
+                <div class="d-flex justify-content-end mt-3"
+                     th:if="${#authorization.expression('hasRole(''ADMIN'')') or (#authentication != null and #authentication.name == rev.userEmail)}">
+                    <form th:action="@{/reviews/{id}/delete(id=${rev.id})}"
+                          method="post"
+                          onsubmit="openDeleteReviewModal(event, this)">
+                        <button type="submit"
+                                class="btn-modern btn-outline"
+                                style="color:#c0392b; border-color:#c0392b;">
+                            <i class="bi bi-trash3"></i>
+                            Borrar reseña
+                        </button>
+                    </form>
+                </div>
+
             </div>
         </div>
     </div>
 
     <div style="margin-top: 3rem; text-align: center;">
         <a th:href="@{/workshops}" class="btn-modern btn-outline">
-            <i class="bi bi-arrow-left"></i> <span th:text="#{msg.review-list.back}">Volver a Talleres</span>
+            <i class="bi bi-arrow-left"></i>
+            <span th:text="#{msg.review-list.back}">Volver a Talleres</span>
         </a>
     </div>
 </main>
 
+<div id="customReviewDeleteModal" class="tgo-modal-overlay">
+    <div class="tgo-modal">
+        <div class="tgo-modal-header" style="border-bottom: none; padding-bottom: 0;">
+            <h5 style="color: #c0392b; font-size: 1.2rem;">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                Eliminar reseña
+            </h5>
+            <button type="button" class="tgo-modal-close" onclick="closeDeleteReviewModal()">&times;</button>
+        </div>
+        <div class="tgo-modal-body" style="padding-top: 0.5rem;">
+            <p style="color: #555; font-size: 0.95rem; margin: 0; line-height: 1.5;">
+                ¿Seguro que quieres eliminar esta reseña? Esta acción no se puede deshacer.
+            </p>
+        </div>
+        <div class="tgo-modal-footer">
+            <button type="button" class="btn-modern btn-outline" onclick="closeDeleteReviewModal()">
+                Cancelar
+            </button>
+            <button type="button"
+                    class="btn-modern btn-danger-modern"
+                    id="confirmDeleteReviewBtn"
+                    style="background: #c0392b; color: white; border: none;">
+                Sí, eliminar
+            </button>
+        </div>
+    </div>
+</div>
+
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    let reviewFormToDelete = null;
+
+    function openDeleteReviewModal(event, formElement) {
+        event.preventDefault();
+        reviewFormToDelete = formElement;
+        document.getElementById('customReviewDeleteModal').classList.add('open');
+    }
+
+    function closeDeleteReviewModal() {
+        document.getElementById('customReviewDeleteModal').classList.remove('open');
+        reviewFormToDelete = null;
+    }
+
+    document.getElementById('confirmDeleteReviewBtn').addEventListener('click', function() {
+        if (reviewFormToDelete) {
+            reviewFormToDelete.submit();
+        }
+    });
+</script>
 </body>
 </html>

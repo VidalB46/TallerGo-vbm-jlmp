@@ -10,20 +10,29 @@ INSERT IGNORE INTO roles (id, name, display_name, description) VALUES
 (2, 'ROLE_CLIENT', 'Cliente', 'Usuario cliente de Taller Go'),
 (3, 'ROLE_WORKSHOP_ADMIN', 'Admin de Taller', 'Gestiona las citas y operaciones de un taller concreto');
 
-INSERT IGNORE INTO users (id, email, password_hash, active, account_non_locked, last_password_change, password_expires_at, failed_login_attempts, email_verified, must_change_password) VALUES
-(1, 'leo@email.com', '$2a$12$HnF3pSI.kpCNujmMgcQDA.fbGt2TFPbmMDH.rT4wUKLvOKEzsvlTC', TRUE, TRUE, NOW(), DATE_ADD(NOW(), INTERVAL 3 MONTH), 0, TRUE, FALSE),
-(2, 'vidal@email.com', '$2a$12$HnF3pSI.kpCNujmMgcQDA.fbGt2TFPbmMDH.rT4wUKLvOKEzsvlTC', TRUE, TRUE, NOW(), DATE_ADD(NOW(), INTERVAL 3 MONTH), 0, TRUE, FALSE),
-(3, 'maria@email.com', '$2a$12$HnF3pSI.kpCNujmMgcQDA.fbGt2TFPbmMDH.rT4wUKLvOKEzsvlTC', TRUE, TRUE, NOW(), DATE_ADD(NOW(), INTERVAL 3 MONTH), 0, TRUE, FALSE),
-(4, 'jmorpat', '$2a$12$HnF3pSI.kpCNujmMgcQDA.fbGt2TFPbmMDH.rT4wUKLvOKEzsvlTC', TRUE, TRUE, NOW(), DATE_ADD(NOW(), INTERVAL 3 MONTH), 0, TRUE, FALSE),
-(5, 'VidalB46', '$2a$12$HnF3pSI.kpCNujmMgcQDA.fbGt2TFPbmMDH.rT4wUKLvOKEzsvlTC', TRUE, TRUE, NOW(), DATE_ADD(NOW(), INTERVAL 3 MONTH), 0, TRUE, FALSE);
+INSERT IGNORE INTO users (
+    id, email, password_hash, active, account_non_locked,
+    last_password_change, password_expires_at, failed_login_attempts,
+    email_verified, must_change_password, workshop_id
+) VALUES
+(1, 'leo@email.com', '$2a$12$HnF3pSI.kpCNujmMgcQDA.fbGt2TFPbmMDH.rT4wUKLvOKEzsvlTC', TRUE, TRUE, NOW(), DATE_ADD(NOW(), INTERVAL 3 MONTH), 0, TRUE, FALSE, NULL),
+(2, 'vidal@email.com', '$2a$12$HnF3pSI.kpCNujmMgcQDA.fbGt2TFPbmMDH.rT4wUKLvOKEzsvlTC', TRUE, TRUE, NOW(), DATE_ADD(NOW(), INTERVAL 3 MONTH), 0, TRUE, FALSE, NULL),
+(3, 'maria@email.com', '$2a$12$HnF3pSI.kpCNujmMgcQDA.fbGt2TFPbmMDH.rT4wUKLvOKEzsvlTC', TRUE, TRUE, NOW(), DATE_ADD(NOW(), INTERVAL 3 MONTH), 0, TRUE, FALSE, NULL),
+(4, 'jmorpat', '$2a$12$HnF3pSI.kpCNujmMgcQDA.fbGt2TFPbmMDH.rT4wUKLvOKEzsvlTC', TRUE, TRUE, NOW(), DATE_ADD(NOW(), INTERVAL 3 MONTH), 0, TRUE, FALSE, NULL),
+(5, 'VidalB46', '$2a$12$HnF3pSI.kpCNujmMgcQDA.fbGt2TFPbmMDH.rT4wUKLvOKEzsvlTC', TRUE, TRUE, NOW(), DATE_ADD(NOW(), INTERVAL 3 MONTH), 0, TRUE, FALSE, NULL),
+(6, 'taller@email.com', '$2a$12$HnF3pSI.kpCNujmMgcQDA.fbGt2TFPbmMDH.rT4wUKLvOKEzsvlTC', TRUE, TRUE, NOW(), DATE_ADD(NOW(), INTERVAL 3 MONTH), 0, TRUE, FALSE, 1);
 
-INSERT IGNORE INTO user_roles (user_id, role_id) VALUES (1, 1), (2, 1), (3, 2);
+INSERT IGNORE INTO user_roles (user_id, role_id) VALUES
+(1, 1),
+(2, 1),
+(3, 2),
+(6, 3);
 
 INSERT IGNORE INTO user_profiles (user_id, first_name, last_name, phone_number, locale) VALUES
 (1, 'Leo', 'Morillo', '600111222', 'es_ES'),
 (2, 'Vidal', 'Bañez', '600333444', 'es_ES'),
-(3, 'Maria', 'Lopez', '600555666', 'es_ES');
-
+(3, 'Maria', 'Lopez', '600555666', 'es_ES'),
+(6, 'Admin', 'Taller', '600777888', 'es_ES');
 -- =======================================================
 -- 2. DATOS DE TALLER GO (Entidades Maestras)
 -- =======================================================
@@ -74,17 +83,17 @@ INSERT IGNORE INTO workshops (id, nif, name, phone, location, email, schedule) V
 (10, 'B88990011', 'Mecánica Express Valladolid',  '983323344', 'Calle Santiago 22, Valladolid',    'express@mecanica.com',    '08:30 - 18:30');
 
 INSERT IGNORE INTO mechanics (id, name, specialty, workshop_id) VALUES
-(1,  'Carlos López',     'Motor',        1), (2,  'Ana Martín',      'Electricidad', 1),
-(3,  'Luis García',      'Neumáticos',   2), (4,  'Marta Pérez',     'Carrocería',   2),
-(5,  'Javier Torres',    'General',      1),
-(6,  'Pedro Fernández',  'Motor',        3), (7,  'Sofía Ruiz',      'Electricidad', 3),
-(8,  'Miguel Sánchez',   'Carrocería',   4), (9,  'Laura Gómez',     'General',      4),
-(10, 'Tomás Navarro',    'Neumáticos',   5), (11, 'Elena Castillo',  'Motor',        5),
-(12, 'Rubén Moreno',     'Electricidad', 6), (13, 'Carmen Jiménez',  'General',      6),
-(14, 'David Romero',     'Carrocería',   7), (15, 'Isabel Molina',   'Motor',        7),
-(16, 'Sergio Álvarez',   'Neumáticos',   8), (17, 'Patricia Vega',   'Electricidad', 8),
-(18, 'Alberto Herrera',  'General',      9), (19, 'Natalia Reyes',   'Motor',        9),
-(20, 'Francisco Mora',   'Carrocería',  10), (21, 'Beatriz Santos',  'General',     10);
+(1,  'Carlos López',     'GENERAL_MECHANICS', 1), (2,  'Ana Martín',      'ELECTRICAL',        1),
+(3,  'Luis García',      'TIRES_ALIGNMENT',   2), (4,  'Marta Pérez',     'BODYWORK_PAINT',    2),
+(5,  'Javier Torres',    'GENERAL_MECHANICS', 1),
+(6,  'Pedro Fernández',  'GENERAL_MECHANICS', 3), (7,  'Sofía Ruiz',      'ELECTRICAL',        3),
+(8,  'Miguel Sánchez',   'BODYWORK_PAINT',    4), (9,  'Laura Gómez',     'GENERAL_MECHANICS', 4),
+(10, 'Tomás Navarro',    'TIRES_ALIGNMENT',   5), (11, 'Elena Castillo',  'GENERAL_MECHANICS', 5),
+(12, 'Rubén Moreno',     'ELECTRICAL',        6), (13, 'Carmen Jiménez',  'GENERAL_MECHANICS', 6),
+(14, 'David Romero',     'BODYWORK_PAINT',    7), (15, 'Isabel Molina',   'GENERAL_MECHANICS', 7),
+(16, 'Sergio Álvarez',   'TIRES_ALIGNMENT',   8), (17, 'Patricia Vega',   'ELECTRICAL',        8),
+(18, 'Alberto Herrera',  'GENERAL_MECHANICS', 9), (19, 'Natalia Reyes',   'GENERAL_MECHANICS', 9),
+(20, 'Francisco Mora',   'BODYWORK_PAINT',   10), (21, 'Beatriz Santos',  'GENERAL_MECHANICS',10);
 
 INSERT IGNORE INTO services (id, name) VALUES 
 (1, 'Cambio de Aceite'), (2, 'Revisión General'), (3, 'Cambio de Neumáticos'), (4, 'Reparación Frenos');

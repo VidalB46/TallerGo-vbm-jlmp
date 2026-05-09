@@ -17,36 +17,85 @@
 
 <nav th:replace="~{fragments/navbar :: navbar('mechanics')}"></nav>
 
-<section class="mec-hero">
-    <div class="mec-hero-content">
-        <i class="bi bi-person-gear mec-hero-icon"></i>
-        <h1><span th:text="#{msg.mecanico.list.title}">Mecánicos</span></h1>
-        <p th:text="#{msg.mecanico.list.subtitle}">Profesionales certificados al servicio de tu vehículo</p>
+<div class="page-hero">
+    <div class="page-hero-inner" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.5rem;">
+        <div class="page-hero-text">
+            <div class="page-label" th:text="#{msg.label.mechanics}">Personal</div>
+            <h1 th:text="#{msg.mecanico.list.title}">Mecánicos</h1>
+            <p th:text="#{msg.mecanico.list.subtitle}">Equipo de profesionales del taller.</p>
+        </div>
+
+        <a th:href="@{/mechanics/new}"
+           class="btn-new"
+           sec:authorize="hasAnyRole('ADMIN','WORKSHOP_ADMIN')">
+            <i class="bi bi-plus-lg"></i>
+            <span th:text="#{msg.mecanico.action.new}">Nuevo Mecánico</span>
+        </a>
     </div>
-</section>
+
+    <form th:action="@{/mechanics}" method="get" class="workshop-search-form">
+        <div class="workshop-search-wrap">
+            <i class="bi bi-search workshop-search-icon"></i>
+
+            <input type="text"
+                   name="q"
+                   class="workshop-search-input"
+                   th:placeholder="#{msg.mecanico.list.search.placeholder}"
+                   th:value="${q}"
+                   autocomplete="off"/>
+
+            <button type="submit"
+                    class="workshop-search-btn"
+                    th:text="#{msg.common.search}">
+                Buscar
+            </button>
+
+            <a th:if="${q != null and !#strings.isEmpty(q)}"
+               th:href="@{/mechanics}"
+               class="workshop-search-clear"
+               th:title="#{msg.common.cancel}">
+                <i class="bi bi-x-lg"></i>
+            </a>
+        </div>
+    </form>
+</div>
 
 <div class="mec-main">
 
+    <div th:if="${success}" class="alert-success-custom">
+        <i class="bi bi-check-circle-fill"></i>
+        <span th:text="${success}"></span>
+    </div>
+
+    <div th:if="${successMessage}" class="alert-success-custom">
+        <i class="bi bi-check-circle-fill"></i>
+        <span th:text="${successMessage}"></span>
+    </div>
+
+    <div th:if="${error}" class="alert-error-custom">
+        <i class="bi bi-exclamation-circle-fill"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert-error-custom">
+        <i class="bi bi-exclamation-circle-fill"></i>
+        <span th:text="${errorMessage}"></span>
+    </div>
+
     <div class="mec-toolbar">
-        <h2><span th:text="${page.totalElements}">0</span> mecánicos en nuestra red</h2>
-        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
-            <form th:action="@{/mechanics}" method="get" class="mec-search-form">
-                <div class="mec-search-wrap">
-                    <i class="bi bi-search mec-search-icon"></i>
-                    <input type="text" name="q" class="mec-search-input"
-                           th:placeholder="#{msg.mecanico.list.search.placeholder}"
-                           th:value="${q}" autocomplete="off"/>
-                    <button type="submit" class="mec-search-btn"><i class="bi bi-search"></i></button>
-                    <a th:if="${q != null and !#strings.isEmpty(q)}"
-                       th:href="@{/mechanics}" class="mec-search-clear" title="Limpiar">
-                        <i class="bi bi-x-lg"></i>
-                    </a>
-                </div>
-            </form>
-            <a th:href="@{/mechanics/new}" class="btn-new-mec" sec:authorize="hasRole('ADMIN')">
-                <i class="bi bi-person-plus-fill"></i> <span th:text="#{msg.mecanico.action.new}">Añadir mecánico</span>
-            </a>
-        </div>
+        <h2>
+            <span th:text="${page.totalElements}">0</span>
+            <span th:text="#{msg.mechanic.list.count}">mecánicos en nuestra red</span>
+        </h2>
+    </div>
+
+    <div th:if="${q != null and !#strings.isEmpty(q)}" class="search-results-info">
+        <i class="bi bi-funnel"></i>
+        <span th:text="#{msg.common.search}">Buscar</span>
+        <strong th:text="${q}"></strong>
+        &nbsp;·&nbsp;
+        <span th:text="${page.totalElements}"></span>
+        <span th:text="#{msg.mechanic.list.count}">mecánicos en nuestra red</span>
     </div>
 
     <div class="mec-grid">
@@ -60,22 +109,30 @@
                 <i class="bi bi-person-circle avatar-icon"></i>
                 <span class="specialty-badge" th:text="${m.specialty}">Especialidad</span>
             </div>
+
             <div class="mec-card-body">
                 <div class="mec-card-name" th:text="${m.name}">Nombre</div>
+
                 <div class="mec-card-workshop">
                     <i class="bi bi-building"></i>
                     <span th:text="${m.workshopName}">Taller</span>
                 </div>
+
                 <div class="mec-card-actions">
                     <a th:href="@{/mechanics/detail(id=${m.id})}" class="btn-detail-mec">
-                        <i class="bi bi-eye"></i> <span th:text="#{msg.common.viewDetail}">Ver ficha</span>
+                        <i class="bi bi-eye"></i>
+                        <span th:text="#{msg.common.viewDetail}">Ver ficha</span>
                     </a>
-                    <form th:action="@{/mechanics/delete}" method="post"
-                          style="flex:1;display:contents;" sec:authorize="hasRole('ADMIN')">
+
+                    <form th:action="@{/mechanics/delete}"
+                          method="post"
+                          style="flex:1;display:contents;"
+                          sec:authorize="hasAnyRole('ADMIN','WORKSHOP_ADMIN')"
+                          onsubmit="openDeleteMechanicModal(event, this)">
                         <input type="hidden" name="id" th:value="${m.id}"/>
-                        <button type="submit" class="btn-delete-mec"
-                                th:onclick="'return confirm(\'' + #{msg.mecanico.delete.confirm} + '\')'">
-                            <i class="bi bi-person-dash"></i> <span th:text="#{msg.common.delete}">Eliminar</span>
+                        <button type="submit" class="btn-delete-mec">
+                            <i class="bi bi-person-dash"></i>
+                            <span th:text="#{msg.common.delete}">Eliminar</span>
                         </button>
                     </form>
                 </div>
@@ -87,13 +144,53 @@
         <a th:href="@{/mechanics(page=${page.number - 1}, q=${q})}" th:if="${page.hasPrevious()}">
             <i class="bi bi-chevron-left"></i>
         </a>
+
         <th:block th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
             <span class="current" th:if="${i == page.number}" th:text="${i + 1}"></span>
-            <a th:unless="${i == page.number}" th:href="@{/mechanics(page=${i}, q=${q})}" th:text="${i + 1}"></a>
+            <a th:unless="${i == page.number}"
+               th:href="@{/mechanics(page=${i}, q=${q})}"
+               th:text="${i + 1}"></a>
         </th:block>
+
         <a th:href="@{/mechanics(page=${page.number + 1}, q=${q})}" th:if="${page.hasNext()}">
             <i class="bi bi-chevron-right"></i>
         </a>
+    </div>
+</div>
+
+<div id="deleteMechanicModal" class="tgo-modal-overlay" aria-hidden="true">
+    <div class="tgo-modal" role="dialog" aria-modal="true" aria-labelledby="deleteMechanicModalTitle">
+        <div class="tgo-modal-header">
+            <h5 id="deleteMechanicModalTitle">
+                <i class="bi bi-exclamation-triangle"></i>
+                <span th:text="#{msg.common.delete}">Eliminar</span>
+            </h5>
+            <button type="button" class="tgo-modal-close" onclick="closeDeleteMechanicModal()" aria-label="Cerrar">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <div class="tgo-modal-body">
+            <p th:text="#{msg.mecanico.delete.confirm}">
+                ¿Seguro que quieres eliminar a este mecánico?
+            </p>
+        </div>
+
+        <div class="tgo-modal-footer">
+            <button type="button"
+                    class="btn-cancel"
+                    onclick="closeDeleteMechanicModal()"
+                    th:text="#{msg.common.cancel}">
+                Cancelar
+            </button>
+
+            <button type="button"
+                    class="btn-submit"
+                    id="confirmDeleteMechanicBtn"
+                    th:text="#{msg.common.delete}">
+                Eliminar
+            </button>
+        </div>
     </div>
 </div>
 
@@ -113,6 +210,39 @@
         el.style.opacity = '0';
         el.style.animationDelay = `${i * 0.06}s`;
         observer.observe(el);
+    });
+
+    let mechanicFormToDelete = null;
+
+    function openDeleteMechanicModal(event, formElement) {
+        event.preventDefault();
+        mechanicFormToDelete = formElement;
+        document.getElementById('deleteMechanicModal').classList.add('open');
+        document.getElementById('deleteMechanicModal').setAttribute('aria-hidden', 'false');
+    }
+
+    function closeDeleteMechanicModal() {
+        document.getElementById('deleteMechanicModal').classList.remove('open');
+        document.getElementById('deleteMechanicModal').setAttribute('aria-hidden', 'true');
+        mechanicFormToDelete = null;
+    }
+
+    document.getElementById('confirmDeleteMechanicBtn').addEventListener('click', function () {
+        if (mechanicFormToDelete) {
+            mechanicFormToDelete.submit();
+        }
+    });
+
+    document.getElementById('deleteMechanicModal').addEventListener('click', function (e) {
+        if (e.target === this) {
+            closeDeleteMechanicModal();
+        }
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            closeDeleteMechanicModal();
+        }
     });
 </script>
 

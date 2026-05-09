@@ -21,13 +21,13 @@
         <li>
             <a th:href="@{/}" th:classappend="${activeLink == 'home'} ? ' tgo-active'" th:text="#{msg.nav.home}">Inicio</a>
         </li>
-        <li>
+        <li sec:authorize="hasAnyRole('CLIENT','ADMIN')">
             <a th:href="@{/workshops}" th:classappend="${activeLink == 'workshops'} ? ' tgo-active'" th:text="#{msg.nav.workshops}">Talleres</a>
         </li>
         <li sec:authorize="isAuthenticated()">
             <a th:href="@{/appointments}" th:classappend="${activeLink == 'appointments'} ? ' tgo-active'" th:text="#{msg.nav.appointments}">Mis Citas</a>
         </li>
-        <li sec:authorize="isAuthenticated()">
+        <li sec:authorize="hasAnyRole('CLIENT','ADMIN')">
             <a th:href="@{/vehicles}" th:classappend="${activeLink == 'vehicles'} ? ' tgo-active'" th:text="#{msg.header.vehicles}">Mis Vehículos</a>
         </li>
 
@@ -35,7 +35,7 @@
             <a th:href="@{/brands}" th:classappend="${activeLink == 'brands'} ? ' tgo-active'" th:text="#{msg.header.brands}">Marcas</a>
         </li>
 
-        <li class="tgo-dd-wrap" id="ddPersonal" sec:authorize="hasAnyRole('ADMIN','JEFE_TALLER')">
+        <li class="tgo-dd-wrap" id="ddPersonal" sec:authorize="hasAnyRole('ADMIN','WORKSHOP_ADMIN')">
             <button class="tgo-dd-btn"
                     th:classappend="${activeLink == 'mechanics' or activeLink == 'users'} ? ' tgo-active'">
                 <span th:text="#{msg.nav.personal}">Personal</span> <i class="bi bi-chevron-down tgo-chev"></i>

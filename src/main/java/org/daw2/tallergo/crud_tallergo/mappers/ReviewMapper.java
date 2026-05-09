@@ -16,20 +16,25 @@ public class ReviewMapper {
 
     /**
      * Convierte una entidad {@link Review} a un DTO resumido para listados.
+     * Incluye el email del autor para poder aplicar lógica de permisos en la vista
+     * y mostrar acciones como el borrado solo al propietario o al administrador.
      *
      * @param entity Entidad de reseña (puede ser {@code null}).
      * @return DTO resumido, o {@code null} si la entidad es {@code null}.
      */
     public static ReviewDTO toDTO(Review entity) {
-        if (entity == null) return null;
+        if (entity == null) {
+            return null;
+        }
 
         return ReviewDTO.builder()
                 .id(entity.getId())
                 .rating(entity.getRating())
                 .comment(entity.getComment())
-                .userFullName(entity.getUser() != null && entity.getUser().getProfile() != null ?
-                        entity.getUser().getProfile().getFirstName() + " " + entity.getUser().getProfile().getLastName() :
-                        "Usuario Anónimo")
+                .userFullName(entity.getUser() != null && entity.getUser().getProfile() != null
+                        ? entity.getUser().getProfile().getFirstName() + " " + entity.getUser().getProfile().getLastName()
+                        : "Usuario Anónimo")
+                .userEmail(entity.getUser() != null ? entity.getUser().getEmail() : null)
                 .workshopName(entity.getWorkshop() != null ? entity.getWorkshop().getName() : "Taller Desconocido")
                 .build();
     }
@@ -41,7 +46,9 @@ public class ReviewMapper {
      * @return DTO de detalle con usuario y taller incluidos, o {@code null}.
      */
     public static ReviewDetailDTO toDetailDTO(Review entity) {
-        if (entity == null) return null;
+        if (entity == null) {
+            return null;
+        }
 
         ReviewDetailDTO dto = new ReviewDetailDTO();
         dto.setId(entity.getId());
@@ -50,8 +57,12 @@ public class ReviewMapper {
 
         if (entity.getUser() != null) {
             dto.setUserEmail(entity.getUser().getEmail());
+
             if (entity.getUser().getProfile() != null) {
-                dto.setUserFullName(entity.getUser().getProfile().getFirstName() + " " + entity.getUser().getProfile().getLastName());
+                dto.setUserFullName(
+                        entity.getUser().getProfile().getFirstName() + " "
+                                + entity.getUser().getProfile().getLastName()
+                );
             }
         }
 
@@ -69,7 +80,9 @@ public class ReviewMapper {
      * @return Nueva entidad de reseña, o {@code null} si el DTO es {@code null}.
      */
     public static Review toEntity(ReviewCreateDTO dto, User user, Workshop workshop) {
-        if (dto == null) return null;
+        if (dto == null) {
+            return null;
+        }
 
         Review entity = new Review();
         entity.setRating(dto.getRating());
@@ -83,15 +96,18 @@ public class ReviewMapper {
     /**
      * Actualiza los campos modificables de una entidad {@link Review} existente.
      *
-     * @param dto    DTO con los nuevos valores (campos nulos se ignoran).
+     * @param dto    DTO con los nuevos valores. Los campos nulos se ignoran.
      * @param entity Entidad de reseña a actualizar.
      */
     public static void updateEntity(ReviewUpdateDTO dto, Review entity) {
-        if (dto == null || entity == null) return;
+        if (dto == null || entity == null) {
+            return;
+        }
 
         if (dto.getRating() != null) {
             entity.setRating(dto.getRating());
         }
+
         if (dto.getComment() != null) {
             entity.setComment(dto.getComment());
         }

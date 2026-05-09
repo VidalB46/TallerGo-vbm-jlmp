@@ -16,14 +16,37 @@ import java.util.Optional;
 public interface BudgetRepository extends JpaRepository<Budget, Long> {
 
     /**
-     * Recupera el presupuesto asociado a una reparación.
+     * Recupera el último presupuesto activo (no rechazado) asociado a una reparación,
+     * cargando también sus líneas.
      */
-    @Query("SELECT DISTINCT b FROM Budget b LEFT JOIN FETCH b.lines WHERE b.repair.id = :repairId")
-    Optional<Budget> findByRepairId(@Param("repairId") Long repairId);
+    @Query("""
+           SELECT DISTINCT b
+           FROM Budget b
+           LEFT JOIN FETCH b.lines
+           WHERE b.id = (
+               SELECT MAX(b2.id)
+               FROM Budget b2
+               WHERE b2.repair.id = :repairId
+                 AND b2.rejected = false
+           )
+           """)
+    Optional<Budget> findLatestActiveByRepairId(@Param("repairId") Long repairId);
 
     /**
-     * Recupera un presupuesto cargando de forma ansiosa la reparación y la cita vinculada.
+     * Comprueba si existe alguna versión aceptada y no rechazada para una reparación.
      */
-    @Query("SELECT b FROM Budget b JOIN FETCH b.repair r JOIN FETCH r.appointment WHERE b.id = :id")
+    boolean existsByRepair_IdAndAcceptedTrueAndRejectedFalse(Long repairId);
+
+    /**
+     * Recupera un presupuesto cargando de forma ansiosa la reparación, la cita y las líneas vinculadas.
+     */
+    @Query("""
+           SELECT DISTINCT b
+           FROM Budget b
+           JOIN FETCH b.repair r
+           JOIN FETCH r.appointment
+           LEFT JOIN FETCH b.lines
+           WHERE b.id = :id
+           """)
     Optional<Budget> findByIdWithRepair(@Param("id") Long id);
 }

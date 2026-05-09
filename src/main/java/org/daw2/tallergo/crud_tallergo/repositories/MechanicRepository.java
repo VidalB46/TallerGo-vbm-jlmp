@@ -33,4 +33,19 @@ public interface MechanicRepository extends JpaRepository<Mechanic, Long> {
            "LOWER(m.name) LIKE LOWER(CONCAT('%', :q, '%')) OR " +
            "LOWER(m.specialty) LIKE LOWER(CONCAT('%', :q, '%'))")
     Page<Mechanic> search(@Param("q") String q, Pageable pageable);
+
+    Page<Mechanic> findByWorkshopId(Integer workshopId, Pageable pageable);
+
+    @Query("""
+       SELECT m
+       FROM Mechanic m
+       WHERE m.workshop.id = :workshopId
+         AND (
+              LOWER(m.name) LIKE LOWER(CONCAT('%', :q, '%'))
+              OR LOWER(m.specialty) LIKE LOWER(CONCAT('%', :q, '%'))
+         )
+       """)
+    Page<Mechanic> searchByWorkshop(@Param("workshopId") Integer workshopId,
+                                    @Param("q") String q,
+                                    Pageable pageable);
 }

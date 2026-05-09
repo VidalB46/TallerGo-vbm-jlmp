@@ -24,19 +24,29 @@
             <p th:text="#{msg.workshop-list.subtitle}">Encuentra el taller que más confianza te transmita.</p>
         </div>
         <a th:href="@{/workshops/new}" class="btn-new" sec:authorize="hasRole('ADMIN')">
-            <i class="bi bi-plus-lg"></i> <span th:text="#{msg.workshop-list.add}">Nuevo Taller</span>
+            <i class="bi bi-plus-lg"></i>
+            <span th:text="#{msg.workshop-list.add}">Nuevo Taller</span>
         </a>
     </div>
 
     <form th:action="@{/workshops}" method="get" class="workshop-search-form">
         <div class="workshop-search-wrap">
             <i class="bi bi-search workshop-search-icon"></i>
-            <input type="text" name="q" class="workshop-search-input"
+            <input type="text"
+                   name="q"
+                   class="workshop-search-input"
                    th:placeholder="#{msg.workshop-list.search.placeholder}"
-                   th:value="${q}" autocomplete="off"/>
-            <button type="submit" class="workshop-search-btn" th:text="#{msg.workshop-list.search.btn}">Buscar</button>
+                   th:value="${q}"
+                   autocomplete="off"/>
+            <button type="submit"
+                    class="workshop-search-btn"
+                    th:text="#{msg.workshop-list.search.btn}">
+                Buscar
+            </button>
             <a th:if="${q != null and !#strings.isEmpty(q)}"
-               th:href="@{/workshops}" class="workshop-search-clear" title="Limpiar búsqueda">
+               th:href="@{/workshops}"
+               class="workshop-search-clear"
+               th:title="#{msg.common.cancel}">
                 <i class="bi bi-x-lg"></i>
             </a>
         </div>
@@ -45,29 +55,54 @@
 
 <main class="workshops-main">
 
+    <div th:if="${success}" class="alert-success-custom">
+        <i class="bi bi-check-circle-fill"></i>
+        <span th:text="${success}"></span>
+    </div>
+
     <div th:if="${successMessage}" class="alert-success-custom">
         <i class="bi bi-check-circle-fill"></i>
         <span th:text="${successMessage}"></span>
+    </div>
+
+    <div th:if="${error}" class="alert-error-custom">
+        <i class="bi bi-exclamation-circle-fill"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert-error-custom">
+        <i class="bi bi-exclamation-circle-fill"></i>
+        <span th:text="${errorMessage}"></span>
     </div>
 
     <div th:if="${q != null and !#strings.isEmpty(q)}" class="search-results-info">
         <i class="bi bi-funnel"></i>
         <span th:text="#{msg.workshop-list.results.showing}">Mostrando resultados para:</span>
         <strong th:text="${q}"></strong>
-        &nbsp;·&nbsp; <span th:text="${page.totalElements}"></span>
+        &nbsp;·&nbsp;
+        <span th:text="${page.totalElements}"></span>
         <span th:text="#{msg.workshop-list.results.found}">taller(es) encontrado(s)</span>
     </div>
 
     <div th:if="${page.content.isEmpty()}" class="empty-state">
         <i class="bi bi-search" style="font-size:2.5rem; color:#c0392b; opacity:.4;"></i>
         <p>
-            <span th:text="#{msg.workshop-list.empty}">No se encontraron talleres</span><span th:if="${q != null and !#strings.isEmpty(q)}"> "<strong th:text="${q}"></strong>"</span>.
+            <span th:text="#{msg.workshop-list.empty}">No se encontraron talleres</span>
+            <span th:if="${q != null and !#strings.isEmpty(q)}">
+                "<strong th:text="${q}"></strong>"
+            </span>.
         </p>
-        <a th:href="@{/workshops}" class="btn-new" style="margin-top:.5rem;" th:text="#{msg.workshop-list.view.all}">Ver todos los talleres</a>
+        <a th:href="@{/workshops}"
+           class="btn-new"
+           style="margin-top:.5rem;"
+           th:text="#{msg.workshop-list.view.all}">
+            Ver todos los talleres
+        </a>
     </div>
 
     <div class="workshops-grid">
-        <div th:each="w, stat : ${page.content}" class="ws-card"
+        <div th:each="w, stat : ${page.content}"
+             class="ws-card"
              th:style="'animation-delay:' + ${stat.index * 80} + 'ms'">
 
             <div class="ws-card-img-placeholder">
@@ -78,51 +113,69 @@
                 <div class="d-flex justify-content-end align-items-start">
                     <a th:href="@{/reviews/workshop/{id}(id=${w.id})}"
                        class="text-decoration-none"
-                       style="background: rgba(245, 158, 11, 0.15); color: #b45309; padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem; transition: background 0.2s;" title="Ver opiniones">
+                       style="background: rgba(245, 158, 11, 0.15); color: #b45309; padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.3rem; transition: background 0.2s;"
+                       title="Ver opiniones">
                         <i class="bi bi-star-fill" style="color: #f59e0b;"></i>
-                        <span th:if="${w.averageRating != null}" th:text="${#numbers.formatDecimal(w.averageRating, 1, 1)}"></span>
-                        <span th:if="${w.averageRating == null}" th:text="#{msg.workshop-list.rating.new}">Nuevo</span>
+                        <span th:if="${w.averageRating != null}"
+                              th:text="${#numbers.formatDecimal(w.averageRating, 1, 1)}"></span>
+                        <span th:if="${w.averageRating == null}"
+                              th:text="#{msg.workshop-list.rating.new}">
+                            Nuevo
+                        </span>
                     </a>
                 </div>
 
                 <div class="ws-card-name mt-2" th:text="${w.name}">Nombre Taller</div>
+
                 <div class="ws-card-nif">
                     <i class="bi bi-building"></i>
                     <span th:text="${w.nif}">B12345678</span>
                 </div>
-                <div class="ws-card-location" th:if="${w.location}">
+
+                <div class="ws-card-location"
+                     th:if="${w.location != null and !#strings.isEmpty(w.location)}">
                     <i class="bi bi-geo-alt"></i>
                     <span th:text="${w.location}">Ubicación</span>
                 </div>
 
                 <div class="ws-card-footer mt-auto pt-3">
                     <a th:href="@{/workshops/detail(id=${w.id})}" class="btn-detail w-100">
-                        <i class="bi bi-eye"></i> <span th:text="#{msg.workshop-list.detail}">Ver detalle</span>
+                        <i class="bi bi-eye"></i>
+                        <span th:text="#{msg.workshop-list.detail}">Ver detalle</span>
                     </a>
 
-                    <form th:action="@{/workshops/delete/{id}(id=${w.id})}" method="post"
+                    <form th:action="@{/workshops/delete/{id}(id=${w.id})}"
+                          method="post"
                           sec:authorize="hasRole('ADMIN')"
-                          onsubmit="openDeleteModal(event, this)" class="w-100 mt-2">
-                        <button type="submit" class="btn-delete w-100 justify-content-center" title="Eliminar taller">
-                            <i class="bi bi-trash3"></i> <span th:text="#{msg.workshop-list.delete}">Eliminar</span>
+                          onsubmit="openDeleteModal(event, this)"
+                          class="w-100 mt-2">
+                        <button type="submit"
+                                class="btn-delete w-100 justify-content-center"
+                                title="Eliminar taller">
+                            <i class="bi bi-trash3"></i>
+                            <span th:text="#{msg.workshop-list.delete}">Eliminar</span>
                         </button>
                     </form>
-
                 </div>
             </div>
         </div>
     </div>
 
     <nav class="pagination-bar" th:if="${page.totalPages > 1}">
-        <a class="page-btn" th:classappend="${page.first} ? 'disabled'"
+        <a class="page-btn"
+           th:classappend="${page.first} ? 'disabled'"
            th:href="@{/workshops(page=${page.number - 1}, q=${q})}">
             <i class="bi bi-chevron-left"></i>
         </a>
-        <a class="page-btn" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+
+        <a class="page-btn"
+           th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
            th:classappend="${i == page.number} ? 'active'"
            th:href="@{/workshops(page=${i}, q=${q})}"
            th:text="${i + 1}"></a>
-        <a class="page-btn" th:classappend="${page.last} ? 'disabled'"
+
+        <a class="page-btn"
+           th:classappend="${page.last} ? 'disabled'"
            th:href="@{/workshops(page=${page.number + 1}, q=${q})}">
             <i class="bi bi-chevron-right"></i>
         </a>
@@ -131,7 +184,6 @@
 </main>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
-
 <div th:replace="~{fragments/scripts :: scripts}"></div>
 
 <script>
@@ -147,6 +199,7 @@
         'https://images.unsplash.com/photo-1459603677915-a62079ffd002?w=600&q=80',
         'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=600&q=80',
     ];
+
     document.querySelectorAll('.ws-card-img-placeholder').forEach((el, i) => {
         const img = document.createElement('img');
         img.src = workshopImgs[i % workshopImgs.length];
@@ -162,10 +215,22 @@
             <i class="bi bi-exclamation-triangle"></i>
         </div>
         <h3 th:text="#{msg.workshop-list.delete.title}">¿Eliminar Taller?</h3>
-        <p th:text="#{msg.workshop-list.delete.warning}">Esta acción no se puede deshacer. Se eliminarán todos los mecánicos y servicios asociados.</p>
+        <p th:text="#{msg.workshop-list.delete.warning}">
+            Esta acción no se puede deshacer. Se eliminarán todos los mecánicos y servicios asociados.
+        </p>
         <div class="modal-actions">
-            <button type="button" class="btn-cancel-modal" onclick="closeDeleteModal()" th:text="#{msg.workshop-list.delete.cancel}">Cancelar</button>
-            <button type="button" class="btn-confirm-modal" id="confirmDeleteBtn" th:text="#{msg.workshop-list.delete.confirm}">Sí, eliminar</button>
+            <button type="button"
+                    class="btn-cancel-modal"
+                    onclick="closeDeleteModal()"
+                    th:text="#{msg.workshop-list.delete.cancel}">
+                Cancelar
+            </button>
+            <button type="button"
+                    class="btn-confirm-modal"
+                    id="confirmDeleteBtn"
+                    th:text="#{msg.workshop-list.delete.confirm}">
+                Sí, eliminar
+            </button>
         </div>
     </div>
 </div>
@@ -240,5 +305,6 @@
         }
     });
 </script>
+
 </body>
 </html>

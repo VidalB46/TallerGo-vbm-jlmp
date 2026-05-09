@@ -3,10 +3,10 @@ package org.daw2.tallergo.crud_tallergo.controllers;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.daw2.tallergo.crud_tallergo.dtos.BudgetCreateDTO;
-import org.daw2.tallergo.crud_tallergo.dtos.BudgetDTO;
 import org.daw2.tallergo.crud_tallergo.dtos.BudgetDetailDTO;
 import org.daw2.tallergo.crud_tallergo.dtos.BudgetUpdateDTO;
 import org.daw2.tallergo.crud_tallergo.services.BudgetService;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,11 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
- * Controlador MVC para la gestión de presupuestos ({@link org.daw2.tallergo.crud_tallergo.entities.Budget}).
- * <p>
- * Expone las rutas bajo {@code /budgets} y delega la lógica de negocio
- * en {@link org.daw2.tallergo.crud_tallergo.services.BudgetService}.
- * </p>
+ * Controlador MVC para la gestión de presupuestos.
  */
 @Controller
 @RequestMapping("/budgets")
@@ -28,86 +24,112 @@ public class BudgetController {
     private final BudgetService budgetService;
 
     /**
-     * Muestra el presupuesto asociado a una reparación concreta.
+     * Muestra el presupuesto activo asociado a una reparación concreta.
+     * Si no existe y el usuario es ADMIN o WORKSHOP_ADMIN, redirige al formulario de creación.
+     * Si no existe y es CLIENT, vuelve a citas con mensaje de error.
      */
     @GetMapping("/repair/{repairId}")
-    public String viewBudgetByRepair(@PathVariable Long repairId, Model model) {
+    public String viewBudgetByRepair(@PathVariable Long repairId,
+                                     Model model,
+                                     Authentication authentication,
+                                     RedirectAttributes redirectAttributes) {
         try {
             BudgetDetailDTO budget = budgetService.getBudgetByRepairId(repairId);
             model.addAttribute("budget", budget);
             return "views/budget/budget-detail";
         } catch (Exception e) {
-            // Si no hay presupuesto, mandamos al formulario de creación (solo mecánicos)
-            return "redirect:/budgets/new?repairId=" + repairId;
+            boolean isWorkshopSide = authentication != null &&
+                    authentication.getAuthorities().stream().anyMatch(a ->
+                            a.getAuthority().equals("ROLE_ADMIN") ||
+                                    a.getAuthority().equals("ROLE_WORKSHOP_ADMIN"));
+
+            if (isWorkshopSide) {
+                return "redirect:/budgets/new?repairId=" + repairId;
+            }
+
+            redirectAttributes.addFlashAttribute("error", "No existe presupuesto disponible para esta reparación.");
+            return "redirect:/appointments";
         }
     }
 
     /**
      * Muestra el formulario de presupuesto.
-     * Si ya existe uno, precarga sus datos para permitir la edición.
+     * Si ya existe uno activo, precarga sus datos para permitir la modificación.
      */
     @GetMapping("/new")
     public String showCreateForm(@RequestParam Long repairId, Model model) {
+        BudgetCreateDTO dto = new BudgetCreateDTO();
+        dto.setRepairId(repairId);
+
         try {
-            // Intentamos buscar si ya hay un presupuesto previo para editarlo
             BudgetDetailDTO existing = budgetService.getBudgetByRepairId(repairId);
-
-            BudgetCreateDTO dto = new BudgetCreateDTO();
-            dto.setRepairId(repairId);
-            dto.setLines(existing.getLines()); // Precargamos las líneas actuales
-
-            model.addAttribute("budget", dto);
-        } catch (Exception e) {
-            // Si no existe, enviamos un DTO vacío con el repairId
-            BudgetCreateDTO dto = new BudgetCreateDTO();
-            dto.setRepairId(repairId);
-            model.addAttribute("budget", dto);
+            dto.setNotes(existing.getNotes());
+            dto.setLines(existing.getLines());
+        } catch (Exception ignored) {
+            // Si no existe presupuesto activo, mostramos formulario vacío
         }
+
+        model.addAttribute("budget", dto);
         return "views/budget/budget-form";
     }
 
+    /**
+     * Crea o modifica un presupuesto.
+     */
     @PostMapping("/new")
     public String createBudget(@Valid @ModelAttribute("budget") BudgetCreateDTO dto,
                                BindingResult result,
-                               RedirectAttributes redirectAttributes) {
-        if (result.hasErrors()) return "views/budget/budget-form";
+                               RedirectAttributes redirectAttributes,
+                               Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("budget", dto);
+            return "views/budget/budget-form";
+        }
 
-        budgetService.createBudget(dto);
-        redirectAttributes.addFlashAttribute("success", "Presupuesto generado y enviado al cliente.");
-        return "redirect:/repairs/" + dto.getRepairId();
+        try {
+            budgetService.createBudget(dto);
+            redirectAttributes.addFlashAttribute("success", "Presupuesto guardado y enviado correctamente.");
+            return "redirect:/repairs/" + dto.getRepairId();
+        } catch (Exception e) {
+            model.addAttribute("budget", dto);
+            model.addAttribute("error", e.getMessage());
+            return "views/budget/budget-form";
+        }
     }
 
     /**
-     * Acción para que el cliente ACEPTE el presupuesto.
+     * Acción para que el cliente acepte el presupuesto.
      */
     @PostMapping("/{id}/accept")
     public String acceptBudget(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        BudgetDetailDTO budget = budgetService.getBudgetById(id);
+        try {
+            BudgetUpdateDTO updateDTO = new BudgetUpdateDTO();
+            updateDTO.setId(id);
+            updateDTO.setAccepted(true);
 
-        BudgetUpdateDTO updateDTO = new BudgetUpdateDTO();
-        updateDTO.setId(id);
-        updateDTO.setAccepted(true);
+            budgetService.updateBudget(updateDTO);
 
-        budgetService.updateBudget(updateDTO);
-
-        redirectAttributes.addFlashAttribute("success", "¡Has aceptado el presupuesto! El mecánico comenzará pronto.");
+            redirectAttributes.addFlashAttribute("success", "¡Has aceptado el presupuesto! El taller podrá continuar.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "No se pudo aceptar el presupuesto: " + e.getMessage());
+        }
         return "redirect:/appointments";
     }
 
     /**
-     * Acción para que el cliente RECHACE el presupuesto y cancele la cita.
+     * Acción para que el cliente rechace el presupuesto.
+     * Si era el presupuesto inicial, cancela la cita.
+     * Si era una modificación, mantiene el presupuesto anterior aceptado.
      */
     @PostMapping("/{id}/reject")
     public String rejectBudget(@PathVariable Long id, RedirectAttributes ra) {
         try {
-            // Guardamos el resultado del servicio
             boolean isCancelled = budgetService.rejectBudget(id);
 
-            // Elegimos el mensaje correcto según lo que haya pasado
             if (isCancelled) {
                 ra.addFlashAttribute("success", "Presupuesto rechazado y cita cancelada correctamente.");
             } else {
-                ra.addFlashAttribute("success", "Modificación rechazada. El taller continuará trabajando con el presupuesto original aceptado.");
+                ra.addFlashAttribute("success", "Modificación rechazada. Se mantiene el presupuesto anterior aceptado.");
             }
         } catch (Exception e) {
             ra.addFlashAttribute("error", "Error al rechazar: " + e.getMessage());

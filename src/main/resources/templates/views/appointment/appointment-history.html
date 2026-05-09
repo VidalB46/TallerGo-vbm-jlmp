@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>TallerGO — Historial</title>
+    <title th:text="#{msg.appointment-history.title}">Historial</title>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
@@ -23,8 +23,10 @@
             <h1 th:text="#{msg.appointment-history.title}">Historial Completo</h1>
             <p th:text="#{msg.appointment-history.subtitle}">Registro de todas las citas, intervenciones y cancelaciones.</p>
         </div>
-        <a th:href="@{/appointments}" class="btn-modern btn-outline" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2);">
-            <i class="bi bi-arrow-left"></i> <span th:text="#{msg.appointment-history.back}">Volver a citas activas</span>
+        <a th:href="@{/appointments}" class="btn-modern btn-outline"
+           style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2);">
+            <i class="bi bi-arrow-left"></i>
+            <span th:text="#{msg.appointment-history.back}">Volver a citas activas</span>
         </a>
     </div>
 </div>
@@ -59,11 +61,29 @@
                         </div>
                     </div>
 
-                    <span class="status-badge"
+                    <span th:if="${#strings.toString(appt.status) == 'CONFIRMADO' and (appt.hasBudget == null or !appt.hasBudget)}"
+                          class="status-badge status-pending">
+                        <i class="bi bi-calculator"></i>
+                        <span th:text="#{msg.appointment-list.status.budgeting}">Preparando presupuesto</span>
+                    </span>
+
+                    <span th:if="${#strings.toString(appt.status) == 'CONFIRMADO' and appt.hasBudget != null and appt.hasBudget and !appt.isBudgetAccepted}"
+                          class="status-badge status-pending">
+                        <i class="bi bi-clock-history"></i>
+                        <span th:text="#{msg.appointment-list.status.pendingBudget}">Pendiente de aceptar</span>
+                    </span>
+
+                    <span th:if="${(#strings.toString(appt.status) == 'CONFIRMADO' and appt.hasBudget != null and appt.hasBudget and appt.isBudgetAccepted) or #strings.toString(appt.status) == 'LISTO_RECOGIDA'}"
+                          class="status-badge status-confirmado">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span th:text="${#messages.msgOrNull('msg.status.' + appt.status)}"></span>
+                    </span>
+
+                    <span th:if="${#strings.toString(appt.status) != 'CONFIRMADO' and #strings.toString(appt.status) != 'LISTO_RECOGIDA'}"
+                          class="status-badge"
                           th:classappend="${#strings.toString(appt.status) == 'SOLICITADO'} ? 'status-solicitado' :
-                                        (${#strings.toString(appt.status) == 'CONFIRMADO' or #strings.toString(appt.status) == 'LISTO_RECOGIDA'} ? 'status-confirmado' :
                                         (${#strings.toString(appt.status) == 'CANCELADO' or #strings.toString(appt.status) == 'RECHAZADA'} ? 'status-cancelado' :
-                                        (${#strings.toString(appt.status) == 'EN_TALLER' or #strings.toString(appt.status) == 'RECOGIDO'} ? 'status-taller' : 'status-reparacion')))">
+                                        (${#strings.toString(appt.status) == 'EN_TALLER' or #strings.toString(appt.status) == 'RECOGIDO'} ? 'status-taller' : 'status-reparacion'))">
 
                         <i th:class="${#strings.toString(appt.status) == 'SOLICITADO'} ? 'bi bi-hourglass-split' :
                                    (${#strings.toString(appt.status) == 'CANCELADO' or #strings.toString(appt.status) == 'RECHAZADA'} ? 'bi bi-x-circle-fill' : 'bi bi-gear-fill')"></i>
@@ -75,6 +95,7 @@
                     <i class="bi bi-car-front-fill"></i>
                     <span th:text="${appt.vehicleModel}">Vehículo</span>
                 </div>
+
                 <div class="appt-info-row mt-1">
                     <i class="bi bi-building"></i>
                     <span th:text="${appt.workshopName}">Taller</span>
@@ -82,35 +103,16 @@
 
                 <div class="appt-card-footer">
                     <a th:href="@{/appointments/{id}(id=${appt.id})}" class="btn-detail-appt">
-                        <i class="bi bi-eye"></i> Detalle
+                        <i class="bi bi-eye"></i> <span th:text="#{msg.appointment-history.btn.detail}">Detalle</span>
                     </a>
-
-                    <form sec:authorize="hasRole('CLIENT')"
-                          th:if="${#strings.toString(appt.status) == 'SOLICITADO' or #strings.toString(appt.status) == 'CONFIRMADO'}"
-                          th:action="@{/appointments/{id}/cancel(id=${appt.id})}" method="post"
-                          onsubmit="openCancelModal(event, this)"
-                          style="flex: 1; display: flex;">
-                        <button type="submit" class="btn-cancel-appt w-100">
-                            <i class="bi bi-x-circle"></i> Cancelar
-                        </button>
-                    </form>
 
                     <a sec:authorize="hasRole('CLIENT')"
                        th:if="${#strings.toString(appt.status) == 'RECOGIDO'}"
                        th:href="@{/reviews/new(workshopId=${appt.workshopId})}"
                        class="btn-modern btn-warning-modern"
                        style="flex: 1; padding: 0.45rem 0.9rem; font-size: 0.78rem; text-decoration: none;">
-                        <i class="bi bi-star-fill"></i> Valorar Taller
+                        <i class="bi bi-star-fill"></i> <span th:text="#{msg.appointment-list.btn.review}">Valorar Taller</span>
                     </a>
-
-                    <form sec:authorize="hasRole('CLIENT')"
-                          th:if="${#strings.toString(appt.status) == 'CANCELADO' or #strings.toString(appt.status) == 'RECHAZADA' or #strings.toString(appt.status) == 'RECOGIDO'}"
-                          th:action="@{/appointments/{id}/archive(id=${appt.id})}" method="post"
-                          style="flex: 1; display: flex;">
-                        <button type="submit" class="btn-cancel-appt w-100" style="color: #555; border-color: #ddd;" title="Ocultar de esta vista">
-                            <i class="bi bi-archive"></i> Ocultar
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>
@@ -121,11 +123,13 @@
            th:href="@{/appointments/history(page=${appointmentsPage.number - 1})}">
             <i class="bi bi-chevron-left"></i>
         </a>
+
         <a class="page-btn"
            th:each="i : ${#numbers.sequence(0, appointmentsPage.totalPages - 1)}"
            th:classappend="${i == appointmentsPage.number} ? 'active'"
            th:href="@{/appointments/history(page=${i})}"
            th:text="${i + 1}"></a>
+
         <a class="page-btn" th:classappend="${appointmentsPage.last} ? 'disabled'"
            th:href="@{/appointments/history(page=${appointmentsPage.number + 1})}">
             <i class="bi bi-chevron-right"></i>
@@ -134,7 +138,7 @@
 
     <div style="text-align: center; margin-top: 4rem; padding-top: 2rem; border-top: 1px solid #e0e0e0;">
         <a th:href="@{/appointments}" class="btn-modern btn-primary-modern">
-            <i class="bi bi-arrow-left"></i> Volver a mis citas activas
+            <i class="bi bi-arrow-left"></i> <span th:text="#{msg.appointment-history.btn.back}">Volver a mis citas activas</span>
         </a>
     </div>
 

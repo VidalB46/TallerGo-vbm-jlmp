@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/e                <div class="text-muted small fst-italic">
-                    <i class="bi bi-clock-history"></i> <span th:text="#{msg.repair-detail.waiting.client}">Esperando aprobación del cliente...</span>
-                </div>as/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -20,43 +18,66 @@
 <div class="page-hero">
     <div class="page-hero-inner">
         <div class="page-label" th:text="#{msg.repair-detail.label}">Taller</div>
-        <h1>Detalle de Reparación <span style="color:#c0392b;">#<span th:text="${repair.id}"></span></span></h1>
+        <h1>
+            <span th:text="#{msg.repair-detail.title}">Detalle de Reparación</span>
+            <span style="color:#c0392b;">#<span th:text="${repair.id}"></span></span>
+        </h1>
     </div>
 </div>
 
 <main class="detail-main">
-    <div th:if="${success}" class="alert alert-success alert-custom mb-4 shadow-sm"><i class="bi bi-check-circle-fill"></i> <span th:text="${success}"></span></div>
-    <div th:if="${error}" class="alert alert-danger alert-custom mb-4 shadow-sm"><i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span></div>
+    <div th:if="${success}" class="alert alert-success alert-custom mb-4 shadow-sm">
+        <i class="bi bi-check-circle-fill"></i> <span th:text="${success}"></span>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-custom mb-4 shadow-sm">
+        <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span>
+    </div>
 
     <div sec:authorize="hasRole('CLIENT')" class="mb-4">
-        <div th:if="${#strings.toString(repair.status) == 'STANDBY' and repair.budget != null and repair.budget.accepted}" class="alert alert-warning alert-custom shadow-sm">
-            <i class="bi bi-hourglass-split"></i> <div th:utext="'<strong>' + #{msg.repair-detail.status.budget.accepted} + '</strong>'">Presupuesto aceptado.</div>
+        <div th:if="${#strings.toString(repair.status) == 'STANDBY' and repair.budget != null and repair.budget.accepted}"
+             class="alert alert-warning alert-custom shadow-sm">
+            <i class="bi bi-hourglass-split"></i>
+            <div th:utext="'<strong>' + #{msg.repair-detail.status.budget.accepted} + '</strong>'">Presupuesto aceptado.</div>
         </div>
-        <div th:if="${#strings.toString(repair.status) == 'ACTIVO'}" class="alert alert-info alert-custom shadow-sm text-dark">
-            <i class="bi bi-tools text-primary"></i> <div th:utext="'<strong>' + #{msg.repair-detail.status.active} + '</strong>'">¡Manos a la obra!</div>
+
+        <div th:if="${#strings.toString(repair.status) == 'ACTIVO'}"
+             class="alert alert-info alert-custom shadow-sm text-dark">
+            <i class="bi bi-tools text-primary"></i>
+            <div th:utext="'<strong>' + #{msg.repair-detail.status.active} + '</strong>'">¡Manos a la obra!</div>
         </div>
-        <div th:if="${#strings.toString(repair.status) == 'FINALIZADO'}" class="alert alert-success alert-custom shadow-sm">
-            <i class="bi bi-check-circle-fill"></i> <div th:utext="'<strong>' + #{msg.repair-detail.status.done} + '</strong>'">¡Vehículo listo!</div>
+
+        <div th:if="${#strings.toString(repair.status) == 'FINALIZADO'}"
+             class="alert alert-success alert-custom shadow-sm">
+            <i class="bi bi-check-circle-fill"></i>
+            <div th:utext="'<strong>' + #{msg.repair-detail.status.done} + '</strong>'">¡Vehículo listo!</div>
         </div>
     </div>
 
     <div class="detail-card">
         <div class="detail-stripe"
-             th:classappend="${#strings.toString(repair.status) == 'STANDBY'} ? 'stripe-standby' : (${#strings.toString(repair.status) == 'ACTIVO'} ? 'stripe-activo' : 'stripe-finalizado')">
+             th:classappend="${#strings.toString(repair.status) == 'STANDBY'} ? 'stripe-standby' :
+                            (${#strings.toString(repair.status) == 'ACTIVO'} ? 'stripe-activo' : 'stripe-finalizado')">
         </div>
 
         <div class="detail-card-body">
             <div class="detail-header">
-                <div class="detail-id"><span th:text="#{msg.repair-detail.id}">Reparación #</span><span th:text="${repair.id}"></span></div>
+                <div class="detail-id">
+                    <span th:text="#{msg.repair-detail.id}">Reparación #</span><span th:text="${repair.id}"></span>
+                </div>
 
                 <span class="status-badge"
-                      th:classappend="${#strings.toString(repair.status) == 'STANDBY'} ? 'status-standby' : (${#strings.toString(repair.status) == 'ACTIVO'} ? 'status-activo' : 'status-finalizado')">
-                    <i th:class="${#strings.toString(repair.status) == 'STANDBY'} ? 'bi bi-pause-circle' : (${#strings.toString(repair.status) == 'ACTIVO'} ? 'bi bi-gear-fill' : 'bi bi-check-circle-fill')"></i>
+                      th:classappend="${#strings.toString(repair.status) == 'STANDBY'} ? 'status-standby' :
+                                      (${#strings.toString(repair.status) == 'ACTIVO'} ? 'status-activo' : 'status-finalizado')">
+                    <i th:class="${#strings.toString(repair.status) == 'STANDBY'} ? 'bi bi-pause-circle' :
+                                  (${#strings.toString(repair.status) == 'ACTIVO'} ? 'bi bi-gear-fill' : 'bi bi-check-circle-fill')"></i>
                     <span th:text="${#messages.msgOrNull('msg.status.' + repair.status)}"></span>
                 </span>
             </div>
 
-            <div class="detail-section-title"><i class="bi bi-info-square-fill"></i> <span th:text="#{msg.repair-detail.section.general}">Datos Generales</span></div>
+            <div class="detail-section-title">
+                <i class="bi bi-info-square-fill"></i> <span th:text="#{msg.repair-detail.section.general}">Datos Generales</span>
+            </div>
+
             <div class="detail-grid">
                 <div class="detail-field">
                     <label th:text="#{msg.repair-detail.field.entryDate}">Fecha de Entrada</label>
@@ -68,9 +89,12 @@
                 </div>
             </div>
 
-            <div class="detail-section-title"><i class="bi bi-clipboard-data-fill"></i> <span th:text="#{msg.repair-detail.section.notes}">Notas del Mecánico</span></div>
+            <div class="detail-section-title">
+                <i class="bi bi-clipboard-data-fill"></i> <span th:text="#{msg.repair-detail.section.notes}">Notas del Mecánico</span>
+            </div>
+
             <div class="notes-box">
-                <span th:text="${repair.notes != null and !#strings.isEmpty(repair.notes) ? repair.notes : 'Sin notas adicionales.'}"></span>
+                <span th:text="${repair.notes != null and !#strings.isEmpty(repair.notes) ? repair.notes : #messages.msgOrNull('msg.repair-detail.notes.empty')}"></span>
             </div>
         </div>
 
@@ -81,17 +105,20 @@
 
             <div class="d-flex flex-wrap gap-2 align-items-center">
 
-                <a th:if="${repair.budget == null}" sec:authorize="hasRole('ADMIN')"
-                   th:href="@{/budgets/new(repairId=${repair.id})}" class="btn-modern btn-warning-modern">
-                    <i class="bi bi-file-earmark-plus"></i> Generar Presupuesto
+                <a th:if="${repair.budget == null}"
+                   sec:authorize="hasAnyRole('ADMIN','WORKSHOP_ADMIN')"
+                   th:href="@{/budgets/new(repairId=${repair.id})}"
+                   class="btn-modern btn-warning-modern">
+                    <i class="bi bi-file-earmark-plus"></i> <span th:text="#{msg.repair-detail.btn.generate}">Generar Presupuesto</span>
                 </a>
 
                 <a th:if="${repair.budget != null}"
-                   th:href="@{/budgets/repair/{id}(id=${repair.id})}" class="btn-modern btn-info-modern">
-                    <i class="bi bi-receipt"></i> Ver Presupuesto
+                   th:href="@{/budgets/repair/{id}(id=${repair.id})}"
+                   class="btn-modern btn-info-modern">
+                    <i class="bi bi-receipt"></i> <span th:text="#{msg.repair-detail.btn.viewBudget}">Ver Presupuesto</span>
                 </a>
 
-                <form sec:authorize="hasRole('ADMIN')"
+                <form sec:authorize="hasAnyRole('ADMIN','WORKSHOP_ADMIN')"
                       th:if="${#strings.toString(repair.status) == 'STANDBY' and repair.budget != null and repair.budget.accepted}"
                       th:action="@{/repairs/{id}/start(id=${repair.id})}" method="post" class="m-0">
                     <button type="submit" class="btn-modern btn-primary-modern">
@@ -99,19 +126,21 @@
                     </button>
                 </form>
 
-                <div sec:authorize="hasRole('ADMIN')"
+                <div sec:authorize="hasAnyRole('ADMIN','WORKSHOP_ADMIN')"
                      th:if="${#strings.toString(repair.status) == 'STANDBY' and repair.budget != null and !repair.budget.accepted}"
                      class="text-muted small fst-italic">
-                    <i class="bi bi-clock-history"></i> Esperando aprobación del cliente...
+                    <i class="bi bi-clock-history"></i>
+                    <span th:text="#{msg.repair-detail.waiting.client}">Esperando aprobación del cliente...</span>
                 </div>
 
-                <a sec:authorize="hasRole('ADMIN')"
+                <a sec:authorize="hasAnyRole('ADMIN','WORKSHOP_ADMIN')"
                    th:if="${#strings.toString(repair.status) == 'ACTIVO' and repair.budget != null and repair.budget.accepted}"
-                   th:href="@{/budgets/new(repairId=${repair.id})}" class="btn-modern btn-warning-modern">
-                    <i class="bi bi-pencil-square"></i> Modificar
+                   th:href="@{/budgets/new(repairId=${repair.id})}"
+                   class="btn-modern btn-warning-modern">
+                    <i class="bi bi-pencil-square"></i> <span th:text="#{msg.repair-detail.btn.modify}">Modificar</span>
                 </a>
 
-                <form sec:authorize="hasRole('ADMIN')"
+                <form sec:authorize="hasAnyRole('ADMIN','WORKSHOP_ADMIN')"
                       th:if="${#strings.toString(repair.status) == 'ACTIVO' and repair.budget != null and repair.budget.accepted}"
                       th:action="@{/repairs/{id}/finish(id=${repair.id})}" method="post" class="m-0">
                     <button type="submit" class="btn-modern btn-success-modern">
@@ -119,13 +148,14 @@
                     </button>
                 </form>
 
-                <div sec:authorize="hasRole('ADMIN')"
+                <div sec:authorize="hasAnyRole('ADMIN','WORKSHOP_ADMIN')"
                      th:if="${#strings.toString(repair.status) == 'ACTIVO' and repair.budget != null and !repair.budget.accepted}"
                      class="text-muted small fw-bold ms-2 d-flex align-items-center gap-1">
-                    <i class="bi bi-clock-history text-warning"></i> <span th:text="#{msg.repair-detail.mod.pending}">Modificación pendiente aprobación</span>
+                    <i class="bi bi-clock-history text-warning"></i>
+                    <span th:text="#{msg.repair-detail.mod.pending}">Modificación pendiente aprobación</span>
                 </div>
 
-                <form sec:authorize="hasRole('ADMIN')"
+                <form sec:authorize="hasAnyRole('ADMIN','WORKSHOP_ADMIN')"
                       th:if="${#strings.toString(repair.status) == 'FINALIZADO' and repair.appointment != null and #strings.toString(repair.appointment.status) != 'RECOGIDO'}"
                       th:action="@{/repairs/{id}/deliver(id=${repair.id})}" method="post" class="m-0">
                     <button type="submit" class="btn-modern btn-dark-modern">

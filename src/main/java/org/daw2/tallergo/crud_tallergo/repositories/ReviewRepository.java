@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repositorio de Spring Data JPA para la entidad Review.
@@ -17,13 +18,35 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     /**
      * Recupera todas las reseñas de un taller específico.
-     * Útil para calcular la nota media y mostrar el carrusel de opiniones.
+     *
+     * @param workshopId Identificador del taller.
+     * @return Lista de reseñas del taller indicado.
      */
     List<Review> findByWorkshopId(Integer workshopId);
 
     /**
      * Obtiene la nota media (rating) de un taller.
+     *
+     * @param workshopId Identificador del taller.
+     * @return Media de puntuaciones o {@code null} si no existen reseñas.
      */
     @Query("SELECT AVG(r.rating) FROM Review r WHERE r.workshop.id = :workshopId")
     Double getAverageRatingForWorkshop(@Param("workshopId") Integer workshopId);
+
+    /**
+     * Recupera una reseña concreta cargando además el usuario autor y el taller asociado.
+     * Este método resulta útil para validar permisos de borrado y conocer el taller al que
+     * pertenece la reseña antes de eliminarla.
+     *
+     * @param id Identificador de la reseña.
+     * @return Reseña encontrada con usuario y taller inicializados.
+     */
+    @Query("""
+           SELECT r
+           FROM Review r
+           JOIN FETCH r.user u
+           JOIN FETCH r.workshop w
+           WHERE r.id = :id
+           """)
+    Optional<Review> findByIdWithUserAndWorkshop(@Param("id") Long id);
 }

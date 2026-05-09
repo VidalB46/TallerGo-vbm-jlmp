@@ -46,7 +46,19 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     @Transactional(readOnly = true)
     public Page<AppointmentDTO> getAllAppointments(Pageable pageable) {
-        return appointmentRepository.findAllWithDetails(pageable).map(AppointmentMapper::toDTO);
+        return appointmentRepository.findAllWithDetails(pageable)
+                .map(AppointmentMapper::toDTO);
+    }
+
+    /**
+     * Devuelve una página paginada con todas las citas del sistema
+     * ordenadas por prioridad de negocio y, dentro de cada grupo, por fecha.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<AppointmentDTO> getAllAppointmentsOrderedByBusinessStatus(Pageable pageable) {
+        return appointmentRepository.findAllOrderByBusinessStatus(pageable)
+                .map(AppointmentMapper::toDTO);
     }
 
     /**
@@ -85,6 +97,13 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .map(AppointmentMapper::toDTO);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<AppointmentDTO> getActiveAppointmentsByUserOrderedByBusinessStatus(Long userId, Pageable pageable) {
+        return appointmentRepository.findActiveByUserIdOrderByBusinessStatus(userId, pageable)
+                .map(AppointmentMapper::toDTO);
+    }
+
     /**
      * Devuelve las citas de un taller concreto con paginación.
      *
@@ -96,6 +115,13 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Transactional(readOnly = true)
     public Page<AppointmentDTO> getAppointmentsByWorkshop(Integer workshopId, Pageable pageable) {
         return appointmentRepository.findByWorkshopId(workshopId, pageable)
+                .map(AppointmentMapper::toDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<AppointmentDTO> getAppointmentsByWorkshopOrderedByBusinessStatus(Integer workshopId, Pageable pageable) {
+        return appointmentRepository.findByWorkshopIdOrderByBusinessStatus(workshopId, pageable)
                 .map(AppointmentMapper::toDTO);
     }
 
@@ -209,14 +235,14 @@ public class AppointmentServiceImpl implements AppointmentService {
     public void acceptDate(Long id) {
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Cita no encontrada con ID: " + id));
-        // El cliente acepta la fecha
+
         appointment.setIsDateAcceptedByClient(true);
-        // Como el taller fue quien propuso la fecha, la damos por confirmada automáticamente
         appointment.setStatus(AppointmentStatus.CONFIRMADO);
 
         appointmentRepository.save(appointment);
     }
 
+    @Override
     @Transactional
     public void archiveAppointment(Long id) {
         Appointment appt = appointmentRepository.findById(id).orElseThrow();

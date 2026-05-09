@@ -11,15 +11,52 @@
     <link rel="stylesheet" th:href="@{/css/views.css}"/>
 
     <style>
-        .line-item { display: grid; grid-template-columns: 3fr 1fr 1.5fr auto; gap: 1rem; align-items: start; background: #fdfdfd; padding: 1rem; border: 1.5px solid #eee; border-radius: 10px; margin-bottom: 1rem; transition: all 0.2s; }
-        .line-item:hover { border-color: #ffc107; }
+        .line-item {
+            display: grid;
+            grid-template-columns: 3fr 1fr 1.5fr auto;
+            gap: 1rem;
+            align-items: start;
+            background: #fdfdfd;
+            padding: 1rem;
+            border: 1.5px solid #eee;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+        }
 
-        .btn-remove-line { background: #fee; color: #dc3545; border: none; padding: 0.7rem 1rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; height: 42px; margin-top: 25px; display: inline-flex; align-items: center; justify-content: center;}
-        .btn-remove-line:hover { background: #dc3545; color: #fff; }
+        .line-item:hover {
+            border-color: #ffc107;
+        }
+
+        .btn-remove-line {
+            background: #fee;
+            color: #dc3545;
+            border: none;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            height: 42px;
+            margin-top: 25px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-remove-line:hover {
+            background: #dc3545;
+            color: #fff;
+        }
 
         @media (max-width: 768px) {
-            .line-item { grid-template-columns: 1fr; }
-            .btn-remove-line { margin-top: 0; width: 100%; }
+            .line-item {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-remove-line {
+                margin-top: 0;
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -37,6 +74,18 @@
         <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}"></span>
     </div>
 
+    <div id="budgetI18n"
+         style="display:none;"
+         th:attr="data-concept-label=#{msg.budget-form.col.concept},
+                  data-quantity-label=#{msg.budget-form.col.quantity},
+                  data-price-label=#{msg.budget-form.col.price},
+                  data-required-text=#{msg.budget-form.validation.required},
+                  data-min-text=#{msg.budget-form.validation.min},
+                  data-remove-title=#{msg.budget-form.remove.title},
+                  data-concept-placeholder=#{msg.budget-form.placeholder.concept},
+                  data-min-line-error=#{msg.budget-form.error.min.line}">
+    </div>
+
     <div class="custom-card">
         <form th:action="@{/budgets/new}" th:object="${budget}" method="post" id="budgetForm" class="needs-validation" novalidate>
             <input type="hidden" th:field="*{repairId}" />
@@ -49,49 +98,84 @@
                 <div class="line-item" th:each="line, stat : *{lines}">
                     <div>
                         <label class="form-label text-muted" style="font-size: 0.75rem;" th:text="#{msg.budget-form.col.concept}">Concepto / Descripción</label>
-                        <input type="text" th:field="*{lines[__${stat.index}__].concept}" list="commonParts" class="form-control-custom concept-input" required placeholder="Ej: Cambio de aceite" />
+                        <input type="text"
+                               th:field="*{lines[__${stat.index}__].concept}"
+                               list="commonParts"
+                               class="form-control-custom concept-input"
+                               required
+                               th:placeholder="#{msg.budget-form.placeholder.concept}" />
                         <div class="invalid-feedback-custom" th:text="#{msg.budget-form.validation.required}">Requerido</div>
                     </div>
+
                     <div>
                         <label class="form-label text-muted" style="font-size: 0.75rem;" th:text="#{msg.budget-form.col.quantity}">Cantidad</label>
-                        <input type="number" min="1" th:field="*{lines[__${stat.index}__].quantity}" class="form-control-custom qty-input" required />
+                        <input type="number"
+                               min="1"
+                               th:field="*{lines[__${stat.index}__].quantity}"
+                               class="form-control-custom qty-input"
+                               required />
                         <div class="invalid-feedback-custom" th:text="#{msg.budget-form.validation.min}">Mínimo 1</div>
                     </div>
+
                     <div>
                         <label class="form-label text-muted" style="font-size: 0.75rem;" th:text="#{msg.budget-form.col.price}">Precio Un. (€)</label>
-                        <input type="number" step="0.01" min="0" th:field="*{lines[__${stat.index}__].unitPrice}" class="form-control-custom price-input" required />
-                        <div class="invalid-feedback-custom" th:text="#{msg.budget-form.validation.required}">Requerido</div> onclick="removeLine(this)" title="Eliminar concepto"><i class="bi bi-trash3"></i></button>
+                        <input type="number"
+                               step="0.01"
+                               min="0"
+                               th:field="*{lines[__${stat.index}__].unitPrice}"
+                               class="form-control-custom price-input"
+                               required />
+                        <div class="invalid-feedback-custom" th:text="#{msg.budget-form.validation.required}">Requerido</div>
+                    </div>
+
+                    <button type="button"
+                            class="btn-remove-line"
+                            onclick="removeLine(this)"
+                            th:title="#{msg.budget-form.remove.title}">
+                        <i class="bi bi-trash3"></i>
+                    </button>
                 </div>
             </div>
 
             <datalist id="commonParts">
-                <option value="Cambio de Aceite 5W30">
-                <option value="Filtro de Aceite">
-                <option value="Filtro de Aire">
-                <option value="Pastillas de Freno">
-                <option value="Mano de Obra (Horas)">
-                <option value="Diagnosis Electrónica">
-                <option value="Carga de Aire Acondicionado">
+                <option th:value="#{msg.budget-form.part.oil.change}"></option>
+                <option th:value="#{msg.budget-form.part.oil.filter}"></option>
+                <option th:value="#{msg.budget-form.part.air.filter}"></option>
+                <option th:value="#{msg.budget-form.part.brake.pads}"></option>
+                <option th:value="#{msg.budget-form.part.labor.hours}"></option>
+                <option th:value="#{msg.budget-form.part.diagnosis}"></option>
+                <option th:value="#{msg.budget-form.part.ac.charge}"></option>
             </datalist>
 
-            <button type="button" class="btn-modern btn-outline w-100 mb-4" onclick="addLine()" style="border-style: dashed;">
+            <button type="button"
+                    class="btn-modern btn-outline w-100 mb-4"
+                    onclick="addLine()"
+                    style="border-style: dashed;">
                 <i class="bi bi-plus-circle"></i> <span th:text="#{msg.budget-form.btn.add.line}">Añadir Concepto</span>
             </button>
 
             <div class="form-section-title mt-4 mb-3" style="color: #444; border-bottom: 2px solid #eee; padding-bottom: 0.8rem; font-size: 0.9rem;">
                 <i class="bi bi-info-square"></i> <span th:text="#{msg.budget-form.section.notes}">Notas para el cliente</span>
             </div>
+
             <div class="mb-4">
-                <textarea th:field="*{notes}" id="notes" class="form-control-custom" rows="3" placeholder="Ej: Se ha detectado un desgaste inusual en las correas, se recomienda revisión futura..."></textarea>
+                <textarea th:field="*{notes}"
+                          id="notes"
+                          class="form-control-custom"
+                          rows="3"
+                          th:placeholder="#{msg.budget-form.placeholder.notes}"></textarea>
                 <div class="form-text text-muted" style="font-size: 0.8rem; margin-top: 0.4rem;" th:text="#{msg.budget-form.notes.hint}">
                     Usa este campo para explicar la avería o justificar los conceptos añadidos.
                 </div>
             </div>
 
             <div class="form-card-footer d-flex justify-content-between align-items-center mt-4 pt-4 border-top" style="padding: 0; gap: 1rem;">
-                <a th:href="@{/appointments/{id}(id=*{repairId})}" class="btn-modern btn-outline" style="margin-bottom: 0; border-style: solid; width: auto;">
+                <a th:href="@{/repairs/{id}(id=*{repairId})}"
+                   class="btn-modern btn-outline"
+                   style="margin-bottom: 0; border-style: solid; width: auto;">
                     <i class="bi bi-x-circle"></i> <span th:text="#{msg.budget-form.btn.cancel}">Cancelar</span>
                 </a>
+
                 <button type="submit" class="btn-modern btn-warning-modern">
                     <i class="bi bi-send-check"></i> <span th:text="#{msg.budget-form.btn.submit}">Guardar y Enviar</span>
                 </button>
@@ -103,7 +187,9 @@
 <div id="customErrorModal" class="tgo-modal-overlay">
     <div class="tgo-modal">
         <div class="tgo-modal-header" style="border-bottom: none; padding-bottom: 0;">
-            <h5 style="color: #c0392b; font-size: 1.2rem;"><i class="bi bi-exclamation-octagon-fill"></i> <span th:text="#{msg.budget-form.modal.error.title}">Atención</span></h5>
+            <h5 style="color: #c0392b; font-size: 1.2rem;">
+                <i class="bi bi-exclamation-octagon-fill"></i> <span th:text="#{msg.budget-form.modal.error.title}">Atención</span>
+            </h5>
             <button type="button" class="tgo-modal-close" onclick="closeErrorModal()">&times;</button>
         </div>
         <div class="tgo-modal-body" style="padding-top: 0.5rem;">
@@ -116,8 +202,6 @@
 </div>
 
 <div th:replace="~{fragments/scripts :: scripts}"></div>
-
 <script th:src="@{/js/budget.js}"></script>
-
 </body>
 </html>
