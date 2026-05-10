@@ -21,13 +21,11 @@
         <div class="page-label" th:text="#{msg.workshop-detail.label}">Detalle del Taller</div>
         <h1 th:text="${workshop.name}">Nombre Taller</h1>
 
-        <div class="d-flex align-items-center gap-2 mt-2" style="color: #f59e0b; font-size: 1.2rem;">
-            <i class="bi bi-star-fill"></i>
-            <span style="font-weight: 700; color: #fff;">4.5</span>
-            <span style="font-size: 0.85rem; color: rgba(255,255,255,0.6);" th:text="'(' + #{msg.workshop-detail.reviews} + ')'"></span>
+        <div class="hero-id mt-3">
+            ID #<span th:text="${workshop.id}"></span>
+            &nbsp;·&nbsp;
+            NIF <span th:text="${workshop.nif}"></span>
         </div>
-
-        <div class="hero-id mt-3">ID #<span th:text="${workshop.id}"></span> &nbsp;·&nbsp; NIF <span th:text="${workshop.nif}"></span></div>
     </div>
 </div>
 
@@ -36,61 +34,80 @@
     <div class="detail-grid-ws">
 
         <div class="detail-card-ws">
-            <h2><i class="bi bi-info-circle"></i> <span th:text="#{msg.workshop-detail.general}">Datos Generales</span></h2>
+            <h2>
+                <i class="bi bi-info-circle"></i>
+                <span th:text="#{msg.workshop-detail.general}">Datos Generales</span>
+            </h2>
 
             <div class="info-row">
                 <span class="info-label" th:text="#{msg.workshop-detail.field.location}">Ubicación</span>
                 <span class="info-value">
                     <i class="bi bi-geo-alt"></i>
-                    <span th:text="${workshop.location} ?: 'No especificada'"></span>
+                    <span th:text="${workshop.location ?: 'No especificada'}">No especificada</span>
                 </span>
             </div>
+
             <div class="info-row">
                 <span class="info-label" th:text="#{msg.workshop-detail.field.schedule}">Horario</span>
                 <span class="info-value">
                     <i class="bi bi-clock"></i>
-                    <span th:text="${workshop.schedule} ?: 'No especificado'"></span>
+                    <span th:text="${workshop.schedule ?: 'No especificado'}">No especificado</span>
                 </span>
             </div>
+
             <div class="info-row">
                 <span class="info-label" th:text="#{msg.workshop-detail.field.phone}">Teléfono</span>
                 <span class="info-value">
                     <i class="bi bi-telephone"></i>
-                    <span th:text="${workshop.phone} ?: 'No especificado'"></span>
+                    <span th:text="${workshop.phone ?: 'No especificado'}">No especificado</span>
                 </span>
             </div>
+
             <div class="info-row">
                 <span class="info-label" th:text="#{msg.workshop-detail.field.email}">Email</span>
                 <span class="info-value">
                     <i class="bi bi-envelope"></i>
-                    <a th:if="${workshop.email != null}" th:href="'mailto:' + ${workshop.email}"
-                       th:text="${workshop.email}" style="color: inherit;"></a>
-                    <span th:unless="${workshop.email != null}" th:text="#{msg.workshop-detail.no.email}">No especificado</span>
+
+                    <a th:if="${workshop.email != null and !#strings.isEmpty(workshop.email)}"
+                       th:href="@{|mailto:${workshop.email}|}"
+                       th:text="${workshop.email}"
+                       style="color: inherit; text-decoration: none;">
+                        email@taller.com
+                    </a>
+
+                    <span th:unless="${workshop.email != null and !#strings.isEmpty(workshop.email)}"
+                          th:text="#{msg.workshop-detail.no.email}">
+                        No especificado
+                    </span>
                 </span>
             </div>
+
             <div class="info-row">
                 <span class="info-label" th:text="#{msg.workshop-detail.field.nif}">NIF / CIF</span>
                 <span class="info-value">
                     <i class="bi bi-building"></i>
-                    <span th:text="${workshop.nif}"></span>
+                    <span th:text="${workshop.nif}">B12345678</span>
                 </span>
             </div>
         </div>
 
         <div class="detail-card-ws">
-            <h2><i class="bi bi-person-gear"></i> <span th:text="#{msg.workshop-detail.mechanics}">Mecánicos en Plantilla</span></h2>
+            <h2>
+                <i class="bi bi-person-gear"></i>
+                <span th:text="#{msg.workshop-detail.mechanics}">Mecánicos en Plantilla</span>
+            </h2>
 
-            <div class="mechanics-list" th:if="${!#lists.isEmpty(workshop.mechanics)}">
+            <div class="mechanics-list" th:if="${workshop.mechanics != null and !#lists.isEmpty(workshop.mechanics)}">
                 <div class="mechanic-item" th:each="m : ${workshop.mechanics}">
                     <span class="mechanic-name">
                         <i class="bi bi-person"></i>
-                        <span th:text="${m.name}"></span>
+                        <span th:text="${m.name}">Nombre mecánico</span>
                     </span>
-                    <span class="mechanic-badge" th:text="${m.specialty}"></span>
+                    <span class="mechanic-badge" th:text="${m.specialty}">Especialidad</span>
                 </div>
             </div>
 
-            <div class="no-mechanics" th:if="${#lists.isEmpty(workshop.mechanics)}">
+            <div class="no-mechanics" th:if="${workshop.mechanics == null or #lists.isEmpty(workshop.mechanics)}">
                 <i class="bi bi-person-x"></i>
                 <span th:text="#{msg.workshop-detail.no.mechanics}">Sin mecánicos asignados</span>
             </div>
@@ -100,25 +117,35 @@
 
     <div class="actions-bar">
         <a th:href="@{/workshops}" class="btn-back">
-            <i class="bi bi-arrow-left"></i> <span th:text="#{msg.workshop-detail.back}">Volver a talleres</span>
-        </a>
-        <a th:href="@{/workshops/edit/{id}(id=${workshop.id})}" class="btn-edit" sec:authorize="hasRole('ADMIN')">
-            <i class="bi bi-pencil"></i> <span th:text="#{msg.workshop-detail.edit}">Editar Taller</span>
+            <i class="bi bi-arrow-left"></i>
+            <span th:text="#{msg.workshop-detail.back}">Volver a talleres</span>
         </a>
 
-        <a th:href="@{/reviews/workshop/{id}(id=${workshop.id})}" class="btn-modern btn-warning-modern">
-            <i class="bi bi-stars"></i> <span th:text="#{msg.workshop-detail.opinions}">Ver Opiniones</span>
+        <a th:href="@{/workshops/edit/{id}(id=${workshop.id})}"
+           class="btn-edit"
+           sec:authorize="hasRole('ADMIN')">
+            <i class="bi bi-pencil"></i>
+            <span th:text="#{msg.workshop-detail.edit}">Editar Taller</span>
         </a>
 
-        <a th:href="@{/appointments/new}" class="btn-new-appt" sec:authorize="isAuthenticated()">
-            <i class="bi bi-calendar-plus"></i> <span th:text="#{msg.workshop-detail.book}">Pedir cita aquí</span>
+        <a th:href="@{/reviews/workshop/{id}(id=${workshop.id})}"
+           class="btn-modern btn-warning-modern">
+            <i class="bi bi-stars"></i>
+            <span th:text="#{msg.workshop-detail.opinions}">Ver Opiniones</span>
+        </a>
+
+        <a th:href="@{/appointments/new}"
+           class="btn-new-appt"
+           sec:authorize="isAuthenticated()">
+            <i class="bi bi-calendar-plus"></i>
+            <span th:text="#{msg.workshop-detail.book}">Pedir cita aquí</span>
         </a>
     </div>
 
 </main>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
-
 <div th:replace="~{fragments/scripts :: scripts}"></div>
+
 </body>
 </html>

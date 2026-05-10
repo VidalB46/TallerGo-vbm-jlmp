@@ -1,0 +1,199 @@
+/* =========================================================
+   TallerGO — ERROR PAGES CSS
+   Estilos compartidos para páginas 403 / 404 / 500
+   ========================================================= */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+@keyframes errorFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+body.error-page {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    background: #f4f4f6;
+    color: #1a1a1a;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Forzar navbar oscura en páginas de error */
+body.error-page .tgo-nav {
+    background: rgba(10,10,10,0.93) !important;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 2px 24px rgba(0,0,0,0.4);
+}
+
+.error-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6rem 1.5rem 4rem;
+}
+
+.error-card {
+    background: #fff;
+    border: 1.5px solid rgba(0,0,0,0.07);
+    border-radius: 24px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+    padding: 3rem 2.5rem;
+    max-width: 540px;
+    width: 100%;
+    text-align: center;
+    animation: errorFadeUp 0.5s ease both;
+}
+
+.error-code {
+    font-size: 6rem;
+    font-weight: 900;
+    color: #c0392b;
+    line-height: 1;
+    letter-spacing: -4px;
+}
+
+.error-icon {
+    font-size: 5rem;
+    color: #c0392b;
+    line-height: 1;
+}
+
+.error-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #111;
+    margin-top: 0.5rem;
+}
+
+.error-desc {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.75rem;
+    line-height: 1.6;
+}
+
+.error-alert {
+    margin-top: 1.5rem;
+    background: rgba(192,57,43,0.06);
+    border: 1.5px solid rgba(192,57,43,0.18);
+    border-radius: 12px;
+    padding: 0.9rem 1.2rem;
+    font-size: 0.83rem;
+    color: #c0392b;
+    text-align: left;
+}
+
+.error-alert strong {
+    font-weight: 700;
+}
+
+.error-meta {
+    margin-top: 1.5rem;
+    background: #f8f8fa;
+    border-radius: 12px;
+    padding: 0.9rem 1.2rem;
+    font-size: 0.78rem;
+    color: #999;
+    text-align: left;
+}
+
+.error-meta span {
+    color: #444;
+    font-weight: 600;
+}
+
+.error-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.error-actions .btn-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #111;
+    color: #fff;
+    font-size: 0.87rem;
+    font-weight: 700;
+    padding: 0.7rem 1.5rem;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: background 0.2s;
+    border: none;
+}
+
+.error-actions .btn-home:hover {
+    background: #c0392b;
+    color: #fff;
+}
+
+.error-actions .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #f0f0f2;
+    color: #555;
+    font-size: 0.87rem;
+    font-weight: 600;
+    padding: 0.7rem 1.4rem;
+    border-radius: 12px;
+    text-decoration: none;
+    border: 1.5px solid #e0e0e0;
+    transition: background 0.2s, color 0.2s;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.error-actions .btn-back:hover {
+    background: #e4e4e6;
+    color: #111;
+}
+
+@media (max-width: 640px) {
+    .error-wrap {
+        padding: 5.5rem 1rem 3rem;
+    }
+
+    .error-card {
+        padding: 2.2rem 1.3rem;
+        border-radius: 20px;
+    }
+
+    .error-code {
+        font-size: 4.8rem;
+    }
+
+    .error-icon {
+        font-size: 4rem;
+    }
+
+    .error-title {
+        font-size: 1.2rem;
+    }
+
+    .error-actions {
+        flex-direction: column;
+    }
+
+    .error-actions .btn-home,
+    .error-actions .btn-back {
+        width: 100%;
+        justify-content: center;
+    }
+}

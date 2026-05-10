@@ -11,7 +11,7 @@ import org.daw2.tallergo.crud_tallergo.mappers.ReviewMapper;
 import org.daw2.tallergo.crud_tallergo.repositories.ReviewRepository;
 import org.daw2.tallergo.crud_tallergo.repositories.UserRepository;
 import org.daw2.tallergo.crud_tallergo.repositories.WorkshopRepository;
-import org.daw2.tallergo.crud_tallergo.services.ReviewService;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,17 +83,32 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     /**
-     * Elimina una reseña por su ID.
+     * Elimina una reseña si el usuario autenticado es su propietario
+     * o si tiene rol de administrador global.
      *
-     * @param id Identificador único de la reseña a eliminar.
-     * @throws IllegalArgumentException si no existe ninguna reseña con ese ID.
+     * @param id               Identificador único de la reseña.
+     * @param currentUserEmail Email del usuario autenticado.
+     * @param isAdmin          Indica si el usuario tiene rol de administrador.
+     * @return Identificador del taller al que pertenecía la reseña eliminada.
+     * @throws IllegalArgumentException si la reseña no existe.
+     * @throws AccessDeniedException    si el usuario no tiene permisos para eliminarla.
      */
     @Override
     @Transactional
-    public void deleteReview(Long id) {
-        if (!reviewRepository.existsById(id)) {
-            throw new IllegalArgumentException("Reseña no encontrada");
+    public Integer deleteReview(Long id, String currentUserEmail, boolean isAdmin) {
+        Review review = reviewRepository.findByIdWithUserAndWorkshop(id)
+                .orElseThrow(() -> new IllegalArgumentException("Reseña no encontrada"));
+
+        boolean isOwner = review.getUser() != null
+                && review.getUser().getEmail() != null
+                && review.getUser().getEmail().equalsIgnoreCase(currentUserEmail);
+
+        if (!isAdmin && !isOwner) {
+            throw new AccessDeniedException("No tienes permisos para eliminar esta reseña");
         }
-        reviewRepository.deleteById(id);
+
+        Integer workshopId = review.getWorkshop().getId();
+        reviewRepository.delete(review);
+        return workshopId;
     }
 }

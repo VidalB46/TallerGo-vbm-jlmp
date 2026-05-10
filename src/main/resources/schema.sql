@@ -29,9 +29,20 @@ CREATE TABLE IF NOT EXISTS users (
    CONSTRAINT fk_user_workshop FOREIGN KEY (workshop_id) REFERENCES workshops(id) ON DELETE SET NULL
 );
 
--- Migración: añadir workshop_id si la tabla ya existía sin esa columna
-ALTER TABLE users ADD COLUMN IF NOT EXISTS workshop_id INT NULL REFERENCES workshops(id);
-ALTER TABLE appointments ADD COLUMN IF NOT EXISTS archived_by_client BOOLEAN NOT NULL DEFAULT FALSE;
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT NOT NULL,
+  token_hash VARCHAR(64) NOT NULL,
+  expires_at DATETIME NOT NULL,
+  used_at DATETIME NULL,
+  created_at DATETIME NOT NULL,
+  request_ip VARCHAR(45),
+  user_agent VARCHAR(255),
+  CONSTRAINT fk_password_reset_tokens_user
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT uk_password_reset_tokens_hash UNIQUE (token_hash)
+);
+
 
 CREATE TABLE IF NOT EXISTS user_profiles (
    user_id BIGINT PRIMARY KEY,
@@ -130,7 +141,7 @@ CREATE TABLE IF NOT EXISTS repairs (
 
 CREATE TABLE IF NOT EXISTS budgets (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  repair_id BIGINT UNIQUE NOT NULL,
+  repair_id BIGINT NOT NULL,
   total_gross DECIMAL(10, 2),
   total_net DECIMAL(10, 2),
   accepted BOOLEAN DEFAULT FALSE,
@@ -138,6 +149,8 @@ CREATE TABLE IF NOT EXISTS budgets (
   notes TEXT,
   CONSTRAINT fk_budget_repair FOREIGN KEY (repair_id) REFERENCES repairs(id)
 );
+
+CREATE INDEX IF NOT EXISTS idx_budgets_repair_id ON budgets(repair_id);
 
 CREATE TABLE IF NOT EXISTS budget_lines (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,

@@ -3,7 +3,6 @@ package org.daw2.tallergo.crud_tallergo.config;
 import org.daw2.tallergo.crud_tallergo.handlers.CustomOAuth2FailureHandler;
 import org.daw2.tallergo.crud_tallergo.handlers.CustomOAuth2SuccessHandler;
 import org.daw2.tallergo.crud_tallergo.services.CustomUserDetailsService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +18,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * Configuración central de Spring Security para TallerGo.
- * Define reglas de acceso por rol, el proveedor de autenticación basado en BD,
- * el soporte de login con OAuth2 (GitHub/Google) y la gestión de sesiones.
+ * Configuración central de Spring Security para TallerGO.
+ * Define las reglas de acceso por rol, el proveedor de autenticación
+ * basado en base de datos, el soporte de login con OAuth2 y la gestión
+ * de sesiones de la aplicación.
  */
 @Configuration
 @EnableWebSecurity
@@ -39,51 +39,84 @@ public class SecurityConfig {
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
-    /**
-     * Define la cadena de filtros de seguridad: rutas públicas y protegidas por rol,
-     * formulario de login, integración OAuth2 y política de sesiones.
-     *
-     * @param http Constructor de la configuración HTTP de Spring Security.
-     * @return Cadena de filtros de seguridad configurada.
-     * @throws Exception si ocurre algún error durante la configuración de HttpSecurity.
-     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         logger.info("Entrando en el método securityFilterChain");
 
         http
                 .authorizeHttpRequests(auth -> {
-                    logger.debug("Configurando autorización de solicitudes HTTP por Roles");
-                    auth
-                            // 1. RUTAS PÚBLICAS
-                            .requestMatchers("/", "/js/**", "/css/**", "/images/**", "/login", "/register", "/auth/**", "/error", "/error/**", "/lang").permitAll()
+                    logger.debug("Configurando autorización de solicitudes HTTP por roles");
 
-                            // 2. SOLO ADMINISTRADOR GLOBAL: Gestión de personal, usuarios y configuración global
+                    auth
+                            /*
+                             * 1. RUTAS PÚBLICAS
+                             */
+                            .requestMatchers(
+                                    "/",
+                                    "/js/**",
+                                    "/css/**",
+                                    "/images/**",
+                                    "/login",
+                                    "/register",
+                                    "/auth/**",
+                                    "/error",
+                                    "/error/**",
+                                    "/lang"
+                            ).permitAll()
+
+                            /*
+                             * 2. RUTAS DE ADMINISTRACIÓN GLOBAL
+                             */
                             .requestMatchers("/users/**").hasRole("ADMIN")
-                            .requestMatchers("/mechanics/**").hasRole("ADMIN")
                             .requestMatchers("/workshops/new", "/workshops/edit/**", "/workshops/delete/**").hasRole("ADMIN")
 
-                            // 3. RUTAS COMPARTIDAS Y TÉCNICAS (Reparaciones y Presupuestos)
-                            .requestMatchers("/repairs/**").hasAnyRole("MECHANIC", "ADMIN", "WORKSHOP_ADMIN")
-                            .requestMatchers("/budgets/repair/**", "/budgets/*/accept", "/budgets/*/reject").hasAnyRole("CLIENT", "ADMIN", "MECHANIC", "WORKSHOP_ADMIN")
-                            .requestMatchers("/budgets/**").hasAnyRole("MECHANIC", "ADMIN", "WORKSHOP_ADMIN")
+                            /*
+                             * 3. RUTAS DE TALLERES
+                             */
+                            .requestMatchers("/workshops/**").hasAnyRole("CLIENT", "ADMIN")
 
-                            // 4. CLIENTES Y STAFF: Gestión de vehículos y citas
+                            /*
+                             * 4. MECÁNICOS Y GESTIÓN INTERNA DEL TALLER
+                             */
+                            .requestMatchers("/mechanics/**").hasAnyRole("ADMIN", "WORKSHOP_ADMIN")
+
+                            /*
+                             * 5. REPARACIONES Y PRESUPUESTOS
+                             */
+                            .requestMatchers("/repairs/**").hasAnyRole("ADMIN", "WORKSHOP_ADMIN")
+                            .requestMatchers("/budgets/repair/**").hasAnyRole("CLIENT", "ADMIN", "WORKSHOP_ADMIN")
+                            .requestMatchers("/budgets/*/accept", "/budgets/*/reject").hasAnyRole("CLIENT", "ADMIN", "WORKSHOP_ADMIN")
+                            .requestMatchers("/budgets/new").hasAnyRole("ADMIN", "WORKSHOP_ADMIN")
+
+                            /*
+                             * 6. VEHÍCULOS Y CITAS
+                             */
                             .requestMatchers("/vehicles/**").hasAnyRole("CLIENT", "ADMIN")
-                            .requestMatchers("/appointments/**").hasAnyRole("CLIENT", "MECHANIC", "ADMIN", "WORKSHOP_ADMIN")
+                            .requestMatchers("/appointments/**").hasAnyRole("CLIENT", "ADMIN", "WORKSHOP_ADMIN")
 
-                            // 5. PERFIL Y REVIEWS: Cualquier usuario autenticado
+                            /*
+                             * 7. PERFIL DE USUARIO
+                             */
                             .requestMatchers("/profile/**").authenticated()
-                            .requestMatchers("/reviews/add/**").hasRole("CLIENT")
 
-                            // Cualquier otra petición requiere estar logueado
+                            /*
+                             * 8. RESEÑAS
+                             */
+                            .requestMatchers("/reviews/my").hasRole("WORKSHOP_ADMIN")
+                            .requestMatchers("/reviews/workshop/**").authenticated()
+                            .requestMatchers("/reviews/new").hasRole("CLIENT")
+                            .requestMatchers("/reviews/*/delete").hasAnyRole("CLIENT", "ADMIN")
+
+                            /*
+                             * 9. CUALQUIER OTRA RUTA REQUIERE AUTENTICACIÓN
+                             */
                             .anyRequest().authenticated();
                 })
                 .formLogin(form -> {
                     logger.debug("Configurando formulario de inicio de sesión");
                     form
                             .loginPage("/login")
-                            .defaultSuccessUrl("/")
+                            .defaultSuccessUrl("/", true)
                             .permitAll();
                 })
                 .oauth2Login(oauth2 -> {
@@ -102,12 +135,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * Configura el proveedor de autenticación basado en base de datos.
-     * Enlaza el {@link CustomUserDetailsService} con el {@link PasswordEncoder} BCrypt.
-     *
-     * @return Proveedor de autenticación listo para usar por Spring Security.
-     */
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         logger.info("Entrando en el método authenticationProvider");
@@ -120,12 +147,6 @@ public class SecurityConfig {
         return provider;
     }
 
-    /**
-     * Registra el codificador de contraseñas BCrypt como bean de Spring.
-     * Se usa al crear usuarios y al validar credenciales en el login.
-     *
-     * @return Instancia de {@link BCryptPasswordEncoder}.
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         logger.info("Entrando en el método passwordEncoder");

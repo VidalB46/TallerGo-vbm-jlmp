@@ -13,7 +13,6 @@ public class WorkshopUpdateDTO extends WorkshopCreateDTO {
 
     /**
      * Identificador único del taller a actualizar.
-     * Es obligatorio para identificar el registro.
      */
     @NotNull(message = "{msg.workshop.id.notNull}")
     private Integer id;

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>TallerGO — Nueva Cita</title>
+    <title th:text="#{msg.appointment-form.title}">Solicitar Cita</title>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
@@ -12,7 +12,8 @@
     <link rel="stylesheet" th:href="@{/css/views.css}"/>
 </head>
 
-<body class="appt-form-page">
+<body class="appt-form-page"
+      th:attr="data-file-too-large=#{msg.common.file.tooLarge}">
 
 <nav th:replace="~{fragments/navbar :: navbar('')}"></nav>
 
@@ -33,10 +34,22 @@
                 <span th:text="${error}"></span>
             </div>
 
+            <div th:if="${#lists.isEmpty(vehicles)}"
+                 class="alert-error-custom"
+                 style="background: #fff8e1; border-color: #f6c343; color: #7a5a00; margin-bottom: 1.5rem;">
+                <i class="bi bi-car-front-fill"></i>
+                <span th:text="#{msg.appointment-form.vehicle.empty.help}">
+                    No tienes ningún vehículo registrado todavía. Añádelo primero para poder solicitar una cita.
+                </span>
+            </div>
+
             <form th:action="@{/appointments/new}" th:object="${appointment}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
 
                 <div class="field-group">
-                    <label for="workshopId"><i class="bi bi-building"></i> <span th:text="#{msg.appointment-form.workshop}">Taller</span></label>
+                    <label for="workshopId">
+                        <i class="bi bi-building"></i>
+                        <span th:text="#{msg.appointment-form.workshop}">Taller</span>
+                    </label>
                     <select id="workshopId" th:field="*{workshopId}" required
                             th:classappend="${#fields.hasErrors('workshopId')} ? 'is-invalid'">
                         <option value="" disabled selected th:text="#{msg.appointment-form.workshop.option}">Selecciona un taller...</option>
@@ -45,7 +58,8 @@
                                 th:text="${w.name + ' — ' + w.location}"></option>
                     </select>
                     <div class="invalid-feedback-custom">
-                        <i class="bi bi-exclamation-circle"></i> <span th:text="#{msg.appointment-form.workshop.validation}">Por favor, selecciona un taller.</span>
+                        <i class="bi bi-exclamation-circle"></i>
+                        <span th:text="#{msg.appointment-form.workshop.validation}">Por favor, selecciona un taller.</span>
                     </div>
                     <div class="field-error" th:if="${#fields.hasErrors('workshopId')}">
                         <i class="bi bi-exclamation-circle"></i>
@@ -54,29 +68,63 @@
                 </div>
 
                 <div class="field-group">
-                    <label for="vehicleId"><i class="bi bi-car-front-fill"></i> <span th:text="#{msg.appointment-form.vehicle}">Vehículo</span></label>
-                    <select id="vehicleId" th:field="*{vehicleId}" required
-                            th:classappend="${#fields.hasErrors('vehicleId')} ? 'is-invalid'">
-                        <option value="" disabled selected th:text="#{msg.appointment-form.vehicle.option}">Selecciona un vehículo...</option>
-                        <option th:each="v : ${vehicles}"
-                                th:value="${v.id}"
-                                th:text="${v.matricula + ' — ' + v.brandName + ' ' + v.model}"></option>
-                    </select>
-                    <div class="invalid-feedback-custom">
-                        <i class="bi bi-exclamation-circle"></i> <span th:text="#{msg.appointment-form.vehicle.validation}">Por favor, selecciona tu vehículo.</span>
-                    </div>
-                    <div class="field-error" th:if="${#fields.hasErrors('vehicleId')}">
-                        <i class="bi bi-exclamation-circle"></i>
-                        <span th:errors="*{vehicleId}"></span>
+                    <label for="vehicleId">
+                        <i class="bi bi-car-front-fill"></i>
+                        <span th:text="#{msg.appointment-form.vehicle}">Vehículo</span>
+                    </label>
+
+                    <th:block th:unless="${#lists.isEmpty(vehicles)}">
+                        <select id="vehicleId" th:field="*{vehicleId}" required
+                                th:classappend="${#fields.hasErrors('vehicleId')} ? 'is-invalid'">
+                            <option value="" disabled selected th:text="#{msg.appointment-form.vehicle.option}">Selecciona un vehículo...</option>
+                            <option th:each="v : ${vehicles}"
+                                    th:value="${v.id}"
+                                    th:text="${v.matricula + ' — ' + v.brandName + ' ' + v.model}"></option>
+                        </select>
+
+                        <div class="invalid-feedback-custom">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <span th:text="#{msg.appointment-form.vehicle.validation}">Por favor, selecciona tu vehículo.</span>
+                        </div>
+                        <div class="field-error" th:if="${#fields.hasErrors('vehicleId')}">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <span th:errors="*{vehicleId}"></span>
+                        </div>
+                    </th:block>
+
+                    <div th:if="${#lists.isEmpty(vehicles)}"
+                         style="background: #f8f8fa; border: 1.5px dashed #d9d9df; border-radius: 12px; padding: 1rem 1.2rem;">
+                        <div style="display: flex; align-items: flex-start; gap: 0.8rem; margin-bottom: 1rem;">
+                            <i class="bi bi-info-circle-fill" style="color: #c0392b; font-size: 1.15rem; margin-top: 0.1rem;"></i>
+                            <div>
+                                <div style="font-weight: 700; color: #222; margin-bottom: 0.25rem;"
+                                     th:text="#{msg.appointment-form.vehicle.empty}">
+                                    No hay vehículos disponibles
+                                </div>
+                                <div style="font-size: 0.9rem; color: #666; line-height: 1.5;"
+                                     th:text="#{msg.appointment-form.vehicle.empty.help}">
+                                    Para solicitar una cita necesitas registrar al menos un vehículo en tu cuenta.
+                                </div>
+                            </div>
+                        </div>
+
+                        <a th:href="@{/vehicles/new}" class="btn-modern btn-primary-modern" style="text-decoration: none;">
+                            <i class="bi bi-plus-circle"></i>
+                            <span th:text="#{msg.appointment-form.vehicle.empty.cta}">Añadir mi vehículo</span>
+                        </a>
                     </div>
                 </div>
 
                 <div class="field-group">
-                    <label for="startDate"><i class="bi bi-calendar-event"></i> <span th:text="#{msg.appointment-form.startDate}">Fecha y hora</span></label>
+                    <label for="startDate">
+                        <i class="bi bi-calendar-event"></i>
+                        <span th:text="#{msg.appointment-form.startDate}">Fecha y hora</span>
+                    </label>
                     <input type="datetime-local" th:field="*{startDate}" id="startDate" required
                            th:classappend="${#fields.hasErrors('startDate')} ? 'is-invalid'" />
                     <div class="invalid-feedback-custom">
-                        <i class="bi bi-exclamation-circle"></i> <span th:text="#{msg.appointment-form.date.validation}">Por favor, indica una fecha válida.</span>
+                        <i class="bi bi-exclamation-circle"></i>
+                        <span th:text="#{msg.appointment-form.date.validation}">Por favor, indica una fecha válida.</span>
                     </div>
                     <div class="field-error" th:if="${#fields.hasErrors('startDate')}">
                         <i class="bi bi-exclamation-circle"></i>
@@ -85,7 +133,10 @@
                 </div>
 
                 <div class="field-group">
-                    <label for="notes"><i class="bi bi-chat-left-text"></i> <span th:text="#{msg.appointment-form.notes}">Notas (opcional)</span></label>
+                    <label for="notes">
+                        <i class="bi bi-chat-left-text"></i>
+                        <span th:text="#{msg.appointment-form.notes}">Notas (opcional)</span>
+                    </label>
                     <textarea th:field="*{notes}" id="notes"
                               th:placeholder="#{msg.appointment-form.notes.placeholder}"></textarea>
                     <div class="field-error" th:if="${#fields.hasErrors('notes')}">
@@ -95,11 +146,15 @@
                 </div>
 
                 <div class="field-group">
-                    <label for="mediaFile"><i class="bi bi-camera-video"></i> <span th:text="#{msg.appointment-form.media.label}">Foto o Vídeo de la avería (Opcional)</span></label>
+                    <label for="mediaFile">
+                        <i class="bi bi-camera-video"></i>
+                        <span th:text="#{msg.appointment-form.media.label}">Foto o Vídeo de la avería (Opcional)</span>
+                    </label>
                     <input type="file" id="mediaFile" th:field="*{mediaFile}" accept="image/*, video/*"
                            th:classappend="${#fields.hasErrors('mediaFile')} ? 'is-invalid'"
                            style="padding: 0.5rem 1rem; background: #fff; cursor: pointer;" />
-                    <small style="font-size: 0.78rem; color: #888; margin-top: 0.4rem; display: block;" th:text="#{msg.appointment-form.media.hint}">
+                    <small style="font-size: 0.78rem; color: #888; margin-top: 0.4rem; display: block;"
+                           th:text="#{msg.appointment-form.media.hint}">
                         Sube una foto clara del daño o un vídeo corto si hace un ruido extraño (Máx. 50MB).
                     </small>
                     <div class="field-error" th:if="${#fields.hasErrors('mediaFile')}">
@@ -109,17 +164,22 @@
                 </div>
 
                 <div class="form-card-footer" style="padding: 1.2rem 0 0; border-top: 1.5px solid #f0f0f0; margin-top: 0.5rem;">
-                    <button type="submit" class="btn-submit">
-                        <i class="bi bi-calendar-check"></i> <span th:text="#{msg.appointment-form.create}">Solicitar cita</span>
+                    <button type="submit"
+                            class="btn-submit"
+                            th:disabled="${#lists.isEmpty(vehicles)}"
+                            th:style="${#lists.isEmpty(vehicles)} ? 'opacity: 0.6; cursor: not-allowed;' : ''">
+                        <i class="bi bi-calendar-check"></i>
+                        <span th:text="#{msg.appointment-form.create}">Solicitar cita</span>
                     </button>
+
                     <a th:href="@{/appointments}" class="btn-back">
-                        <i class="bi bi-arrow-left"></i> <span th:text="#{msg.appointment-form.returnback}">Cancelar</span>
+                        <i class="bi bi-arrow-left"></i>
+                        <span th:text="#{msg.appointment-form.returnback}">Cancelar</span>
                     </a>
                 </div>
 
             </form>
         </div>
-
     </div>
 </main>
 
@@ -129,12 +189,10 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const dateInput = document.getElementById('startDate');
-        if(dateInput) {
+        if (dateInput) {
             const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1); // Sumamos un día (mañana)
-            // Ajustamos a la zona horaria local
+            tomorrow.setDate(tomorrow.getDate() + 1);
             tomorrow.setMinutes(tomorrow.getMinutes() - tomorrow.getTimezoneOffset());
-            // Formateamos a YYYY-MM-DDThh:mm
             dateInput.min = tomorrow.toISOString().slice(0, 16);
         }
     });

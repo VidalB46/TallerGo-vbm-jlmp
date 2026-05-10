@@ -25,6 +25,12 @@ public interface AppointmentService {
     Page<AppointmentDTO> getAllAppointments(Pageable pageable);
 
     /**
+     * Devuelve una página paginada con todas las citas del sistema
+     * ordenadas por prioridad de negocio y, dentro de cada grupo, por fecha.
+     */
+    Page<AppointmentDTO> getAllAppointmentsOrderedByBusinessStatus(Pageable pageable);
+
+    /**
      * Devuelve el detalle completo de una cita por su ID.
      *
      * @param id Identificador único de la cita.
@@ -47,6 +53,12 @@ public interface AppointmentService {
     Page<AppointmentDTO> getActiveAppointmentsByUser(Long userId, Pageable pageable);
 
     /**
+     * Devuelve SOLO las citas activas (no archivadas) de un usuario
+     * ordenadas por prioridad de negocio.
+     */
+    Page<AppointmentDTO> getActiveAppointmentsByUserOrderedByBusinessStatus(Long userId, Pageable pageable);
+
+    /**
      * Devuelve las citas de un taller concreto con paginación.
      *
      * @param workshopId Identificador del taller.
@@ -54,6 +66,11 @@ public interface AppointmentService {
      * @return Página de DTOs de cita del taller.
      */
     Page<AppointmentDTO> getAppointmentsByWorkshop(Integer workshopId, Pageable pageable);
+
+    /**
+     * Devuelve las citas de un taller concreto ordenadas por prioridad de negocio.
+     */
+    Page<AppointmentDTO> getAppointmentsByWorkshopOrderedByBusinessStatus(Integer workshopId, Pageable pageable);
 
     /**
      * Crea una nueva cita validando que el vehículo pertenece al usuario autenticado.

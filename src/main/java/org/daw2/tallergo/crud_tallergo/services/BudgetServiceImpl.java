@@ -50,7 +50,7 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     @Transactional(readOnly = true)
     public BudgetDetailDTO getBudgetById(Long id) {
-        Budget budget = budgetRepository.findById(id)
+        Budget budget = budgetRepository.findByIdWithRepair(id)
                 .orElseThrow(() -> new IllegalArgumentException("Presupuesto no encontrado"));
         return BudgetMapper.toDetailDTO(budget);
     }
@@ -65,13 +65,12 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     @Transactional(readOnly = true)
     public BudgetDetailDTO getBudgetByRepairId(Long repairId) {
-        Repair repair = repairRepository.findById(repairId)
+        repairRepository.findById(repairId)
                 .orElseThrow(() -> new IllegalArgumentException("Reparación no encontrada"));
 
-        Budget budget = repair.getBudget(); // Usa el truco de la versión más reciente
-        if (budget == null) {
-            throw new IllegalArgumentException("No existe presupuesto activo para esta reparación");
-        }
+        Budget budget = budgetRepository.findLatestActiveByRepairId(repairId)
+                .orElseThrow(() -> new IllegalArgumentException("No existe presupuesto activo para esta reparación"));
+
         return BudgetMapper.toDetailDTO(budget);
     }
 
@@ -93,21 +92,24 @@ public class BudgetServiceImpl implements BudgetService {
         Budget currentBudget = repair.getBudget();
         Budget budget;
 
-        // LÓGICA DE VERSIONADO
         if (currentBudget != null && !Boolean.TRUE.equals(currentBudget.getAccepted())) {
-            // El mecánico está editando un presupuesto que el cliente AÚN NO HA VISTO ni aceptado.
-            // Actualizamos el mismo.
+            // Sobrescribimos el presupuesto pendiente
             budget = currentBudget;
             budget.setNotes(dto.getNotes());
+            budget.setRejected(false);
+
             budget = budgetRepository.save(budget);
             budgetRepository.flush();
 
             budgetLineRepository.deleteAllByBudgetId(budget.getId());
-            entityManager.clear();
-            budget = budgetRepository.findById(budget.getId()).orElseThrow();
+            budgetLineRepository.flush();
 
+            entityManager.clear();
+
+            budget = budgetRepository.findById(budget.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Error al recargar el presupuesto"));
         } else {
-            // No había presupuesto, o el anterior YA ESTABA ACEPTADO (Crear v2, v3...)
+            // Creamos una nueva versión
             budget = new Budget();
             budget.setRepair(repair);
             budget.setNotes(dto.getNotes());
@@ -118,8 +120,8 @@ public class BudgetServiceImpl implements BudgetService {
             budgetRepository.flush();
         }
 
-        // Cargar las nuevas líneas
         BigDecimal totalGross = BigDecimal.ZERO;
+
         if (dto.getLines() != null) {
             for (var lineDto : dto.getLines()) {
                 BudgetLine line = new BudgetLine();
@@ -143,7 +145,7 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     /**
-     * Actualiza los campos editables de un presupuesto (p. ej. notas o estado).
+     * Actualiza los campos editables de un presupuesto.
      *
      * @param dto DTO con los nuevos valores y el ID del presupuesto.
      * @return DTO actualizado del presupuesto.
@@ -174,8 +176,7 @@ public class BudgetServiceImpl implements BudgetService {
      * Si no existe ninguna versión aceptada anterior, cancela la cita asociada.
      *
      * @param id Identificador único del presupuesto a rechazar.
-     * @return {@code true} si la cita ha sido cancelada; {@code false} si solo se rechazó
-     *         el anexo y la cita continúa activa.
+     * @return true si la cita ha sido cancelada; false si solo se rechazó el anexo.
      * @throws IllegalArgumentException si no existe ningún presupuesto con ese ID.
      */
     @Override
@@ -184,24 +185,21 @@ public class BudgetServiceImpl implements BudgetService {
         Budget budget = budgetRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Presupuesto no encontrado"));
 
-        // 1. Lo marcamos como rechazado
         budget.setRejected(true);
         budgetRepository.save(budget);
 
         Repair repair = budget.getRepair();
 
-        // 2. Buscamos si hay alguna versión anterior aceptada
-        boolean hasAcceptedVersion = repair.getBudgets().stream()
-                .anyMatch(b -> Boolean.TRUE.equals(b.getAccepted()) && !Boolean.TRUE.equals(b.getRejected()));
+        boolean hasAcceptedVersion = budgetRepository
+                .existsByRepair_IdAndAcceptedTrueAndRejectedFalse(repair.getId());
 
-        // 3. Si no hay versión aceptada, se cancela la cita.
         if (!hasAcceptedVersion) {
             if (repair.getAppointment() != null) {
                 repair.getAppointment().setStatus(AppointmentStatus.CANCELADO);
             }
-            return true; // true = La cita se ha cancelado
+            return true;
         }
 
-        return false; // false = Solo hemos rechazado el anexo, la cita sigue
+        return false;
     }
 }

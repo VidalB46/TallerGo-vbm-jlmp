@@ -3,6 +3,7 @@ package org.daw2.tallergo.crud_tallergo.repositories;
 import org.daw2.tallergo.crud_tallergo.entities.Appointment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,66 +11,172 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-/**
- * Repositorio de Spring Data JPA para la entidad Appointment.
- * Gestiona el ciclo de vida de las citas y permite la recuperación eficiente
- * de las relaciones con clientes, vehículos y talleres.
- */
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
 
-    /**
-     * Recupera todas las citas de un usuario específico de forma paginada.
-     * Útil para la vista "Mis Citas" del cliente.
-     */
     Page<Appointment> findByUserId(Long userId, Pageable pageable);
 
-    /**
-     * Recupera todas las citas programadas para un taller específico.
-     * Esencial para la agenda de trabajo de los mecánicos y administradores.
-     */
     Page<Appointment> findByWorkshopId(Integer workshopId, Pageable pageable);
 
-    /**
-     * Recupera una cita cargando ansiosamente (Eager) sus relaciones principales.
-     * Evita el problema de las N+1 consultas al mostrar el detalle completo.
-     *
-     * @param id Identificador de la cita.
-     * @return Optional con la cita y sus entidades relacionadas cargadas.
-     */
-    /**
-     * Recupera todas las citas de un usuario con sus relaciones cargadas (evita LazyInitializationException).
-     */
-    @Query("SELECT a FROM Appointment a JOIN FETCH a.user JOIN FETCH a.workshop JOIN FETCH a.vehicle WHERE a.user.id = :userId")
+    @Query(
+            value = """
+            SELECT a
+            FROM Appointment a
+            JOIN FETCH a.user
+            JOIN FETCH a.workshop
+            JOIN FETCH a.vehicle
+            WHERE a.user.id = :userId
+            """,
+            countQuery = """
+            SELECT COUNT(a)
+            FROM Appointment a
+            WHERE a.user.id = :userId
+            """
+    )
     Page<Appointment> findByUserIdWithDetails(@Param("userId") Long userId, Pageable pageable);
 
-    /**
-     * Recupera todas las citas con sus relaciones cargadas (para admins).
-     */
-    @Query(value = "SELECT a FROM Appointment a JOIN FETCH a.user JOIN FETCH a.workshop JOIN FETCH a.vehicle",
-           countQuery = "SELECT COUNT(a) FROM Appointment a")
+    @Query(
+            value = """
+            SELECT a
+            FROM Appointment a
+            JOIN FETCH a.user
+            JOIN FETCH a.workshop
+            JOIN FETCH a.vehicle
+            """,
+            countQuery = """
+            SELECT COUNT(a)
+            FROM Appointment a
+            """
+    )
     Page<Appointment> findAllWithDetails(Pageable pageable);
 
-    @Query("SELECT a FROM Appointment a " +
-            "JOIN FETCH a.user " +
-            "JOIN FETCH a.workshop " +
-            "JOIN FETCH a.vehicle " +
-            "WHERE a.id = :id")
+    @Query("""
+            SELECT a
+            FROM Appointment a
+            JOIN FETCH a.user
+            JOIN FETCH a.workshop
+            JOIN FETCH a.vehicle
+            WHERE a.id = :id
+            """)
     Optional<Appointment> findByIdWithDetails(@Param("id") Long id);
 
-    /**
-     * Citas activas: No archivadas por el cliente.
-     */
-    @Query(value = "SELECT a FROM Appointment a JOIN FETCH a.user JOIN FETCH a.workshop JOIN FETCH a.vehicle " +
-            "WHERE a.user.id = :userId AND a.archivedByClient = false",
-            countQuery = "SELECT COUNT(a) FROM Appointment a WHERE a.user.id = :userId AND a.archivedByClient = false")
+    @Query(
+            value = """
+            SELECT a
+            FROM Appointment a
+            JOIN FETCH a.user
+            JOIN FETCH a.workshop
+            JOIN FETCH a.vehicle
+            WHERE a.user.id = :userId
+              AND a.archivedByClient = false
+            """,
+            countQuery = """
+            SELECT COUNT(a)
+            FROM Appointment a
+            WHERE a.user.id = :userId
+              AND a.archivedByClient = false
+            """
+    )
     Page<Appointment> findActiveByUserId(@Param("userId") Long userId, Pageable pageable);
 
-    /**
-     * Historial completo: Incluye finalizadas, canceladas y archivadas.
-     */
-    @Query(value = "SELECT a FROM Appointment a JOIN FETCH a.user JOIN FETCH a.workshop JOIN FETCH a.vehicle " +
-            "WHERE a.user.id = :userId",
-            countQuery = "SELECT COUNT(a) FROM Appointment a WHERE a.user.id = :userId")
+    @Query(
+            value = """
+            SELECT a
+            FROM Appointment a
+            JOIN FETCH a.user
+            JOIN FETCH a.workshop
+            JOIN FETCH a.vehicle
+            WHERE a.user.id = :userId
+            """,
+            countQuery = """
+            SELECT COUNT(a)
+            FROM Appointment a
+            WHERE a.user.id = :userId
+            """
+    )
     Page<Appointment> findFullHistoryByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    @Query(
+            value = """
+            SELECT *
+            FROM appointments a
+            WHERE a.user_id = :userId
+              AND a.archived_by_client = false
+            ORDER BY
+              CASE
+                WHEN a.status = 'LISTO_RECOGIDA' THEN 0
+                WHEN a.status = 'SOLICITADO' THEN 1
+                WHEN a.status = 'CONFIRMADO' THEN 2
+                WHEN a.status = 'EN_TALLER' THEN 3
+                WHEN a.status = 'EN_REPARACION' THEN 4
+                WHEN a.status = 'RECOGIDO' THEN 5
+                WHEN a.status = 'CANCELADO' THEN 6
+                WHEN a.status = 'RECHAZADA' THEN 7
+                ELSE 8
+              END,
+              a.start_date ASC
+            """,
+            countQuery = """
+            SELECT COUNT(*)
+            FROM appointments a
+            WHERE a.user_id = :userId
+              AND a.archived_by_client = false
+            """,
+            nativeQuery = true
+    )
+    Page<Appointment> findActiveByUserIdOrderByBusinessStatus(@Param("userId") Long userId, Pageable pageable);
+
+    @Query(
+            value = """
+            SELECT *
+            FROM appointments a
+            WHERE a.workshop_id = :workshopId
+            ORDER BY
+              CASE
+                WHEN a.status = 'LISTO_RECOGIDA' THEN 0
+                WHEN a.status = 'SOLICITADO' THEN 1
+                WHEN a.status = 'CONFIRMADO' THEN 2
+                WHEN a.status = 'EN_TALLER' THEN 3
+                WHEN a.status = 'EN_REPARACION' THEN 4
+                WHEN a.status = 'RECOGIDO' THEN 5
+                WHEN a.status = 'CANCELADO' THEN 6
+                WHEN a.status = 'RECHAZADA' THEN 7
+                ELSE 8
+              END,
+              a.start_date ASC
+            """,
+            countQuery = """
+            SELECT COUNT(*)
+            FROM appointments a
+            WHERE a.workshop_id = :workshopId
+            """,
+            nativeQuery = true
+    )
+    Page<Appointment> findByWorkshopIdOrderByBusinessStatus(@Param("workshopId") Integer workshopId, Pageable pageable);
+
+    @Query(
+            value = """
+            SELECT *
+            FROM appointments a
+            ORDER BY
+              CASE
+                WHEN a.status = 'LISTO_RECOGIDA' THEN 0
+                WHEN a.status = 'SOLICITADO' THEN 1
+                WHEN a.status = 'CONFIRMADO' THEN 2
+                WHEN a.status = 'EN_TALLER' THEN 3
+                WHEN a.status = 'EN_REPARACION' THEN 4
+                WHEN a.status = 'RECOGIDO' THEN 5
+                WHEN a.status = 'CANCELADO' THEN 6
+                WHEN a.status = 'RECHAZADA' THEN 7
+                ELSE 8
+              END,
+              a.start_date ASC
+            """,
+            countQuery = """
+            SELECT COUNT(*)
+            FROM appointments a
+            """,
+            nativeQuery = true
+    )
+    Page<Appointment> findAllOrderByBusinessStatus(Pageable pageable);
 }

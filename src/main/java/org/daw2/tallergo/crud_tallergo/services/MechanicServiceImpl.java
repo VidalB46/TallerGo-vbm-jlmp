@@ -93,4 +93,18 @@ public class MechanicServiceImpl implements MechanicService {
     public Page<MechanicDTO> search(String q, Pageable pageable) {
         return mechanicRepository.search(q, pageable).map(MechanicMapper::toDTO);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<MechanicDTO> listByWorkshop(Integer workshopId, Pageable pageable) {
+        return mechanicRepository.findByWorkshopId(workshopId, pageable)
+                .map(MechanicMapper::toDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<MechanicDTO> searchByWorkshop(Integer workshopId, String q, Pageable pageable) {
+        return mechanicRepository.searchByWorkshop(workshopId, q, pageable)
+                .map(MechanicMapper::toDTO);
+    }
 }

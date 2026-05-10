@@ -40,4 +40,9 @@ public interface MechanicService {
 
     /** Búsqueda paginada por nombre o especialidad. */
     Page<MechanicDTO> search(String q, Pageable pageable);
+
+    Page<MechanicDTO> listByWorkshop(Integer workshopId, Pageable pageable);
+
+    Page<MechanicDTO> searchByWorkshop(Integer workshopId, String q, Pageable pageable);
+
 }

@@ -32,48 +32,147 @@
             <span th:text="${errorMessage}"></span>
         </div>
 
-        <form th:action="@{/workshops/insert}" th:object="${workshop}" method="post">
+        <form th:action="@{/workshops/insert}"
+              th:object="${workshop}"
+              method="post"
+              class="needs-validation"
+              novalidate>
 
             <div class="form-section-title">
-                <i class="bi bi-building"></i> <span th:text="#{msg.workshop-form.info}">Información del Taller</span>
+                <i class="bi bi-building"></i>
+                <span th:text="#{msg.workshop-form.info}">Información del Taller</span>
             </div>
 
             <div class="field-group">
-                <input type="text" th:field="*{nif}" id="nif" class="field-input" placeholder=" " required />
+                <input type="text"
+                       th:field="*{nif}"
+                       id="nif"
+                       class="field-input"
+                       th:classappend="${#fields.hasErrors('nif')} ? ' is-invalid'"
+                       placeholder=" "
+                       maxlength="20"
+                       required />
                 <label for="nif" class="field-label" th:text="#{msg.workshop-form.field.nif}">NIF / CIF</label>
-                <div th:if="${#fields.hasErrors('nif')}" class="field-error"><i class="bi bi-exclamation-circle"></i> <span th:errors="*{nif}"></span></div>
+                <div class="invalid-feedback-custom">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <span th:text="#{msg.workshop-form.validation.nif}">Introduce el NIF/CIF del taller.</span>
+                </div>
+                <div th:if="${#fields.hasErrors('nif')}" class="field-error">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <span th:errors="*{nif}"></span>
+                </div>
             </div>
 
             <div class="field-group">
-                <input type="text" th:field="*{name}" id="name" class="field-input" placeholder=" " required />
+                <input type="text"
+                       th:field="*{name}"
+                       id="name"
+                       class="field-input"
+                       th:classappend="${#fields.hasErrors('name')} ? ' is-invalid'"
+                       placeholder=" "
+                       maxlength="150"
+                       required />
                 <label for="name" class="field-label" th:text="#{msg.workshop-form.field.name}">Nombre del Taller</label>
-                <div th:if="${#fields.hasErrors('name')}" class="field-error"><i class="bi bi-exclamation-circle"></i> <span th:errors="*{name}"></span></div>
+                <div class="invalid-feedback-custom">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <span th:text="#{msg.workshop-form.validation.name}">Introduce el nombre del taller.</span>
+                </div>
+                <div th:if="${#fields.hasErrors('name')}" class="field-error">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <span th:errors="*{name}"></span>
+                </div>
             </div>
 
             <div class="form-row">
                 <div class="field-group">
-                    <input type="text" th:field="*{phone}" id="phone" class="field-input" placeholder=" " />
+                    <input type="text"
+                           th:field="*{phone}"
+                           id="phone"
+                           class="field-input"
+                           th:classappend="${#fields.hasErrors('phone')} ? ' is-invalid'"
+                           placeholder=" "
+                           maxlength="20"
+                           required />
                     <label for="phone" class="field-label" th:text="#{msg.workshop-form.field.phone}">Teléfono</label>
+                    <div class="invalid-feedback-custom">
+                        <i class="bi bi-exclamation-circle"></i>
+                        <span th:text="#{msg.workshop-form.validation.phone}">Introduce un teléfono de contacto.</span>
+                    </div>
+                    <div th:if="${#fields.hasErrors('phone')}" class="field-error">
+                        <i class="bi bi-exclamation-circle"></i>
+                        <span th:errors="*{phone}"></span>
+                    </div>
                 </div>
+
                 <div class="field-group">
-                    <input type="email" th:field="*{email}" id="email" class="field-input" placeholder=" " />
+                    <input type="email"
+                           th:field="*{email}"
+                           id="email"
+                           class="field-input"
+                           th:classappend="${#fields.hasErrors('email')} ? ' is-invalid'"
+                           placeholder=" "
+                           maxlength="100" />
                     <label for="email" class="field-label" th:text="#{msg.workshop-form.field.email}">Email de contacto</label>
+                    <div class="invalid-feedback-custom">
+                        <i class="bi bi-exclamation-circle"></i>
+                        <span th:text="#{msg.workshop-form.validation.email}">Introduce un email válido o déjalo vacío.</span>
+                    </div>
+                    <div th:if="${#fields.hasErrors('email')}" class="field-error">
+                        <i class="bi bi-exclamation-circle"></i>
+                        <span th:errors="*{email}"></span>
+                    </div>
                 </div>
             </div>
 
             <div class="field-group">
-                <input type="text" th:field="*{location}" id="location" class="field-input" placeholder=" " />
+                <input type="text"
+                       th:field="*{location}"
+                       id="location"
+                       class="field-input"
+                       th:classappend="${#fields.hasErrors('location')} ? ' is-invalid'"
+                       placeholder=" "
+                       maxlength="255"
+                       required />
                 <label for="location" class="field-label" th:text="#{msg.workshop-form.field.location}">Ubicación / Dirección</label>
+                <div class="invalid-feedback-custom">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <span th:text="#{msg.workshop-form.validation.location}">Introduce la ubicación o dirección.</span>
+                </div>
+                <div th:if="${#fields.hasErrors('location')}" class="field-error">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <span th:errors="*{location}"></span>
+                </div>
             </div>
 
             <div class="field-group">
-                <input type="text" th:field="*{schedule}" id="schedule" class="field-input" placeholder=" " />
+                <input type="text"
+                       th:field="*{schedule}"
+                       id="schedule"
+                       class="field-input"
+                       th:classappend="${#fields.hasErrors('schedule')} ? ' is-invalid'"
+                       placeholder=" "
+                       maxlength="100"
+                       required />
                 <label for="schedule" class="field-label" th:text="#{msg.workshop-form.field.schedule}">Horario (ej: 09:00 - 18:00)</label>
+                <div class="invalid-feedback-custom">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <span th:text="#{msg.workshop-form.validation.schedule}">Introduce el horario del taller.</span>
+                </div>
+                <div th:if="${#fields.hasErrors('schedule')}" class="field-error">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <span th:errors="*{schedule}"></span>
+                </div>
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn-submit"><i class="bi bi-floppy2-fill"></i> Crear Taller</button>
-                <a th:href="@{/workshops}" class="btn-cancel"><i class="bi bi-x-lg"></i> Cancelar</a>
+                <button type="submit" class="btn-submit">
+                    <i class="bi bi-floppy2-fill"></i>
+                    <span th:text="#{msg.workshop-form.create}">Crear Taller</span>
+                </button>
+                <a th:href="@{/workshops}" class="btn-cancel">
+                    <i class="bi bi-x-lg"></i>
+                    <span th:text="#{msg.common.cancel}">Cancelar</span>
+                </a>
             </div>
 
         </form>

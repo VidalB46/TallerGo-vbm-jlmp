@@ -29,7 +29,14 @@
         <div class="detail-card-body">
             <div class="mec-header">
                 <div class="mec-name"><i class="bi bi-person-badge"></i><span th:text="${mechanic.name}"></span></div>
-                <span class="badge-specialty" th:if="${mechanic.specialty}"><i class="bi bi-tools"></i><span th:text="${mechanic.specialty}"></span></span>
+                <span class="badge-specialty" th:if="${mechanic.specialty}">
+    <i class="bi bi-tools"></i>
+                    <span th:text="${#messages.msgOrNull('msg.mechanic.specialty.' + mechanic.specialty) != null
+                    ? #messages.msgOrNull('msg.mechanic.specialty.' + mechanic.specialty)
+                    : mechanic.specialty}">
+                        Specialty
+                    </span>
+                </span>
             </div>
             <div class="detail-grid">
                 <div class="detail-field">
@@ -38,7 +45,16 @@
                 </div>
                 <div class="detail-field">
                     <label th:text="#{msg.mechanic-detail.field.specialty}">Especialidad</label>
-                    <span><i class="bi bi-tools"></i><span th:text="${mechanic.specialty} ?: 'N/A'"></span></span>
+                    <span>
+                        <i class="bi bi-tools"></i>
+                        <span th:text="${mechanic.specialty != null
+                             ? (#messages.msgOrNull('msg.mechanic.specialty.' + mechanic.specialty) != null
+                             ? #messages.msgOrNull('msg.mechanic.specialty.' + mechanic.specialty)
+                             : mechanic.specialty)
+                             : 'N/A'}">
+                             N/A
+                        </span>
+                    </span>
                 </div>
             </div>
         </div>
