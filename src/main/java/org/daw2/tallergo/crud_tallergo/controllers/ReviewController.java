@@ -116,6 +116,42 @@ public class ReviewController {
     }
 
     /**
+     * Lista las reseñas del taller asociado al usuario autenticado con rol WORKSHOP_ADMIN.
+     *
+     * @param authentication     Información del usuario autenticado.
+     * @param model              Modelo para pasar la lista de reseñas y los datos del taller.
+     * @param redirectAttributes Atributos flash para mensajes de error.
+     * @return Vista del listado de reseñas o redirección si no tiene taller asociado.
+     */
+    @PreAuthorize("hasRole('WORKSHOP_ADMIN')")
+    @GetMapping("/my")
+    public String listMyWorkshopReviews(Authentication authentication,
+                                        Model model,
+                                        RedirectAttributes redirectAttributes) {
+        try {
+            User user = userRepository.findByEmail(authentication.getName())
+                    .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+            if (user.getWorkshop() == null) {
+                redirectAttributes.addFlashAttribute("error", "No tienes ningún taller asignado.");
+                return "redirect:/appointments";
+            }
+
+            Integer workshopId = user.getWorkshop().getId();
+            List<ReviewDTO> reviews = reviewService.getReviewsByWorkshop(workshopId);
+            WorkshopDetailDTO workshop = workshopService.getDetail(workshopId);
+
+            model.addAttribute("reviews", reviews);
+            model.addAttribute("workshop", workshop);
+
+            return "views/review/review-list";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "No se pudieron cargar tus reseñas: " + e.getMessage());
+            return "redirect:/appointments";
+        }
+    }
+
+    /**
      * Elimina una reseña si el usuario autenticado es su propietario o si es administrador.
      *
      * @param id                 Identificador de la reseña a eliminar.
@@ -148,8 +184,8 @@ public class ReviewController {
      * Comprueba si el usuario autenticado posee un rol concreto.
      *
      * @param authentication Información de autenticación actual.
-     * @param role           Nombre completo del rol, por ejemplo {@code ROLE_ADMIN}.
-     * @return {@code true} si el usuario tiene el rol indicado; {@code false} en caso contrario.
+     * @param role           Nombre completo del rol, por ejemplo ROLE_ADMIN.
+     * @return true si el usuario tiene el rol indicado; false en caso contrario.
      */
     private boolean hasRole(Authentication authentication, String role) {
         return authentication.getAuthorities().stream()

@@ -31,7 +31,10 @@
         </div>
 
         <form th:action="${user.id != null} ? @{/users/update} : @{/users/insert}"
-              th:object="${user}" method="post">
+              th:object="${user}"
+              method="post"
+              class="needs-validation"
+              novalidate>
             <input type="hidden" th:field="*{id}"/>
 
             <div class="form-card-body">
@@ -43,23 +46,44 @@
 
                 <div class="form-group">
                     <label for="email" th:text="#{msg.user-form.field.email}">Email</label>
-                    <input type="email" id="email" class="form-control" th:field="*{email}" placeholder="usuario@ejemplo.com" required/>
+
+                    <input type="email"
+                           id="email"
+                           class="form-control"
+                           th:field="*{email}"
+                           placeholder="usuario@ejemplo.com"
+                           required/>
+
+                    <div class="invalid-feedback-custom">
+                        <i class="bi bi-exclamation-circle"></i>
+                        <span th:text="#{msg.user-form.validation.email}">Introduce un email válido.</span>
+                    </div>
+
+                    <div th:if="${#fields.hasErrors('email')}" class="field-error">
+                        <i class="bi bi-exclamation-circle"></i>
+                        <span th:errors="*{email}"></span>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="roleIds" th:text="#{msg.user-form.field.roles}">Roles</label>
-                    <select id="roleIds" name="roleIds" class="form-control" multiple>
+                    <select id="roleIds" name="roleIds" class="form-control" multiple size="3">
                         <option th:each="role : ${allRoles}"
                                 th:value="${role.id}"
                                 th:text="${role.displayName}"
                                 th:selected="${user.roleIds != null and user.roleIds.contains(role.id)}">
                         </option>
                     </select>
-                    <div class="form-hint" th:text="#{msg.user-form.roles.hint}">Mantén Ctrl (o Cmd) para seleccionar varios roles.</div>
+                    <div class="form-hint" th:text="#{msg.user-form.roles.hint}">
+                        Mantén Ctrl (o Cmd) para seleccionar varios roles.
+                    </div>
                 </div>
 
                 <div class="form-group" id="workshopSelector" style="display:none;">
-                    <label for="workshopId"><i class="bi bi-building"></i> <span th:text="#{msg.user-form.field.workshop}">Taller asignado</span></label>
+                    <label for="workshopId">
+                        <i class="bi bi-building"></i>
+                        <span th:text="#{msg.user-form.field.workshop}">Taller asignado</span>
+                    </label>
                     <select id="workshopId" name="workshopId" class="form-control">
                         <option value="" th:text="#{msg.user-form.workshop.none}">— Sin taller —</option>
                         <option th:each="ws : ${allWorkshops}"
@@ -68,7 +92,9 @@
                                 th:selected="${user.workshopId != null and user.workshopId == ws.id}">
                         </option>
                     </select>
-                    <div class="form-hint" th:text="#{msg.user-form.workshop.hint}">Taller que gestionará este usuario.</div>
+                    <div class="form-hint" th:text="#{msg.user-form.workshop.hint}">
+                        Taller que gestionará este usuario.
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -76,19 +102,34 @@
                     <div class="checks-grid">
                         <label class="check-item">
                             <input type="checkbox" th:field="*{active}"/>
-                            <span><i class="bi bi-toggle-on"></i> <span th:text="#{msg.user-form.check.active}">Activo</span></span>
+                            <span>
+                                <i class="bi bi-toggle-on"></i>
+                                <span th:text="#{msg.user-form.check.active}">Activo</span>
+                            </span>
                         </label>
+
                         <label class="check-item">
                             <input type="checkbox" th:field="*{accountNonLocked}"/>
-                            <span><i class="bi bi-unlock"></i> <span th:text="#{msg.user-form.check.unlocked}">Cuenta desbloqueada</span></span>
+                            <span>
+                                <i class="bi bi-unlock"></i>
+                                <span th:text="#{msg.user-form.check.unlocked}">Cuenta desbloqueada</span>
+                            </span>
                         </label>
+
                         <label class="check-item">
                             <input type="checkbox" th:field="*{emailVerified}"/>
-                            <span><i class="bi bi-envelope-check"></i> <span th:text="#{msg.user-form.check.emailVerified}">Email verificado</span></span>
+                            <span>
+                                <i class="bi bi-envelope-check"></i>
+                                <span th:text="#{msg.user-form.check.emailVerified}">Email verificado</span>
+                            </span>
                         </label>
+
                         <label class="check-item">
                             <input type="checkbox" th:field="*{mustChangePassword}"/>
-                            <span><i class="bi bi-key"></i> <span th:text="#{msg.user-form.check.mustChange}">Debe cambiar contraseña</span></span>
+                            <span>
+                                <i class="bi bi-key"></i>
+                                <span th:text="#{msg.user-form.check.mustChange}">Debe cambiar contraseña</span>
+                            </span>
                         </label>
                     </div>
                 </div>
@@ -96,10 +137,16 @@
             </div>
 
             <div class="form-card-footer">
-                <a th:href="@{/users}" class="btn-cancel"><i class="bi bi-x"></i> <span th:text="#{msg.common.cancel}">Cancelar</span></a>
+                <a th:href="@{/users}" class="btn-cancel">
+                    <i class="bi bi-x"></i>
+                    <span th:text="#{msg.common.cancel}">Cancelar</span>
+                </a>
+
                 <button type="submit" class="btn-submit">
                     <i class="bi bi-check2"></i>
-                    <span th:text="${user.id != null} ? #{msg.user-form.submit.edit} : #{msg.user-form.submit.new}">Guardar</span>
+                    <span th:text="${user.id != null} ? #{msg.user-form.submit.edit} : #{msg.user-form.submit.new}">
+                        Guardar
+                    </span>
                 </button>
             </div>
         </form>
@@ -111,9 +158,9 @@
 
 <script th:inline="none">
     (function () {
-        const roleSelect    = document.getElementById('roleIds');
+        const roleSelect = document.getElementById('roleIds');
         const workshopBlock = document.getElementById('workshopSelector');
-        const workshopSel   = document.getElementById('workshopId');
+        const workshopSel = document.getElementById('workshopId');
 
         function isWorkshopAdminSelected() {
             return Array.from(roleSelect.options).some(
@@ -127,15 +174,14 @@
             if (!show) workshopSel.value = '';
         }
 
-        // Al cambiar los roles
         roleSelect.addEventListener('change', toggle);
 
-        // Al cargar: mostrar si ya hay taller asignado o rol Workshop Admin seleccionado
         const hasWorkshop = workshopSel.value !== '';
         if (hasWorkshop || isWorkshopAdminSelected()) {
             workshopBlock.style.display = '';
         }
     })();
 </script>
+
 </body>
 </html>

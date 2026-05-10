@@ -390,7 +390,50 @@ body:not(.login-page):not([class*="d-flex"]) > footer { flex: unset !important; 
 .field-row.cols-2     { grid-template-columns: 1fr 1fr; }
 .field-row.cols-3     { grid-template-columns: 1fr 1fr 1fr; }
 .checks-grid          { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 0.75rem; }
+.check-item {
+    display: flex !important;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.75rem 0.9rem;
+    border: 1.5px solid #e5e5e5;
+    border-radius: 10px;
+    background: #fafafa;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    margin-bottom: 0 !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
 
+.check-item:hover {
+    background: #fff;
+    border-color: #d8d8d8;
+}
+
+.check-item input[type="checkbox"] {
+    width: 18px !important;
+    height: 18px !important;
+    margin: 0;
+    flex-shrink: 0;
+    accent-color: #c0392b;
+    appearance: auto !important;
+    cursor: pointer;
+}
+
+.check-item span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #444;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+
+.check-item span i {
+    color: #c0392b;
+}
 .form-section-title {
     font-size: 0.72rem; font-weight: 700; letter-spacing: 2px;
     text-transform: uppercase; color: #c0392b;
@@ -406,19 +449,33 @@ body:not(.login-page):not([class*="d-flex"]) > footer { flex: unset !important; 
 .form-group label i, .field-group label i { color: #c0392b; }
 
 /* Inputs / Selects / Textareas */
-.form-group input, .form-group select, .form-group textarea,
-.field-group input, .field-group select, .field-group textarea,
+.form-group input:not([type="checkbox"]):not([type="radio"]),
+.form-group select,
+.form-group textarea,
+.field-group input:not([type="checkbox"]):not([type="radio"]),
+.field-group select,
+.field-group textarea,
 .form-control {
-    width: 100%; font-family: 'Inter', sans-serif;
-    font-size: 0.92rem; font-weight: 500; color: #111;
-    background: #fafafa; border: 1.5px solid #e5e5e5;
-    border-radius: 10px; padding: 0.7rem 1rem;
+    width: 100%;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: #111;
+    background: #fafafa;
+    border: 1.5px solid #e5e5e5;
+    border-radius: 10px;
+    padding: 0.7rem 1rem;
     transition: border-color 0.2s, box-shadow 0.2s;
-    outline: none; appearance: none;
+    outline: none;
+    appearance: none;
     max-width: 100%;
 }
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus,
-.field-group input:focus, .field-group select:focus, .field-group textarea:focus,
+.form-group input:not([type="checkbox"]):not([type="radio"]):focus,
+.form-group select:focus,
+.form-group textarea:focus,
+.field-group input:not([type="checkbox"]):not([type="radio"]):focus,
+.field-group select:focus,
+.field-group textarea:focus,
 .form-control:focus {
     border-color: #c0392b;
     box-shadow: 0 0 0 3px rgba(192,57,43,0.08);
@@ -462,15 +519,15 @@ textarea.form-control, .field-group textarea { resize: vertical; min-height: 110
 }
 
 /* 2. Mostrar los textos si el form ha intentado enviarse (.was-validated) y el campo está vacío (:invalid) */
-.was-validated input:invalid ~ .invalid-feedback-custom,
+.was-validated input:not([type="checkbox"]):not([type="radio"]):invalid ~ .invalid-feedback-custom,
 .was-validated select:invalid ~ .invalid-feedback-custom,
 .was-validated textarea:invalid ~ .invalid-feedback-custom {
     display: flex;
-    animation: fadeUp 0.3s ease; /* Animación sutil de aparición */
+    animation: fadeUp 0.3s ease;
 }
 
 /* 3. Poner el borde rojo y fondo rosado a los campos vacíos */
-.was-validated input:invalid,
+.was-validated input:not([type="checkbox"]):not([type="radio"]):invalid,
 .was-validated select:invalid,
 .was-validated textarea:invalid {
     border-color: #c0392b !important;
@@ -478,7 +535,7 @@ textarea.form-control, .field-group textarea { resize: vertical; min-height: 110
 }
 
 /* 4. Poner el borde verde a los campos que SÍ están bien rellenados (Opcional, pero da buen feedback) */
-.was-validated input:valid,
+.was-validated input:not([type="checkbox"]):not([type="radio"]):valid,
 .was-validated select:valid,
 .was-validated textarea:valid {
     border-color: #27ae60;
@@ -1516,4 +1573,176 @@ textarea.form-control, .field-group textarea { resize: vertical; min-height: 110
 /* Mantenemos en mayúsculas solo las matrículas y los NIFs */
 .td-matricula, .vehicle-matricula-badge {
     text-transform: uppercase !important;
+}
+
+/* =========================================================
+   USER FORM
+   ========================================================= */
+.user-form-page select.form-control {
+    appearance: auto;
+    -webkit-appearance: menulist;
+    -moz-appearance: auto;
+    background-image: none;
+    padding-right: 1rem;
+    cursor: pointer;
+}
+
+.user-form-page #roleIds {
+    min-height: 110px;
+}
+
+.user-form-page #workshopId {
+    cursor: pointer;
+}
+/* =========================================================
+   FOOTER
+   ========================================================= */
+.tgo-footer {
+    background: #0a0a0a;
+    color: #555;
+    padding: 2.8rem 2rem 1.5rem;
+    border-top: 1px solid #1e1e1e;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    width: 100%;
+    display: block;
+}
+
+.tgo-footer-grid {
+    max-width: 1100px;
+    margin: 0 auto 2rem;
+    display: grid;
+    grid-template-columns: 1.8fr 1fr 1fr 1fr;
+    gap: 2rem;
+}
+
+.tgo-footer-brand-block {
+    display: flex;
+    flex-direction: column;
+}
+
+.tgo-footer-brand {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 1.5px;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.tgo-footer-brand-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #c0392b;
+    margin-bottom: 2px;
+    margin-left: 1px;
+}
+
+.tgo-footer-description {
+    font-size: 0.82rem;
+    color: #444;
+    line-height: 1.7;
+    max-width: 240px;
+}
+
+.tgo-footer-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.tgo-footer-title {
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+.tgo-footer-link {
+    color: #555;
+    font-size: 0.82rem;
+    text-decoration: none;
+    display: block;
+    line-height: 2.1;
+    transition: color 0.2s;
+}
+
+.tgo-footer-link:hover {
+    color: #fff;
+}
+
+.tgo-footer-bottom {
+    max-width: 1100px;
+    margin: 0 auto;
+    border-top: 1px solid #1a1a1a;
+    padding-top: 1.2rem;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #2e2e2e;
+}
+
+@media (max-width: 768px) {
+    .tgo-footer-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .tgo-footer-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================================
+   APPOINTMENT SPECIFIC STYLES (Extraídos de vistas)
+   ========================================================= */
+
+/* Cajas de aviso / información en el detalle de la cita */
+.box-warning {
+    background: #fffdf2; border-left: 5px solid #f59e0b;
+    border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid #fcf2ce;
+}
+.box-warning i { color: #f59e0b; font-size: 1.8rem; }
+.box-warning h5 { margin: 0 0 0.4rem 0; font-weight: 800; color: #78350f; }
+.box-warning p { margin: 0 0 1rem 0; color: #92400e; }
+
+.box-info {
+    background: #f0f9ff; border-left: 5px solid #0284c7;
+    border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid #e0f2fe;
+}
+.box-info i { color: #0284c7; font-size: 1.8rem; }
+.box-info h5 { margin: 0 0 0.4rem 0; font-weight: 800; color: #0369a1; }
+.box-info p { margin: 0 0 1rem 0; color: #0c4a6e; }
+
+/* Archivos multimedia */
+.media-preview-box {
+    background: #f8f8fa; border: 1.5px solid #ebebee; border-radius: 12px;
+}
+.media-preview-item {
+    max-height: 400px; max-width: 100%; border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); object-fit: contain;
+}
+
+/* Heros alternativos (History) */
+.page-hero.hero-dark {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+}
+
+/* Cajas vacías con estilo (Formulario sin vehículos) */
+.empty-box-dashed {
+    background: #f8f8fa; border: 1.5px dashed #d9d9df;
+    border-radius: 12px; padding: 1rem 1.2rem;
+}
+
+/* Formularios de ordenación (List) */
+.sort-form-wrap {
+    display: flex; justify-content: flex-end; align-items: center; margin-bottom: 1.5rem;
+}
+.sort-select {
+    min-width: 220px; padding: 0.7rem 0.9rem; border-radius: 12px;
+    border: 1px solid #ddd; background: #fff; font-size: 0.92rem;
 }

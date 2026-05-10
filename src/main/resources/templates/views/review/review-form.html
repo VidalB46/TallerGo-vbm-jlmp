@@ -29,7 +29,7 @@
     </div>
 
     <div class="form-card">
-        <form th:action="@{/reviews/new}" th:object="${review}" method="post">
+        <form th:action="@{/reviews/new}" th:object="${review}" method="post" class="needs-validation" novalidate>
             <input type="hidden" th:field="*{workshopId}" />
 
             <div class="form-card-body" style="padding-top: 1rem; display: flex; flex-direction: column; gap: 1.5rem;">
@@ -47,6 +47,9 @@
                         <option value="2" th:text="#{msg.review-form.rating.2}">⭐⭐ (2 - Regular)</option>
                         <option value="1" th:text="#{msg.review-form.rating.1}">⭐ (1 - Malo)</option>
                     </select>
+                    <div class="invalid-feedback-custom">
+                        <i class="bi bi-exclamation-circle-fill"></i> Por favor, selecciona una puntuación.
+                    </div>
                     <div class="field-error" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></div>
                 </div>
 
@@ -57,6 +60,9 @@
                     <textarea th:field="*{comment}" id="comment" class="form-control" rows="5" required
                               th:classappend="${#fields.hasErrors('comment')} ? 'is-invalid'"
                               th:placeholder="#{msg.review-form.comment.placeholder}"></textarea>
+                    <div class="invalid-feedback-custom">
+                        <i class="bi bi-exclamation-circle-fill"></i> Por favor, escribe un comentario sobre tu experiencia.
+                    </div>
                     <div class="field-error" th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}"></div>
                 </div>
 

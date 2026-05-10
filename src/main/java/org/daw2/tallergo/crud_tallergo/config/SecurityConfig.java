@@ -28,38 +28,17 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-    /**
-     * Logger de la clase para trazas de configuración.
-     */
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
-    /**
-     * Handler de éxito para autenticación OAuth2.
-     */
     @Autowired
     private CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
 
-    /**
-     * Handler de error para autenticación OAuth2.
-     */
     @Autowired
     private CustomOAuth2FailureHandler customOAuth2FailureHandler;
 
-    /**
-     * Servicio personalizado de carga de usuarios desde base de datos.
-     */
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
-    /**
-     * Define la cadena de filtros de seguridad de la aplicación.
-     * Configura rutas públicas, rutas protegidas por rol, formulario de login,
-     * autenticación OAuth2 y política de sesiones.
-     *
-     * @param http Objeto de configuración HTTP de Spring Security.
-     * @return Cadena de filtros de seguridad configurada.
-     * @throws Exception Si ocurre un error durante la configuración.
-     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         logger.info("Entrando en el método securityFilterChain");
@@ -103,12 +82,8 @@ public class SecurityConfig {
 
                             /*
                              * 5. REPARACIONES Y PRESUPUESTOS
-                             * IMPORTANTE:
-                             * Las rutas específicas de cliente deben ir antes que las genéricas,
-                             * para evitar que /budgets/repair/** quede bloqueada por una regla más amplia.
                              */
                             .requestMatchers("/repairs/**").hasAnyRole("ADMIN", "WORKSHOP_ADMIN")
-
                             .requestMatchers("/budgets/repair/**").hasAnyRole("CLIENT", "ADMIN", "WORKSHOP_ADMIN")
                             .requestMatchers("/budgets/*/accept", "/budgets/*/reject").hasAnyRole("CLIENT", "ADMIN", "WORKSHOP_ADMIN")
                             .requestMatchers("/budgets/new").hasAnyRole("ADMIN", "WORKSHOP_ADMIN")
@@ -127,6 +102,7 @@ public class SecurityConfig {
                             /*
                              * 8. RESEÑAS
                              */
+                            .requestMatchers("/reviews/my").hasRole("WORKSHOP_ADMIN")
                             .requestMatchers("/reviews/workshop/**").authenticated()
                             .requestMatchers("/reviews/new").hasRole("CLIENT")
                             .requestMatchers("/reviews/*/delete").hasAnyRole("CLIENT", "ADMIN")
@@ -159,12 +135,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * Configura el proveedor de autenticación basado en base de datos.
-     * Enlaza el servicio personalizado de usuarios con el codificador de contraseñas.
-     *
-     * @return Proveedor de autenticación configurado.
-     */
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         logger.info("Entrando en el método authenticationProvider");
@@ -177,11 +147,6 @@ public class SecurityConfig {
         return provider;
     }
 
-    /**
-     * Registra el codificador BCrypt como bean de Spring.
-     *
-     * @return Instancia de {@link BCryptPasswordEncoder}.
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         logger.info("Entrando en el método passwordEncoder");

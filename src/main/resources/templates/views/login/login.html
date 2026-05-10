@@ -34,26 +34,13 @@
         from { opacity: 0; transform: translateY(30px); }
         to   { opacity: 1; transform: translateY(0); }
     }
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to   { opacity: 1; }
-    }
-    @keyframes gradientShift {
-        0%   { background-position: 0% 50%; }
-        50%  { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-    @keyframes pulse-red {
-        0%, 100% { box-shadow: 0 0 0 0 rgba(192, 57, 43, 0.4); }
-        50%       { box-shadow: 0 0 0 8px rgba(192, 57, 43, 0); }
-    }
     @keyframes shimmer {
         0%   { background-position: -200% center; }
         100% { background-position: 200% center; }
     }
-    @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50%       { transform: translateY(-6px); }
+    @keyframes pulse-red {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(192, 57, 43, 0.4); }
+        50%       { box-shadow: 0 0 0 8px rgba(192, 57, 43, 0); }
     }
 
     /* ================================================================
@@ -83,10 +70,44 @@
         letter-spacing: 1px;
         display: flex;
         align-items: center;
-        gap: 0.4rem;
+        gap: 0.5rem;
         transition: opacity 0.2s;
     }
     .login-topbar .brand-name:hover { opacity: 0.85; }
+
+    /* ESTILOS NUEVOS: Logo y Selector de idioma */
+    .tgo-logo-login {
+        height: 40px;
+        width: auto;
+        display: block;
+    }
+    .lang-btn-login {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 38px;
+        height: 30px;
+        padding: 0 0.6rem;
+        border-radius: 8px;
+        border: none;
+        background: transparent;
+        color: rgba(255,255,255,0.78);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.4px;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s;
+    }
+    .lang-btn-login:hover {
+        background: rgba(255,255,255,0.15);
+        color: #fff;
+    }
+    .login-actions {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
     .login-topbar .brand-dot {
         display: inline-block;
         width: 8px;
@@ -129,21 +150,14 @@
         overflow: hidden;
     }
 
-    /* Overlay degradado multicapa */
     .login-hero::before {
         content: '';
         position: absolute;
         inset: 0;
-        background: linear-gradient(
-            135deg,
-            rgba(0,0,0,0.72) 0%,
-            rgba(10,10,20,0.55) 50%,
-            rgba(0,0,0,0.68) 100%
-        );
+        background: linear-gradient(135deg, rgba(0,0,0,0.72) 0%, rgba(10,10,20,0.55) 50%, rgba(0,0,0,0.68) 100%);
         z-index: 0;
     }
 
-    /* Acento de luz roja en esquina */
     .login-hero::after {
         content: '';
         position: absolute;
@@ -213,167 +227,87 @@
     }
 
     /* ================================================================
-       LOGIN CARD — glassmorphism
+       LOGIN CARD
     ================================================================ */
     .login-card {
         background: rgba(255, 255, 255, 0.97);
         border-radius: 20px;
         padding: 2.2rem 2rem 1.8rem;
-        box-shadow:
-            0 2px 0 rgba(255,255,255,0.08) inset,
-            0 20px 60px rgba(0,0,0,0.4),
-            0 4px 16px rgba(0,0,0,0.2);
+        box-shadow: 0 2px 0 rgba(255,255,255,0.08) inset, 0 20px 60px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.2);
         width: 100%;
         animation: fadeUp 0.7s 0.35s ease both;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     .login-card:hover {
         transform: translateY(-2px);
-        box-shadow:
-            0 2px 0 rgba(255,255,255,0.08) inset,
-            0 28px 70px rgba(0,0,0,0.45),
-            0 4px 20px rgba(0,0,0,0.25);
+        box-shadow: 0 2px 0 rgba(255,255,255,0.08) inset, 0 28px 70px rgba(0,0,0,0.45), 0 4px 20px rgba(0,0,0,0.25);
     }
 
-    /* Floating label inputs */
-    .input-group-float {
-        position: relative;
-        margin-bottom: 1.5rem; /* Ajustado margen para el mensaje de error */
-    }
+    .input-group-float { position: relative; margin-bottom: 1.5rem; }
     .input-group-float .float-label {
-        position: absolute;
-        top: 50%;
-        left: 0.9rem;
-        transform: translateY(-50%);
-        font-size: 0.88rem;
-        font-weight: 500;
-        color: #888;
-        pointer-events: none;
-        transition: all 0.2s ease;
-        background: transparent;
-        padding: 0 0.2rem;
+        position: absolute; top: 50%; left: 0.9rem; transform: translateY(-50%);
+        font-size: 0.88rem; font-weight: 500; color: #888; pointer-events: none;
+        transition: all 0.2s ease; background: transparent; padding: 0 0.2rem;
     }
     .input-group-float .float-input {
-        width: 100%;
-        border: 1.5px solid #e0e0e0;
-        border-radius: 10px;
-        padding: 0.85rem 0.9rem 0.4rem;
-        font-size: 0.95rem;
-        font-family: inherit;
-        background: #fafafa;
-        color: #1a1a1a;
-        outline: none;
+        width: 100%; border: 1.5px solid #e0e0e0; border-radius: 10px;
+        padding: 0.85rem 0.9rem 0.4rem; font-size: 0.95rem; font-family: inherit;
+        background: #fafafa; color: #1a1a1a; outline: none;
         transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
     }
     .input-group-float .float-input:focus,
     .input-group-float .float-input:not(:placeholder-shown) {
-        background: #ffffff;
-        border-color: #c0392b;
+        background: #ffffff; border-color: #c0392b;
     }
-    .input-group-float .float-input:focus {
-        box-shadow: 0 0 0 3px rgba(192,57,43,0.12);
-    }
+    .input-group-float .float-input:focus { box-shadow: 0 0 0 3px rgba(192,57,43,0.12); }
     .input-group-float .float-input:focus ~ .float-label,
     .input-group-float .float-input:not(:placeholder-shown) ~ .float-label {
-        top: 0.55rem;
-        font-size: 0.72rem;
-        color: #c0392b;
-        font-weight: 600;
+        top: 0.55rem; font-size: 0.72rem; color: #c0392b; font-weight: 600;
     }
     .input-group-float .input-icon {
-        position: absolute;
-        right: 0.9rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #bbb;
-        font-size: 1rem;
-        transition: color 0.2s;
-        cursor: pointer;
+        position: absolute; right: 0.9rem; top: 50%; transform: translateY(-50%);
+        color: #bbb; font-size: 1rem; transition: color 0.2s; cursor: pointer;
     }
     .input-group-float .float-input:focus ~ .input-icon { color: #c0392b; }
 
-    /* ESTILOS DE VALIDACIÓN JS */
-    .was-validated .float-input:invalid {
-        border-color: #dc3545;
-        background-color: #fff8f8;
-    }
-    .invalid-feedback-custom {
-        display: none;
-        color: #dc3545;
-        font-size: 0.78rem;
-        margin-top: 0.25rem;
-        text-align: left;
-    }
-    .was-validated .float-input:invalid ~ .invalid-feedback-custom {
-        display: block;
-    }
+    .was-validated .float-input:invalid { border-color: #dc3545; background-color: #fff8f8; }
+    .invalid-feedback-custom { display: none; color: #dc3545; font-size: 0.78rem; margin-top: 0.25rem; text-align: left; }
+    .was-validated .float-input:invalid ~ .invalid-feedback-custom { display: block; }
 
-    /* Botón Entrar */
     .btn-login {
-        position: relative;
-        overflow: hidden;
-        background: linear-gradient(135deg, #c0392b 0%, #96281b 100%);
-        border: none;
-        color: #fff;
-        font-weight: 700;
-        font-size: 0.98rem;
-        letter-spacing: 0.5px;
-        padding: 0.8rem;
-        border-radius: 10px;
-        width: 100%;
-        cursor: pointer;
-        transition: transform 0.15s ease, box-shadow 0.25s ease;
-        box-shadow: 0 4px 18px rgba(192,57,43,0.35);
-        margin-top: 0.4rem;
-        font-family: inherit;
+        position: relative; overflow: hidden; background: linear-gradient(135deg, #c0392b 0%, #96281b 100%);
+        border: none; color: #fff; font-weight: 700; font-size: 0.98rem; letter-spacing: 0.5px;
+        padding: 0.8rem; border-radius: 10px; width: 100%; cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.25s ease; box-shadow: 0 4px 18px rgba(192,57,43,0.35); margin-top: 0.4rem; font-family: inherit;
     }
     .btn-login::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0; height: 0;
-        background: rgba(255,255,255,0.2);
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        transition: width 0.5s ease, height 0.5s ease, opacity 0.5s ease;
-        opacity: 0;
+        content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0;
+        background: rgba(255,255,255,0.2); border-radius: 50%; transform: translate(-50%, -50%);
+        transition: width 0.5s ease, height 0.5s ease, opacity 0.5s ease; opacity: 0;
     }
     .btn-login:active::after { width: 300px; height: 300px; opacity: 1; transition: 0s; }
     .btn-login:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(192,57,43,0.45); }
     .btn-login:active { transform: translateY(0); }
 
-    /* Divisor */
     .login-divider {
-        display: flex;
-        align-items: center;
-        gap: 0.7rem;
-        margin: 1.1rem 0 0.8rem;
-        color: #bbb;
-        font-size: 0.78rem;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
+        display: flex; align-items: center; gap: 0.7rem; margin: 1.1rem 0 0.8rem;
+        color: #bbb; font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase;
     }
-    .login-divider::before,
-    .login-divider::after { content: ''; flex: 1; height: 1px; background: #ececec; }
+    .login-divider::before, .login-divider::after { content: ''; flex: 1; height: 1px; background: #ececec; }
 
-    /* Botón GitHub */
     .github-btn {
         display: flex; align-items: center; justify-content: center; gap: 0.5rem;
         background: #0d0d0d; color: #fff; border: 1.5px solid #222; border-radius: 10px;
-        padding: 0.65rem; width: 100%; font-size: 0.88rem; font-weight: 600;
-        text-decoration: none; font-family: inherit; cursor: pointer;
-        transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+        padding: 0.65rem; width: 100%; font-size: 0.88rem; font-weight: 600; text-decoration: none;
+        font-family: inherit; cursor: pointer; transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .github-btn:hover { background: #222; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,0.2); color: #fff; }
 
-    /* Links extra */
     .extra-links { display: flex; justify-content: space-between; margin-top: 1.1rem; font-size: 0.82rem; }
     .extra-links a { color: #888; text-decoration: none; transition: color 0.2s; font-weight: 500; }
     .extra-links a:hover { color: #c0392b; }
 
-    /* Alertas dentro de la card */
     .login-alert { border-radius: 10px; font-size: 0.85rem; padding: 0.65rem 0.9rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
     .login-alert.error { background: rgba(192,57,43,0.08); border: 1px solid rgba(192,57,43,0.25); color: #a93226; }
     .login-alert.success { background: rgba(39,174,96,0.08); border: 1px solid rgba(39,174,96,0.25); color: #1e8449; }
@@ -381,6 +315,7 @@
     @media (max-width: 640px) {
         .login-hero-content h1 { font-size: 1.7rem; }
         .login-topbar .topbar-nav { display: none; }
+        .lang-wrap-login { border-left: none !important; padding-left: 0 !important; }
         .login-card { padding: 1.6rem 1.3rem 1.4rem; }
     }
 </style>
@@ -388,11 +323,22 @@
 <body class="login-page">
 
 <header class="login-topbar">
-    <a th:href="@{/}" class="brand-name">TallerGO<span class="brand-dot"></span></a>
-    <ul class="topbar-nav">
-        <li><a th:href="@{/}" th:text="#{msg.nav.home}">Inicio</a></li>
-        <li><a th:href="@{/register}" th:text="#{msg.nav.register}">Registrarse</a></li>
-    </ul>
+    <a th:href="@{/}" class="brand-name">
+        <img th:src="@{/images/logoTallerGO.png}" alt="TallerGO Logo" class="tgo-logo-login">
+        TallerGO<span class="brand-dot"></span>
+    </a>
+
+    <div class="login-actions">
+        <ul class="topbar-nav">
+            <li><a th:href="@{/}" th:text="#{msg.nav.home}">Inicio</a></li>
+            <li><a th:href="@{/register}" th:text="#{msg.nav.register}">Registrarse</a></li>
+        </ul>
+
+        <div class="lang-wrap-login" style="display: flex; gap: 0.35rem; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 1rem;">
+            <a href="?lang=es" class="lang-btn-login" style="text-decoration: none;" title="Español">ES</a>
+            <a href="?lang=en" class="lang-btn-login" style="text-decoration: none;" title="English">EN</a>
+        </div>
+    </div>
 </header>
 
 <section class="login-hero">
@@ -414,12 +360,18 @@
                     <input type="email" id="username" name="username" class="float-input" placeholder=" " required autofocus>
                     <label for="username" class="float-label" th:text="#{spring.security.ui.login.username}">Email</label>
                     <i class="bi bi-envelope input-icon"></i>
+                    <div class="invalid-feedback-custom">
+                        <i class="bi bi-exclamation-circle-fill"></i> Por favor, introduce un correo válido.
+                    </div>
                 </div>
 
                 <div class="input-group-float">
                     <input type="password" id="password" name="password" class="float-input" placeholder=" " required>
                     <label for="password" class="float-label" th:text="#{spring.security.ui.login.password}">Contraseña</label>
                     <i class="bi bi-eye input-icon" id="togglePassword"></i>
+                    <div class="invalid-feedback-custom">
+                        <i class="bi bi-exclamation-circle-fill"></i> La contraseña es obligatoria.
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-login" th:text="#{spring.security.ui.login.submit}">Entrar</button>
@@ -457,6 +409,21 @@
             hero.style.backgroundPosition = `calc(40% + ${xPct}px) calc(40% + ${yPct}px)`;
         });
     }
+
+    // Script Inline de Validación por si Spring Security bloquea el scripts.js
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
 </script>
 </body>
 </html>

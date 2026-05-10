@@ -13,42 +13,71 @@
     </a>
 
     <div class="tgo-lang-wrap">
-        <a th:href="@{/lang(lang=es)}" class="tgo-lang-btn" title="Español">🇪🇸</a>
-        <a th:href="@{/lang(lang=en)}" class="tgo-lang-btn" title="English">🇬🇧</a>
+        <a th:href="@{/lang(lang=es)}" class="tgo-lang-btn" title="Español">ES</a>
+        <a th:href="@{/lang(lang=en)}" class="tgo-lang-btn" title="English">EN</a>
     </div>
 
     <ul class="tgo-links">
         <li>
-            <a th:href="@{/}" th:classappend="${activeLink == 'home'} ? ' tgo-active'" th:text="#{msg.nav.home}">Inicio</a>
+            <a th:href="@{/}"
+               th:classappend="${activeLink == 'home'} ? ' tgo-active'"
+               th:text="#{msg.nav.home}">Inicio</a>
         </li>
+
         <li sec:authorize="hasAnyRole('CLIENT','ADMIN')">
-            <a th:href="@{/workshops}" th:classappend="${activeLink == 'workshops'} ? ' tgo-active'" th:text="#{msg.nav.workshops}">Talleres</a>
+            <a th:href="@{/workshops}"
+               th:classappend="${activeLink == 'workshops'} ? ' tgo-active'"
+               th:text="#{msg.nav.workshops}">Talleres</a>
         </li>
+
         <li sec:authorize="isAuthenticated()">
-            <a th:href="@{/appointments}" th:classappend="${activeLink == 'appointments'} ? ' tgo-active'" th:text="#{msg.nav.appointments}">Mis Citas</a>
+            <a th:href="@{/appointments}"
+               th:classappend="${activeLink == 'appointments'} ? ' tgo-active'"
+               th:text="#{msg.nav.appointments}">Mis Citas</a>
         </li>
+
         <li sec:authorize="hasAnyRole('CLIENT','ADMIN')">
-            <a th:href="@{/vehicles}" th:classappend="${activeLink == 'vehicles'} ? ' tgo-active'" th:text="#{msg.header.vehicles}">Mis Vehículos</a>
+            <a th:href="@{/vehicles}"
+               th:classappend="${activeLink == 'vehicles'} ? ' tgo-active'"
+               th:text="#{msg.header.vehicles}">Mis Vehículos</a>
         </li>
 
         <li sec:authorize="hasRole('ADMIN')">
-            <a th:href="@{/brands}" th:classappend="${activeLink == 'brands'} ? ' tgo-active'" th:text="#{msg.header.brands}">Marcas</a>
+            <a th:href="@{/brands}"
+               th:classappend="${activeLink == 'brands'} ? ' tgo-active'"
+               th:text="#{msg.header.brands}">Marcas</a>
         </li>
 
         <li class="tgo-dd-wrap" id="ddPersonal" sec:authorize="hasAnyRole('ADMIN','WORKSHOP_ADMIN')">
-            <button class="tgo-dd-btn"
-                    th:classappend="${activeLink == 'mechanics' or activeLink == 'users'} ? ' tgo-active'">
-                <span th:text="#{msg.nav.personal}">Personal</span> <i class="bi bi-chevron-down tgo-chev"></i>
+            <button type="button"
+                    class="tgo-dd-btn"
+                    th:classappend="${activeLink == 'mechanics' or activeLink == 'users' or activeLink == 'reviews'} ? ' tgo-active'">
+                <span th:text="#{msg.nav.personal}">Personal</span>
+                <i class="bi bi-chevron-down tgo-chev"></i>
             </button>
+
             <ul class="tgo-dd-menu">
                 <li>
-                    <a th:href="@{/mechanics}" th:classappend="${activeLink == 'mechanics'} ? ' tgo-dd-active'">
-                        <i class="bi bi-tools"></i> <span th:text="#{msg.nav.mecanicos}">Mecánicos</span>
+                    <a th:href="@{/mechanics}"
+                       th:classappend="${activeLink == 'mechanics'} ? ' tgo-dd-active'">
+                        <i class="bi bi-tools"></i>
+                        <span th:text="#{msg.nav.mecanicos}">Mecánicos</span>
                     </a>
                 </li>
+
                 <li sec:authorize="hasRole('ADMIN')">
-                    <a th:href="@{/users}" th:classappend="${activeLink == 'users'} ? ' tgo-dd-active'">
-                        <i class="bi bi-people"></i> <span th:text="#{msg.header.users}">Usuarios</span>
+                    <a th:href="@{/users}"
+                       th:classappend="${activeLink == 'users'} ? ' tgo-dd-active'">
+                        <i class="bi bi-people"></i>
+                        <span th:text="#{msg.header.users}">Usuarios</span>
+                    </a>
+                </li>
+
+                <li sec:authorize="hasRole('WORKSHOP_ADMIN')">
+                    <a th:href="@{/reviews/my}"
+                       th:classappend="${activeLink == 'reviews'} ? ' tgo-dd-active'">
+                        <i class="bi bi-star-fill"></i>
+                        <span th:text="#{msg.nav.reviews}">Reseñas</span>
                     </a>
                 </li>
             </ul>
@@ -57,234 +86,129 @@
         <li sec:authorize="!isAuthenticated()">
             <a th:href="@{/register}" class="tgo-cta" th:text="#{msg.nav.register}">Registrarse</a>
         </li>
+
         <li sec:authorize="!isAuthenticated()">
             <a th:href="@{/login}" class="tgo-cta tgo-cta-outline" th:text="#{msg.nav.login}">Iniciar sesión</a>
         </li>
     </ul>
 
     <div class="tgo-avatar-wrap" id="ddUser" sec:authorize="isAuthenticated()">
-        <button class="tgo-avatar-btn">
+        <button type="button" class="tgo-avatar-btn">
             <i class="bi bi-person-circle"></i>
             <span class="tgo-uname" sec:authentication="name"></span>
             <i class="bi bi-chevron-down tgo-chev"></i>
         </button>
+
         <ul class="tgo-dd-menu tgo-dd-right">
             <li class="tgo-dd-label" sec:authentication="name"></li>
             <li class="tgo-dd-sep"></li>
+
             <li>
-                <a th:href="@{/profile/edit}"><i class="bi bi-person-gear"></i> <span th:text="#{menu.editProfile}">Mi Perfil</span></a>
+                <a th:href="@{/profile/edit}">
+                    <i class="bi bi-person-gear"></i>
+                    <span th:text="#{menu.editProfile}">Mi Perfil</span>
+                </a>
             </li>
+
             <li class="tgo-dd-sep"></li>
+
             <li>
                 <form th:action="@{/logout}" method="post" style="margin:0;padding:0;">
                     <button type="submit" class="tgo-dd-logout">
-                        <i class="bi bi-box-arrow-right"></i> <span th:text="#{msg.nav.logout}">Cerrar sesión</span>
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span th:text="#{msg.nav.logout}">Cerrar sesión</span>
                     </button>
                 </form>
             </li>
         </ul>
     </div>
 
-    <button class="tgo-hamburger" id="tgoHamburger" aria-label="Menú">
+    <button type="button" class="tgo-hamburger" id="tgoHamburger" aria-label="Menú">
         <span></span><span></span><span></span>
     </button>
 
     <div class="tgo-mobile-menu" id="tgoMobileMenu">
         <th:block th:if="${#authorization.expression('!isAuthenticated()')}">
-            <a th:href="@{/register}"><i class="bi bi-person-plus"></i> <span th:text="#{msg.nav.register}">Registrarse</span></a>
-            <a th:href="@{/login}"><i class="bi bi-box-arrow-in-right"></i> <span th:text="#{msg.nav.login}">Iniciar sesión</span></a>
+            <a th:href="@{/register}">
+                <i class="bi bi-person-plus"></i>
+                <span th:text="#{msg.nav.register}">Registrarse</span>
+            </a>
+            <a th:href="@{/login}">
+                <i class="bi bi-box-arrow-in-right"></i>
+                <span th:text="#{msg.nav.login}">Iniciar sesión</span>
+            </a>
         </th:block>
 
         <th:block th:if="${#authorization.expression('isAuthenticated()')}">
             <span class="tgo-mobile-label" sec:authentication="name"></span>
-            <a th:href="@{/}"><i class="bi bi-house"></i> <span th:text="#{msg.nav.home}">Inicio</span></a>
-            <a th:href="@{/workshops}"><i class="bi bi-building"></i> <span th:text="#{msg.nav.workshops}">Talleres</span></a>
-            <a th:href="@{/appointments}"><i class="bi bi-calendar-check"></i> <span th:text="#{msg.nav.appointments}">Mis Citas</span></a>
 
-            <div class="tgo-mobile-sep" sec:authorize="hasAnyRole('ADMIN','JEFE_TALLER')"></div>
+            <a th:href="@{/}">
+                <i class="bi bi-house"></i>
+                <span th:text="#{msg.nav.home}">Inicio</span>
+            </a>
 
-            <a th:href="@{/mechanics}" sec:authorize="hasAnyRole('ADMIN','JEFE_TALLER')"><i class="bi bi-tools"></i> <span th:text="#{msg.nav.mecanicos}">Mecánicos</span></a>
-            <a th:href="@{/users}" sec:authorize="hasRole('ADMIN')"><i class="bi bi-people"></i> <span th:text="#{msg.header.users}">Usuarios</span></a>
-            <a th:href="@{/brands}" sec:authorize="hasRole('ADMIN')"><i class="bi bi-shield-check"></i> <span th:text="#{msg.header.brands}">Marcas</span></a>
+            <a th:href="@{/workshops}" sec:authorize="hasAnyRole('CLIENT','ADMIN')">
+                <i class="bi bi-building"></i>
+                <span th:text="#{msg.nav.workshops}">Talleres</span>
+            </a>
+
+            <a th:href="@{/appointments}">
+                <i class="bi bi-calendar-check"></i>
+                <span th:text="#{msg.nav.appointments}">Mis Citas</span>
+            </a>
+
+            <a th:href="@{/vehicles}" sec:authorize="hasAnyRole('CLIENT','ADMIN')">
+                <i class="bi bi-car-front"></i>
+                <span th:text="#{msg.header.vehicles}">Mis Vehículos</span>
+            </a>
+
+            <div class="tgo-mobile-sep" sec:authorize="hasAnyRole('ADMIN','WORKSHOP_ADMIN')"></div>
+
+            <a th:href="@{/mechanics}" sec:authorize="hasAnyRole('ADMIN','WORKSHOP_ADMIN')">
+                <i class="bi bi-tools"></i>
+                <span th:text="#{msg.nav.mecanicos}">Mecánicos</span>
+            </a>
+
+            <a th:href="@{/users}" sec:authorize="hasRole('ADMIN')">
+                <i class="bi bi-people"></i>
+                <span th:text="#{msg.header.users}">Usuarios</span>
+            </a>
+
+            <a th:href="@{/brands}" sec:authorize="hasRole('ADMIN')">
+                <i class="bi bi-shield-check"></i>
+                <span th:text="#{msg.header.brands}">Marcas</span>
+            </a>
+
+            <a th:href="@{/reviews/my}" sec:authorize="hasRole('WORKSHOP_ADMIN')">
+                <i class="bi bi-star-fill"></i>
+                <span th:text="#{msg.nav.reviews}">Reseñas</span>
+            </a>
 
             <div class="tgo-mobile-sep"></div>
-            <a th:href="@{/profile/edit}"><i class="bi bi-person-gear"></i> <span th:text="#{menu.editProfile}">Mi Perfil</span></a>
+
+            <a th:href="@{/profile/edit}">
+                <i class="bi bi-person-gear"></i>
+                <span th:text="#{menu.editProfile}">Mi Perfil</span>
+            </a>
+
             <form th:action="@{/logout}" method="post" style="margin:0; padding:0;">
-                <button type="submit" class="tgo-mobile-logout"><i class="bi bi-box-arrow-right"></i> <span th:text="#{menu.logout}">Cerrar sesión</span></button>
+                <button type="submit" class="tgo-mobile-logout">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span th:text="#{menu.logout}">Cerrar sesión</span>
+                </button>
             </form>
         </th:block>
 
         <div class="tgo-mobile-sep"></div>
         <div style="display:flex; gap:0.6rem; justify-content:center; padding:0.5rem 0;">
-            <a th:href="@{/lang(lang=es)}" class="tgo-lang-btn" title="Español">🇪🇸 ES</a>
-            <a th:href="@{/lang(lang=en)}" class="tgo-lang-btn" title="English">🇬🇧 EN</a>
+            <a th:href="@{/lang(lang=es)}" class="tgo-lang-btn" title="Español">ES</a>
+            <a th:href="@{/lang(lang=en)}" class="tgo-lang-btn" title="English">EN</a>
         </div>
     </div>
 </nav>
 
-<th:block th:fragment="navbarScripts"></th:block>
-<script th:inline="none">
-    function changeLang(lang) {
-        var url = new URL(window.location.href);
-        url.searchParams.set('lang', lang);
-        window.location.href = url.toString();
-    }
-</script>
-
 <th:block th:fragment="navbarCss">
-    <style>
-        /* ════ NAVBAR ESTILOS MODERNOS JLMP ════ */
-        .tgo-nav {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 500;
-            padding: 0.75rem 2.5rem;
-            display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-            transition: background 0.35s, box-shadow 0.35s, padding 0.25s;
-        }
-        .tgo-nav.scrolled {
-            background: rgba(10,10,10,0.93);
-            backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-            box-shadow: 0 2px 24px rgba(0,0,0,0.45);
-            padding: 0.5rem 2.5rem;
-        }
-        .tgo-brand {
-            font-size: 1.4rem; font-weight: 900; color: #fff;
-            text-decoration: none; letter-spacing: 1.5px;
-            /* He subido el gap de 0.25rem a 0.5rem para separar el logo del texto */
-            display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0;
-        }
-
-        .tgo-logo {
-            height: 50px;
-            width: auto;
-            display: block;
-        }
-        .tgo-brand-dot {
-            display: inline-block; width: 9px; height: 9px; border-radius: 50%;
-            background: #c0392b; margin-bottom: 2px;
-            animation: pulse-red 2.2s infinite;
-        }
-        @keyframes pulse-red {
-            0%,100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.55); }
-            50% { box-shadow: 0 0 0 6px rgba(192,57,43,0); }
-        }
-        .tgo-links {
-            display: flex; align-items: center; gap: 0.6rem;
-            list-style: none; margin: 0; padding: 0; flex: 1; justify-content: center;
-        }
-        .tgo-links a {
-            color: rgba(255,255,255,0.72); text-decoration: none;
-            font-size: 0.84rem; font-weight: 500;
-            padding: 0.42rem 0.85rem; border-radius: 8px;
-            transition: color 0.2s, background 0.2s; white-space: nowrap;
-        }
-        .tgo-links a:hover { color: #fff; background: rgba(255,255,255,0.09); }
-        .tgo-links a.tgo-active { color: #fff; font-weight: 700; background: rgba(255,255,255,0.07); }
-        .tgo-links .tgo-cta {
-            background: #c0392b; color: #fff !important; font-weight: 600;
-            padding: 0.42rem 1.1rem; border-radius: 8px;
-            box-shadow: 0 3px 12px rgba(192,57,43,0.35);
-        }
-        .tgo-links .tgo-cta-outline {
-            background: #111 !important; color: #fff !important;
-            border: 1.5px solid #111; box-shadow: none;
-        }
-        .tgo-links .tgo-cta-outline:hover { background: #222 !important; border-color: #222; }
-        .tgo-dd-wrap, .tgo-avatar-wrap { position: relative; list-style: none; }
-        .tgo-dd-btn, .tgo-avatar-btn {
-            display: flex; align-items: center; gap: 0.35rem;
-            color: rgba(255,255,255,0.72); font-size: 0.84rem; font-weight: 500;
-            padding: 0.42rem 0.85rem; border-radius: 8px;
-            border: none; background: transparent; cursor: pointer;
-        }
-        .tgo-dd-menu {
-            display: none; position: absolute;
-            top: calc(100% + 6px); left: 50%; transform: translateX(-50%);
-            background: rgba(14,14,14,0.98);
-            backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
-            border-radius: 14px; padding: 0.4rem; min-width: 180px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-            list-style: none;
-        }
-        .tgo-dd-right { left: auto; right: 0; transform: none; }
-        .tgo-dd-wrap.open .tgo-dd-menu, .tgo-avatar-wrap.open .tgo-dd-menu { display: block; }
-        .tgo-dd-menu li { list-style: none; padding: 0; margin: 0; }
-        .tgo-dd-label {
-            padding: 0.5rem 1rem; font-size: 0.78rem;
-            color: rgba(255,255,255,0.4); font-weight: 500;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            max-width: 230px; cursor: default;
-        }
-        .tgo-dd-menu li a, .tgo-dd-menu li .tgo-dd-logout {
-            display: flex; align-items: center; gap: 0.55rem;
-            padding: 0.58rem 1rem; border-radius: 9px;
-            font-size: 0.83rem; color: rgba(255,255,255,0.72); text-decoration: none;
-            background: transparent; border: none; width: 100%; cursor: pointer;
-        }
-        .tgo-dd-menu li a:hover, .tgo-dd-menu li .tgo-dd-logout:hover { background: rgba(255,255,255,0.07); color: #fff; }
-        .tgo-dd-logout { color: #e88080 !important; }
-        .tgo-dd-sep { height: 1px; background: rgba(255,255,255,0.07); margin: 0.3rem 0.5rem; list-style: none; }
-
-        .tgo-hamburger {
-            display: none; flex-direction: column; gap: 5px; width: 36px; height: 36px;
-            background: transparent; border: none; cursor: pointer;
-            justify-content: center; align-items: center;
-        }
-
-        /* Animación del icono de hamburguesa */
-        .tgo-hamburger span {
-            display: block; width: 24px; height: 2px; background: #fff; border-radius: 2px;
-            transition: all 0.3s ease-in-out; transform-origin: center;
-        }
-        .tgo-nav.menu-open .tgo-hamburger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-        .tgo-nav.menu-open .tgo-hamburger span:nth-child(2) { opacity: 0; }
-        .tgo-nav.menu-open .tgo-hamburger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-        .tgo-mobile-menu {
-            display: none; position: fixed; top: 56px; left: 0; right: 0;
-            background: rgba(10,10,10,0.98); backdrop-filter: blur(18px);
-            padding: 1rem 1.2rem; flex-direction: column; gap: 0.25rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;
-        }
-        .tgo-mobile-menu.open { display: flex; animation: fadeDown 0.3s ease; }
-
-        @keyframes fadeDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* SOLUCIÓN CSS: Estilos para los botones del menú móvil */
-        .tgo-mobile-menu a, .tgo-mobile-logout {
-            display: flex; align-items: center; gap: 0.8rem;
-            padding: 0.85rem 1.2rem; border-radius: 10px;
-            color: rgba(255,255,255,0.85); text-decoration: none;
-            font-size: 0.95rem; font-weight: 500;
-            background: transparent; border: none; width: 100%; text-align: left;
-            cursor: pointer; transition: background 0.2s, color 0.2s;
-        }
-        .tgo-mobile-menu a:hover, .tgo-mobile-logout:hover {
-            background: rgba(255,255,255,0.08); color: #fff;
-        }
-        .tgo-mobile-menu i { font-size: 1.2rem; }
-        .tgo-mobile-label {
-            display: block; padding: 0.5rem 1.2rem; color: #888;
-            font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
-        }
-        .tgo-mobile-sep {
-            height: 1px; background: rgba(255,255,255,0.08); margin: 0.5rem 1.2rem;
-        }
-        .tgo-mobile-logout { color: #e88080 !important; }
-
-        .tgo-lang-wrap { display: flex; align-items: center; gap: 0.3rem; margin-left: 0.4rem; }
-        .tgo-lang-btn {
-            font-size: 1.25rem; text-decoration: none; padding: 0.15rem 0.3rem;
-            border-radius: 6px; transition: background 0.2s; line-height: 1;
-            cursor: pointer;
-        }
-        .tgo-lang-btn:hover { background: rgba(255,255,255,0.15); }
-
-        @media (max-width: 960px) { .tgo-uname { display: none; } }
-        @media (max-width: 640px) {
-            .tgo-links, .tgo-avatar-wrap { display: none; }
-            .tgo-hamburger { display: flex; }
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/navbar.css}" />
 </th:block>
+
 </html>
