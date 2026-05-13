@@ -78,10 +78,6 @@ public class BudgetServiceImpl implements BudgetService {
      * Crea o actualiza el presupuesto de una reparación aplicando lógica de versionado.
      * Si el presupuesto actual no ha sido aceptado se sobrescribe; si ya fue aceptado
      * se genera uno nuevo. Calcula automáticamente el total bruto y el total con IVA.
-     *
-     * @param dto DTO con las líneas y notas del nuevo presupuesto.
-     * @return DTO del presupuesto creado o actualizado.
-     * @throws IllegalArgumentException si no existe la reparación indicada.
      */
     @Override
     @Transactional
@@ -89,35 +85,20 @@ public class BudgetServiceImpl implements BudgetService {
         Repair repair = repairRepository.findById(dto.getRepairId())
                 .orElseThrow(() -> new IllegalArgumentException("Reparación no encontrada"));
 
-        Budget currentBudget = repair.getBudget();
+        Budget currentBudget = budgetRepository.findLatestActiveByRepairId(repair.getId()).orElse(null);
         Budget budget;
 
         if (currentBudget != null && !Boolean.TRUE.equals(currentBudget.getAccepted())) {
-            // Sobrescribimos el presupuesto pendiente
             budget = currentBudget;
             budget.setNotes(dto.getNotes());
             budget.setRejected(false);
-
-            budget = budgetRepository.save(budget);
-            budgetRepository.flush();
-
-            budgetLineRepository.deleteAllByBudgetId(budget.getId());
-            budgetLineRepository.flush();
-
-            entityManager.clear();
-
-            budget = budgetRepository.findById(budget.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Error al recargar el presupuesto"));
+            budget.getLines().clear();
         } else {
-            // Creamos una nueva versión
             budget = new Budget();
             budget.setRepair(repair);
             budget.setNotes(dto.getNotes());
             budget.setAccepted(false);
             budget.setRejected(false);
-
-            budget = budgetRepository.save(budget);
-            budgetRepository.flush();
         }
 
         BigDecimal totalGross = BigDecimal.ZERO;
@@ -128,9 +109,8 @@ public class BudgetServiceImpl implements BudgetService {
                 line.setConcept(lineDto.getConcept());
                 line.setQuantity(lineDto.getQuantity());
                 line.setUnitPrice(lineDto.getUnitPrice());
-                line.setBudget(budget);
 
-                budgetLineRepository.save(line);
+                budget.addLine(line);
                 totalGross = totalGross.add(line.getLineTotal());
             }
         }
@@ -141,7 +121,8 @@ public class BudgetServiceImpl implements BudgetService {
         budget.setTotalGross(totalGross);
         budget.setTotalNet(totalNet);
 
-        return BudgetMapper.toDTO(budgetRepository.save(budget));
+        Budget saved = budgetRepository.save(budget);
+        return BudgetMapper.toDTO(saved);
     }
 
     /**
