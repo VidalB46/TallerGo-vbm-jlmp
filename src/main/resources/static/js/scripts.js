@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
     initNavbarScroll();
     initDropdowns();
     initMobileMenu();
+    initRescheduleModal();
 });
 
 /**
@@ -67,7 +68,7 @@ function initFileSizeValidation() {
  * Oculta automáticamente las alertas de éxito visibles tras unos segundos.
  */
 function initSuccessAlertsAutoHide() {
-    const successAlerts = document.querySelectorAll(".alert-success");
+    const successAlerts = document.querySelectorAll(".alert-success, .alert-success-custom");
 
     successAlerts.forEach(function (alertElement) {
         setTimeout(function () {
@@ -179,20 +180,75 @@ function initMobileMenu() {
 }
 
 /**
- * eliminar reseñas.
+ * Inicializa el modal de reprogramación de citas si existe en la vista.
+ */
+function initRescheduleModal() {
+    const modal = document.getElementById("customRescheduleModal");
+    if (!modal) return;
+
+    const dateInput = modal.querySelector('input[name="newDate"]');
+
+    if (dateInput) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setMinutes(tomorrow.getMinutes() - tomorrow.getTimezoneOffset());
+        dateInput.min = tomorrow.toISOString().slice(0, 16);
+    }
+
+    modal.addEventListener("click", function (event) {
+        if (event.target === modal) {
+            closeRescheduleModal();
+        }
+    });
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && modal.classList.contains("open")) {
+            closeRescheduleModal();
+        }
+    });
+}
+
+/**
+ * Abre el modal de reprogramación.
+ * Debe quedar en ámbito global porque se usa desde onclick en Thymeleaf.
+ */
+function openRescheduleModal() {
+    const modal = document.getElementById("customRescheduleModal");
+    if (modal) {
+        modal.classList.add("open");
+    }
+}
+
+/**
+ * Cierra el modal de reprogramación.
+ * Debe quedar en ámbito global porque se usa desde onclick en Thymeleaf.
+ */
+function closeRescheduleModal() {
+    const modal = document.getElementById("customRescheduleModal");
+    if (modal) {
+        modal.classList.remove("open");
+    }
+}
+
+/**
+ * Gestión de eliminación de reseñas.
  */
 let reviewFormToDelete = null;
 
 function openDeleteReviewModal(event, formElement) {
     event.preventDefault();
     reviewFormToDelete = formElement;
-    const modal = document.getElementById('customReviewDeleteModal');
-    if(modal) modal.classList.add('open');
+    const modal = document.getElementById("customReviewDeleteModal");
+    if (modal) {
+        modal.classList.add("open");
+    }
 }
 
 function closeDeleteReviewModal() {
-    const modal = document.getElementById('customReviewDeleteModal');
-    if(modal) modal.classList.remove('open');
+    const modal = document.getElementById("customReviewDeleteModal");
+    if (modal) {
+        modal.classList.remove("open");
+    }
     reviewFormToDelete = null;
 }
 

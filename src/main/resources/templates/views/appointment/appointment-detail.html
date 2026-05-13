@@ -128,6 +128,7 @@
 
         <div class="detail-card-footer">
             <a th:href="@{/appointments}" class="btn-modern btn-outline"><i class="bi bi-arrow-left"></i> <span th:text="#{msg.appointment-detail.action.back}">Volver</span></a>
+
             <div sec:authorize="hasRole('CLIENT')" class="d-flex flex-wrap gap-2">
                 <a th:if="${appointment.hasBudget}" th:href="@{/budgets/repair/{id}(id=${appointment.repairId})}" class="btn-modern" th:classappend="${appointment.isBudgetAccepted} ? ' btn-info-modern' : ' btn-warning-modern'"><i class="bi bi-receipt"></i> <span th:text="${appointment.isBudgetAccepted} ? #{msg.appointment-detail.btn.review.budget} : #{msg.appointment-detail.btn.review.budget.pending}">Ver Presupuesto</span></a>
             </div>
@@ -181,8 +182,8 @@
                          class="text-muted small fw-bold ms-2 d-flex align-items-center gap-1">
                         <i class="bi bi-lock-fill" style="color: #c0392b;"></i>
                         <span th:text="#{msg.appointment-detail.status.reception.blocked}">
-                Recepción bloqueada hasta aprobación
-            </span>
+                            Recepción bloqueada hasta aprobación
+                        </span>
                     </div>
 
                     <form th:action="@{/appointments/{id}/cancel(id=${appointment.id})}"

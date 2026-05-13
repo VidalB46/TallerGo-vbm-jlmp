@@ -113,7 +113,3 @@ INSERT IGNORE INTO appointments (id, user_id, workshop_id, vehicle_id, start_dat
 
 INSERT IGNORE INTO repairs (id, appointment_id, vehicle_id, entry_date, status, notes) VALUES
 (1, 1, 1, '2025-10-20', 'STANDBY', 'Pastillas de freno desgastadas');
-
--- Presupuesto pendiente de aceptar
-INSERT IGNORE INTO budgets (id, repair_id, total_gross, total_net, accepted) VALUES
-(1, 1, 100.00, 121.00, FALSE);
