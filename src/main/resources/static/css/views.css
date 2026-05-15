@@ -17,8 +17,7 @@
 }
 
 /* ── BODY BASE para todas las vistas modernas ── */
-/* No aplica a login-page ni d-flex (Bootstrap legacy) */
-body:not(.login-page):not([class*="d-flex"]) {
+body:not(.login-page):not(.error-page):not([class*="d-flex"]) {
     font-family: 'Inter', 'Segoe UI', sans-serif;
     background: #f4f4f6;
     color: #1a1a1a;
@@ -26,11 +25,11 @@ body:not(.login-page):not([class*="d-flex"]) {
     height: auto !important;
     min-height: 100vh;
 }
-body:not(.login-page):not([class*="d-flex"]) > nav,
-body:not(.login-page):not([class*="d-flex"]) > section,
-body:not(.login-page):not([class*="d-flex"]) > div,
-body:not(.login-page):not([class*="d-flex"]) > main,
-body:not(.login-page):not([class*="d-flex"]) > footer { flex: unset !important; width: 100%; }
+body:not(.login-page):not(.error-page):not([class*="d-flex"]) > nav,
+body:not(.login-page):not(.error-page):not([class*="d-flex"]) > section,
+body:not(.login-page):not(.error-page):not([class*="d-flex"]) > div,
+body:not(.login-page):not(.error-page):not([class*="d-flex"]) > main,
+body:not(.login-page):not(.error-page):not([class*="d-flex"]) > footer { flex: unset !important; width: 100%; }
 
 /* ── NAVBAR ── */
 .tgo-nav {

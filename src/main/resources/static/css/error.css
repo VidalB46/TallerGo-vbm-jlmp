@@ -25,11 +25,11 @@ body.error-page {
     background: #f4f4f6;
     color: #1a1a1a;
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    display: flex !important;
+    flex-direction: column !important;
 }
 
-/* Forzar navbar oscura en páginas de error */
+
 body.error-page .tgo-nav {
     background: rgba(10,10,10,0.93) !important;
     backdrop-filter: blur(18px);
